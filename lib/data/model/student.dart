@@ -6,6 +6,7 @@ class Student extends Equatable {
 
   const Student({required this.id, required this.name});
 
+  // Returns a new Student with specified changes
   Student copyWith({
     int? id,
     String? name,

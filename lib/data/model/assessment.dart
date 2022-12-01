@@ -1,17 +1,20 @@
 import 'package:equatable/equatable.dart';
+import 'package:quickcheck/data/model/student.dart';
 
 class Assessment extends Equatable {
   final int id;
   final String name;
-  final Map scoreMap;
+  // Maps from Student to assessment score
+  final Map<Student, int> scoreMap;
 
   const Assessment(
       {required this.id, required this.name, required this.scoreMap});
 
+  // Returns a new Assessment with specified changes
   Assessment copyWith({
     int? id,
     String? name,
-    Map? scoreMap,
+    Map<Student, int>? scoreMap,
   }) {
     return Assessment(
       id: id ?? this.id,

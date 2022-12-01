@@ -7,5 +7,5 @@ class Student extends Equatable {
   const Student({required this.id, required this.name});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [id, name];
 }

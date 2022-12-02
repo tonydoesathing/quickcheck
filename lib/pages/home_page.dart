@@ -21,54 +21,58 @@ class HomePage extends StatelessWidget {
       create: (context) => HomePageBloc(context.read<StudentRepository>(),
           context.read<AssessmentRepository>())
         ..add(LoadStudentTableEvent()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("QuickCheck"),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  context
-                      .read<StudentRepository>()
-                      .addStudent(Student(name: "meow"));
-                },
-                child: const Text("Add Student"))
-          ],
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            context
-                .read<AssessmentRepository>()
-                .addAssessment(Assessment(name: "assessment 1", scoreMap: {
-                  for (var el in [
-                    for (int j = 0; j < 10; j++)
-                      Student(id: j, name: 'Student ')
-                  ])
-                    el: el.id! % 5
-                }));
-          },
-          label: const Text("Add Assessment"),
-          icon: const Icon(Icons.add),
-        ),
-        body: BlocBuilder<HomePageBloc, HomePageState>(
-          builder: (context, state) {
-            if (state is DisplayStudentTable) {
-              return Center(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: StudentAssessmentTable(
-                        students: state.students,
-                        assessments: state.assessments),
+      child: BlocBuilder<HomePageBloc, HomePageState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text("QuickCheck"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      context
+                          .read<StudentRepository>()
+                          .addStudent(Student(name: "meow"));
+                    },
+                    child: const Text("Add Student"))
+              ],
+            ),
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: () {
+                if (state is DisplayStudentTable) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddAssessmentPage(
+                              students: state.students,
+                              callback: (assessment) {
+                                context
+                                    .read<AssessmentRepository>()
+                                    .addAssessment(assessment);
+                              },
+                            )),
+                  );
+                }
+              },
+              label: const Text("Add Assessment"),
+              icon: const Icon(Icons.add),
+            ),
+            body: (state is DisplayStudentTable)
+                ? Center(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: StudentAssessmentTable(
+                            students: state.students,
+                            assessments: state.assessments),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text("Loading"),
                   ),
-                ),
-              );
-            }
-            return Center(
-              child: Text("Loading"),
-            );
-          },
-        ),
+          );
+        },
       ),
     );
   }

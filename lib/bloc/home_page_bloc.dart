@@ -35,11 +35,11 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       : super(LoadingStudentTable()) {
     on<LoadStudentTableEvent>(
       (event, emit) async {
-        print("Loading tables");
         // fetch required info
         final List<Student> students = await studentRepository.getStudents();
         final List<Assessment> assessments =
             await assessmentRepository.getAssessments();
+        emit(DisplayStudentTable(students, assessments));
         add(DisplayStudentTableEvent(students, assessments));
       },
       transformer: restartable(),
@@ -47,7 +47,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
     on<DisplayStudentTableEvent>(
       (event, emit) async {
-        print("displaying tables");
         // combine repository streams into one
         HomePageBloc theBloc = this;
         await emit.forEach(

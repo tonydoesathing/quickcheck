@@ -18,3 +18,15 @@ abstract class AssessmentRepository {
   /// Tries to add assessment to repository and returns whether or not it was successful
   Future<bool> addAssessment(Assessment assessment);
 }
+
+/// Exception thrown when assessment not found in LocalAssessmentRepository.getAssessment(id)
+class AssessmentNotFoundException implements Exception {
+  int id;
+
+  AssessmentNotFoundException({required this.id}) {}
+
+  @override
+  String toString() {
+    return "No assessment found with ID $id";
+  }
+}

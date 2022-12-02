@@ -3,24 +3,15 @@ import 'dart:async';
 import 'package:quickcheck/data/model/assessment.dart';
 import 'package:quickcheck/data/repository/assessment_repository.dart';
 
-class AssessmentNotFoundException implements Exception {
-  int id;
-
-  AssessmentNotFoundException({required this.id}) {}
-
-  @override
-  String toString() {
-    return "No assessment found with ID $id";
-  }
-}
-
+/// Repository that holds Assessments
 class LocalAssessmentRepository extends AssessmentRepository {
   final StreamController<List<Assessment>> _streamController =
       StreamController<List<Assessment>>.broadcast();
   final List<Assessment> _assessments = [];
 
   @override
-  // Add assessment to _assessments list.
+
+  /// Add assessment to _assessments list.
   Future<bool> addAssessment(Assessment assessment) async {
     try {
       Assessment newAssessment =
@@ -39,7 +30,8 @@ class LocalAssessmentRepository extends AssessmentRepository {
   }
 
   @override
-  // Get assessment by ID.
+
+  /// Get assessment by ID.
   Future<Assessment> getAssessment(int id) async {
     for (Assessment assessment in _assessments) {
       if (assessment.id == id) {
@@ -50,7 +42,8 @@ class LocalAssessmentRepository extends AssessmentRepository {
   }
 
   @override
-  // Get list of assessments
+
+  /// Get list of assessments
   Future<List<Assessment>> getAssessments() async {
     _streamController.add(List<Assessment>.of(_assessments));
     return List<Assessment>.of(_assessments);

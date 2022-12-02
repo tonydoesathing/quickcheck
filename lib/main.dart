@@ -24,8 +24,8 @@ import 'data/repository/local_assessment_repository.dart';
 import 'data/repository/student_repository.dart';
 
 void main() {
-  final studentRepository = LocalStudentRepository();
-  final assessmentRepository = LocalAssessmentRepository();
+  final StudentRepository studentRepository = LocalStudentRepository();
+  final AssessmentRepository assessmentRepository = LocalAssessmentRepository();
 
   runApp(App(
       studentRepository: studentRepository,
@@ -33,13 +33,13 @@ void main() {
 }
 
 class App extends StatelessWidget {
-  final studentRepository;
-  final assessmentRepository;
+  final StudentRepository studentRepository;
+  final AssessmentRepository assessmentRepository;
 
   const App(
       {Key? key,
-      StudentRepository? this.studentRepository,
-      AssessmentRepository? this.assessmentRepository})
+      required this.studentRepository,
+      required this.assessmentRepository})
       : super(key: key);
 
   // This widget is the root of your application.

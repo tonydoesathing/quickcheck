@@ -44,7 +44,7 @@ class StudentAssessmentTable extends StatelessWidget {
               DataCell(Text(student.name)),
               for (Assessment assessment in assessments)
                 DataCell(
-                    AssessmentScore(score: assessment.scoreMap[student] ?? 0)),
+                    AssessmentScore(score: assessment.scoreMap[student] ?? -1)),
             ],
           )
       ],

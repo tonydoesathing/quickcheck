@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quickcheck/bloc/home_page_bloc.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/pages/add_assessment_page.dart';
 import 'package:quickcheck/data/model/assessment.dart';
+import 'package:quickcheck/data/model/student.dart';
+import 'package:quickcheck/data/repository/assessment_repository.dart';
+import 'package:quickcheck/data/repository/student_repository.dart';
 import 'package:quickcheck/pages/add_student_page.dart';
+import 'package:quickcheck/widgets/quick_check_icons_icons.dart';
 import 'package:quickcheck/widgets/student_assessment_table.dart';
 
 /// The home page of the app, which displays a table of the students and their assessment results
@@ -12,67 +18,69 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("QuickCheck"),
-        actions: [
-          TextButton(
+    return BlocProvider(
+      create: (context) => HomePageBloc(context.read<StudentRepository>(),
+          context.read<AssessmentRepository>())
+        ..add(LoadStudentTableEvent()),
+      child: BlocBuilder<HomePageBloc, HomePageState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text("QuickCheck"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AddStudentPage(callback: (student) {
+                              context
+                                  .read<StudentRepository>()
+                                  .addStudent(student);
+                            }),
+                          ));
+                    },
+                    child: const Text("Add Student"))
+              ],
+            ),
+            floatingActionButton: FloatingActionButton.extended(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          AddStudentPage(callback: ((student) {
-                            print(student.name);
-                          }))),
-                );
+                if (state is DisplayStudentTable) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddAssessmentPage(
+                              students: state.students,
+                              callback: (assessment) {
+                                context
+                                    .read<AssessmentRepository>()
+                                    .addAssessment(assessment);
+                              },
+                            )),
+                  );
+                }
               },
-              child: const Text("Add Student"))
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AddAssessmentPage(
-                      // pass in the list of students; this is fictional
-                      students: [
-                        for (int i = 0; i < 10; i++)
-                          Student(id: i, name: 'Student $i')
-                      ],
-                      callback: (assessment) {
-                        // this is where you'd save things
-                      },
-                    )),
+              label: const Text("Add Assessment"),
+              icon: const Icon(Icons.add),
+            ),
+            body: (state is DisplayStudentTable)
+                ? Center(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: StudentAssessmentTable(
+                            students: state.students,
+                            assessments: state.assessments),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text("Loading"),
+                  ),
           );
         },
-        label: const Text("Add Assessment"),
-        icon: const Icon(Icons.add),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: StudentAssessmentTable(
-
-                /// made up list of students and assessments
-                students: [
-                  for (int i = 0; i < 10; i++)
-                    Student(id: i, name: 'Student $i')
-                ], assessments: [
-              for (int i = 0; i < 10; i++)
-                Assessment(id: i, name: 'Assessment $i', scoreMap: {
-                  for (var el in [
-                    for (int j = 0; j < 10; j++)
-                      Student(id: j, name: 'Student $j')
-                  ])
-                    el: el.id! % 5
-                })
-            ]),
-          ),
-        ),
       ),
     );
   }

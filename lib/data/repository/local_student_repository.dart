@@ -3,24 +3,18 @@ import 'dart:async';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/data/repository/student_repository.dart';
 
-class StudentNotFoundException implements Exception {
-  int id;
-
-  StudentNotFoundException({required this.id}) {}
-
-  @override
-  String toString() {
-    return "No student found with ID $id";
-  }
-}
-
+/// The LocalStudentRepository is an implementation of the [StudentRepository] making use of an in-memory datastore.
 class LocalStudentRepository extends StudentRepository {
+  /// Stream used to update listeners with changes
   final StreamController<List<Student>> _streamController =
       StreamController<List<Student>>.broadcast();
+
+  /// The datastore for students
   final List<Student> _students = [];
 
   @override
-  // Add student to _students list.
+
+  /// Add student to _students list.
   Future<bool> addStudent(Student student) async {
     try {
       Student newStudent =
@@ -39,7 +33,8 @@ class LocalStudentRepository extends StudentRepository {
   }
 
   @override
-  // Get student by ID.
+
+  /// Get student by ID.
   Future<Student> getStudent(int id) async {
     for (Student student in _students) {
       if (student.id == id) {
@@ -50,7 +45,8 @@ class LocalStudentRepository extends StudentRepository {
   }
 
   @override
-  // Get list of students
+
+  /// Get list of students
   Future<List<Student>> getStudents() async {
     _streamController.add(List<Student>.of(_students));
     return List<Student>.of(_students);

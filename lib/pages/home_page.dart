@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/pages/add_assessment_page.dart';
 import 'package:quickcheck/data/model/assessment.dart';
+import 'package:quickcheck/pages/add_student_page.dart';
 import 'package:quickcheck/widgets/student_assessment_table.dart';
 
 /// The home page of the app, which displays a table of the students and their assessment results
@@ -15,7 +16,18 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("QuickCheck"),
         actions: [
-          TextButton(onPressed: () {}, child: const Text("Add Student"))
+          TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          AddStudentPage(callback: ((student) {
+                            print(student.name);
+                          }))),
+                );
+              },
+              child: const Text("Add Student"))
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

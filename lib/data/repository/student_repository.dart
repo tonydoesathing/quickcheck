@@ -18,3 +18,16 @@ abstract class StudentRepository {
   /// Tries to add student to repository and returns whether or not it was successful
   Future<bool> addStudent(Student student);
 }
+
+/// [Student] with id of [id] could not be found in datastore
+class StudentNotFoundException implements Exception {
+  final int id;
+
+  /// Exception: [Student] with id of [id] could not be found in datastore
+  const StudentNotFoundException({required this.id});
+
+  @override
+  String toString() {
+    return "No student found with ID $id";
+  }
+}

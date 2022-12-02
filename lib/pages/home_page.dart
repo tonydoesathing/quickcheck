@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:quickcheck/data/model/assessment.dart';
 import 'package:quickcheck/data/model/student.dart';
-import 'package:quickcheck/widgets/quick_check_icons_icons.dart';
+import 'package:quickcheck/pages/add_assessment_page.dart';
+import 'package:quickcheck/data/model/assessment.dart';
 import 'package:quickcheck/widgets/student_assessment_table.dart';
 
+/// The home page of the app, which displays a table of the students and their assessment results
 class HomePage extends StatelessWidget {
+  /// The home page of the app, which displays a table of the students and their assessment results
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -17,7 +19,22 @@ class HomePage extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddAssessmentPage(
+                      // pass in the list of students; this is fictional
+                      students: [
+                        for (int i = 0; i < 10; i++)
+                          Student(id: i, name: 'Student $i')
+                      ],
+                      callback: (assessment) {
+                        // this is where you'd save things
+                      },
+                    )),
+          );
+        },
         label: const Text("Add Assessment"),
         icon: const Icon(Icons.add),
       ),
@@ -26,9 +43,13 @@ class HomePage extends StatelessWidget {
           scrollDirection: Axis.vertical,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: StudentAssessmentTable(students: [
-              for (int i = 0; i < 10; i++) Student(id: i, name: 'Student $i')
-            ], assessments: [
+            child: StudentAssessmentTable(
+
+                /// made up list of students and assessments
+                students: [
+                  for (int i = 0; i < 10; i++)
+                    Student(id: i, name: 'Student $i')
+                ], assessments: [
               for (int i = 0; i < 10; i++)
                 Assessment(id: i, name: 'Assessment $i', scoreMap: {
                   for (var el in [

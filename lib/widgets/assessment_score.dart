@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:quickcheck/widgets/quick_check_icons_icons.dart';
 
+/// Shows a stylized icon from a [score]
 class AssessmentScore extends StatelessWidget {
+  /// The score to display
   final int score;
+
+  /// Creates a stylized icon from a [score]
   const AssessmentScore({Key? key, required this.score}) : super(key: key);
 
   @override
@@ -10,6 +14,8 @@ class AssessmentScore extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Container(
+        width: 40,
+        height: 40,
         decoration: BoxDecoration(shape: BoxShape.circle, color: _scoreColor()),
         child: Center(
           child: _scoreIcon(),
@@ -18,6 +24,7 @@ class AssessmentScore extends StatelessWidget {
     );
   }
 
+  /// Returns the appropriate background color based off the score
   Color _scoreColor() {
     switch (score) {
       case 0:
@@ -35,6 +42,7 @@ class AssessmentScore extends StatelessWidget {
     }
   }
 
+  /// Returns the appropriate icon based off the score
   Widget _scoreIcon() {
     switch (score) {
       case 0:

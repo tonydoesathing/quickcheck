@@ -32,6 +32,7 @@ void main() {
       assessmentRepository: assessmentRepository));
 }
 
+/// The main app of the application; serves as a wrapper for a MaterialApp and loads HomePage
 class App extends StatelessWidget {
   final StudentRepository studentRepository;
   final AssessmentRepository assessmentRepository;

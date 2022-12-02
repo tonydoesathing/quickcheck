@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/bloc/home_page_bloc.dart';
+import 'package:quickcheck/data/model/student.dart';
+import 'package:quickcheck/pages/add_assessment_page.dart';
 import 'package:quickcheck/data/model/assessment.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/data/repository/assessment_repository.dart';
@@ -8,7 +10,9 @@ import 'package:quickcheck/data/repository/student_repository.dart';
 import 'package:quickcheck/widgets/quick_check_icons_icons.dart';
 import 'package:quickcheck/widgets/student_assessment_table.dart';
 
+/// The home page of the app, which displays a table of the students and their assessment results
 class HomePage extends StatelessWidget {
+  /// The home page of the app, which displays a table of the students and their assessment results
   const HomePage({Key? key}) : super(key: key);
 
   @override

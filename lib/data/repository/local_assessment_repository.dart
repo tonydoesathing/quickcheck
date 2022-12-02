@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:quickcheck/data/model/assessment.dart';
 import 'package:quickcheck/data/repository/assessment_repository.dart';
 
-/// Repository that holds Assessments
+/// The LocalStudentRepository is an implementation of the [AssessmentRepository] making use of an in-memory datastore.
 class LocalAssessmentRepository extends AssessmentRepository {
+  /// Stream used to update listeners with changes
   final StreamController<List<Assessment>> _streamController =
       StreamController<List<Assessment>>.broadcast();
+
+  /// The datastore for students
   final List<Assessment> _assessments = [];
 
   @override

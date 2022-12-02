@@ -19,10 +19,11 @@ abstract class AssessmentRepository {
   Future<bool> addAssessment(Assessment assessment);
 }
 
-/// Exception thrown when assessment not found in LocalAssessmentRepository.getAssessment(id)
+/// [Assessment] with id of [id] could not be found in datastore
 class AssessmentNotFoundException implements Exception {
   int id;
 
+  /// Exception: [Assessment] with id of [id] could not be found in datastore
   AssessmentNotFoundException({required this.id}) {}
 
   @override

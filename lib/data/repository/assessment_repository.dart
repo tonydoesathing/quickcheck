@@ -18,3 +18,16 @@ abstract class AssessmentRepository {
   /// Tries to add assessment to repository and returns whether or not it was successful
   Future<bool> addAssessment(Assessment assessment);
 }
+
+/// [Assessment] with id of [id] could not be found in datastore
+class AssessmentNotFoundException implements Exception {
+  int id;
+
+  /// Exception: [Assessment] with id of [id] could not be found in datastore
+  AssessmentNotFoundException({required this.id}) {}
+
+  @override
+  String toString() {
+    return "No assessment found with ID $id";
+  }
+}

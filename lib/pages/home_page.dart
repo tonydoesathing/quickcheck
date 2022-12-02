@@ -7,6 +7,7 @@ import 'package:quickcheck/data/model/assessment.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/data/repository/assessment_repository.dart';
 import 'package:quickcheck/data/repository/student_repository.dart';
+import 'package:quickcheck/pages/add_student_page.dart';
 import 'package:quickcheck/widgets/quick_check_icons_icons.dart';
 import 'package:quickcheck/widgets/student_assessment_table.dart';
 
@@ -29,9 +30,16 @@ class HomePage extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () {
-                      context
-                          .read<StudentRepository>()
-                          .addStudent(Student(name: "meow"));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AddStudentPage(callback: (student) {
+                              context
+                                  .read<StudentRepository>()
+                                  .addStudent(student);
+                            }),
+                          ));
                     },
                     child: const Text("Add Student"))
               ],

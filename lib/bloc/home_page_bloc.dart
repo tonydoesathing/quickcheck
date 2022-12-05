@@ -27,26 +27,33 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import '../data/model/assessment.dart';
 import '../data/model/student.dart';
 
+/// The Business Logic Component for the HomePage.
+/// Start off rendering a LoadingStudentTable state. Send a LoadStudentTableEvent off the bat
+/// to pull resources from the repositories to populate the table and emit a DisplayStudentTable
+/// state to display the table. Then, Add a DisplayStudentTableEvent to to continuously listen
+/// for changes to the repositories and emit a DisplayStudentTable state each time.
 class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   final StudentRepository studentRepository;
   final AssessmentRepository assessmentRepository;
 
   HomePageBloc(this.studentRepository, this.assessmentRepository)
-      : super(LoadingStudentTable()) {
+      : super(const LoadingStudentTable([], [])) {
     on<LoadStudentTableEvent>(
       (event, emit) async {
         // fetch required info
         final List<Student> students = await studentRepository.getStudents();
         final List<Assessment> assessments =
             await assessmentRepository.getAssessments();
-        emit(DisplayStudentTable(students, assessments));
+        // request to display the info and subscribe to repo changes
         add(DisplayStudentTableEvent(students, assessments));
       },
-      transformer: restartable(),
     );
 
     on<DisplayStudentTableEvent>(
       (event, emit) async {
+        // display the table
+        emit(DisplayStudentTable(event.students, event.assessments));
+
         // combine repository streams into one
         HomePageBloc theBloc = this;
         await emit.forEach(
@@ -55,33 +62,29 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
           onData: (data) {
             // check to see what kind of event got sent through the stream
             if (data is List<Student>) {
-              List<Assessment> assessments;
-              HomePageState state = theBloc.state;
-              if (state is DisplayStudentTable) {
-                assessments = state.assessments;
-              } else {
-                assessments = event.assessments;
-              }
-              return DisplayStudentTable(data, assessments);
+              // there was an update to the student repository
+              // emit DisplayStudentTable using the student data and grabbing the assessments
+              // from the current state
+              return DisplayStudentTable(data, state.assessments);
             } else if (data is List<Assessment>) {
-              List<Student> students;
-              HomePageState state = theBloc.state;
-              if (state is DisplayStudentTable) {
-                students = state.students;
-              } else {
-                students = event.students;
-              }
-              return DisplayStudentTable(students, data);
+              // there was an update to the assessment repository
+              // emit DisplayStudentTable using the assessment data and grabbing the students
+              // from the current state
+              return DisplayStudentTable(state.students, data);
             }
+            // there was an event that there shouldn't've been
             throw Exception("Received unknown event on stream");
           },
         );
       },
+      // this makes it so if there's another DisplayStudentTableEvent, it'll close
+      // this one and start a new one (so we're not doing a ton of emissions)
       transformer: restartable(),
     );
   }
 }
 
+/// Requests/events for the HomePage
 class HomePageEvent extends Equatable {
   const HomePageEvent();
 
@@ -89,33 +92,47 @@ class HomePageEvent extends Equatable {
   List<Object> get props => [];
 }
 
+/// Request to fetch resources from repositories
 class LoadStudentTableEvent extends HomePageEvent {}
 
+/// Request to display resources from repositories and listen for changes
 class DisplayStudentTableEvent extends HomePageEvent {
+  /// List of students to render
   final List<Student> students;
+
+  /// List of assignments to render
   final List<Assessment> assessments;
 
+  /// Request to display resources from repositories and listen for changes
   const DisplayStudentTableEvent(this.students, this.assessments);
 
   @override
   List<Object> get props => [students, assessments];
 }
 
+/// State for the HomePage
 class HomePageState extends Equatable {
-  const HomePageState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class LoadingStudentTable extends HomePageState {}
-
-class DisplayStudentTable extends HomePageState {
+  /// List of students to render
   final List<Student> students;
+
+  /// List of assignments to render
   final List<Assessment> assessments;
 
-  const DisplayStudentTable(this.students, this.assessments);
+  /// State for the HomePage
+  const HomePageState(this.students, this.assessments);
 
   @override
   List<Object> get props => [students, assessments];
+}
+
+/// State to show that it's loading the resources
+class LoadingStudentTable extends HomePageState {
+  /// State to show that it's loading the resources
+  const LoadingStudentTable(super.students, super.assessments);
+}
+
+/// State to display the resouces once loaded
+class DisplayStudentTable extends HomePageState {
+  /// State to display the resouces once loaded
+  const DisplayStudentTable(super.students, super.assessments);
 }

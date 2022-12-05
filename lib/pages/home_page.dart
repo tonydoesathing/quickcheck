@@ -18,10 +18,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // create a HomePageBloc from the repositories and have it load from them
     return BlocProvider(
       create: (context) => HomePageBloc(context.read<StudentRepository>(),
           context.read<AssessmentRepository>())
         ..add(LoadStudentTableEvent()),
+      // On new state changes of the HomePageBloc, re-render the page
       child: BlocBuilder<HomePageBloc, HomePageState>(
         builder: (context, state) {
           return Scaffold(
@@ -30,11 +32,13 @@ class HomePage extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () {
+                      // on AddStudent, navigate to the AddStudentPage
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
                                 AddStudentPage(callback: (student) {
+                              // on save button in AddStudentPage, add the student to the repo
                               context
                                   .read<StudentRepository>()
                                   .addStudent(student);
@@ -46,13 +50,16 @@ class HomePage extends StatelessWidget {
             ),
             floatingActionButton: FloatingActionButton.extended(
               onPressed: () {
+                // if we're not loading:
                 if (state is DisplayStudentTable) {
+                  // Add Assessment button should take us to the AddAssessmentPage
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => AddAssessmentPage(
                               students: state.students,
                               callback: (assessment) {
+                                // on save of assessment, add to the repo
                                 context
                                     .read<AssessmentRepository>()
                                     .addAssessment(assessment);
@@ -64,6 +71,7 @@ class HomePage extends StatelessWidget {
               label: const Text("Add Assessment"),
               icon: const Icon(Icons.add),
             ),
+            // render the table if not loading
             body: (state is DisplayStudentTable)
                 ? Center(
                     child: SingleChildScrollView(
@@ -76,7 +84,8 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                   )
-                : Center(
+                // render that we're loading if we're loading
+                : const Center(
                     child: Text("Loading"),
                   ),
           );

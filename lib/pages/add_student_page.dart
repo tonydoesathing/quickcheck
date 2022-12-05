@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:quickcheck/data/model/student.dart';
 
+/// The page where new students can be added.
+/// Consists of a textfield, a save button, and a cancel button.
+/// On save, it calls the optional [callback]. On cancel, it returns
+/// to the preivous page.
 class AddStudentPage extends StatefulWidget {
+  /// the callback to be called on save
   final Function(Student) callback;
+
+  /// The page where new students can be added.
+  /// Takes an optional [callback], which is called on save with the new student.
   const AddStudentPage({Key? key, required this.callback}) : super(key: key);
 
   @override
@@ -10,6 +18,7 @@ class AddStudentPage extends StatefulWidget {
 }
 
 class _AddStudentPageState extends State<AddStudentPage> {
+  /// The controller for the textfield
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -41,6 +50,8 @@ class _AddStudentPageState extends State<AddStudentPage> {
                         primary: Theme.of(context).colorScheme.primary)
                     .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: () {
+                  // go to previous page
+                  // and call the callback
                   Navigator.pop(context);
                   widget.callback.call(Student(name: _controller.text));
                 },
@@ -50,6 +61,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
               padding: const EdgeInsets.only(left: 8.0, right: 16.0),
               child: TextButton(
                   onPressed: () {
+                    // go to previous page on click
                     Navigator.pop(context);
                   },
                   child: const Text(

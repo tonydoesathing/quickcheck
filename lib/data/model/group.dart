@@ -13,12 +13,13 @@ class Group extends Equatable {
   /// The students int the group
   final List<Student> members;
 
-  /// Create a [Student]
+  /// Create a [Group]
   ///
   /// The [name] must not be null
+  /// The [members] must not be null
   const Group({this.id, required this.name, required this.members});
 
-  // Returns a new Student with specified changes
+  // Returns a new Group with specified changes
   Group copyWith({
     int? id,
     String? name,

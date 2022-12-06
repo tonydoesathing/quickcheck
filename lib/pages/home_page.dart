@@ -48,29 +48,31 @@ class HomePage extends StatelessWidget {
                     child: const Text("Add Student"))
               ],
             ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                // if we're not loading:
-                if (state is DisplayStudentTable) {
-                  // Add Assessment button should take us to the AddAssessmentPage
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddAssessmentPage(
-                              students: state.students,
-                              callback: (assessment) {
-                                // on save of assessment, add to the repo
-                                context
-                                    .read<AssessmentRepository>()
-                                    .addAssessment(assessment);
-                              },
-                            )),
-                  );
-                }
-              },
-              label: const Text("Add Assessment"),
-              icon: const Icon(Icons.add),
-            ),
+            floatingActionButton: state.students.isNotEmpty
+                ? FloatingActionButton.extended(
+                    onPressed: () {
+                      // if we're not loading:
+                      if (state is DisplayStudentTable) {
+                        // Add Assessment button should take us to the AddAssessmentPage
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AddAssessmentPage(
+                                    students: state.students,
+                                    callback: (assessment) {
+                                      // on save of assessment, add to the repo
+                                      context
+                                          .read<AssessmentRepository>()
+                                          .addAssessment(assessment);
+                                    },
+                                  )),
+                        );
+                      }
+                    },
+                    label: const Text("Add Assessment"),
+                    icon: const Icon(Icons.add),
+                  )
+                : null,
             // render the table if not loading
             body: (state is DisplayStudentTable)
                 ? Center(

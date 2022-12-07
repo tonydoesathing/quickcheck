@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:quickcheck/data/model/student.dart';
+import 'package:quickcheck/data/model/group.dart';
 
 /// The data model for an assessment.
-/// Consists of an id, a name, and a map between a student and their score in the assessment.
+/// Consists of an id, a name, and a map between a student/group and their score in the assessment.
 class Assessment extends Equatable {
   /// The id of the assessment
   final int? id;
@@ -10,8 +11,8 @@ class Assessment extends Equatable {
   /// Name of the assessment
   final String name;
 
-  /// Maps from Student to assessment score
-  final Map<Student, int> scoreMap;
+  /// Maps from Student/Group to assessment score
+  final Map<dynamic, int> scoreMap;
 
   /// Create an [Assessment]
   ///
@@ -22,7 +23,7 @@ class Assessment extends Equatable {
   Assessment copyWith({
     int? id,
     String? name,
-    Map<Student, int>? scoreMap,
+    Map<dynamic, int>? scoreMap,
   }) {
     return Assessment(
       id: id ?? this.id,

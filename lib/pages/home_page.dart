@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/bloc/home_page_bloc.dart';
 import 'package:quickcheck/data/model/student.dart';
+import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/pages/add_assessment_page.dart';
 import 'package:quickcheck/data/model/assessment.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/data/repository/assessment_repository.dart';
 import 'package:quickcheck/data/repository/student_repository.dart';
+import 'package:quickcheck/pages/add_group_page.dart';
 import 'package:quickcheck/pages/add_student_page.dart';
 import 'package:quickcheck/widgets/quick_check_icons_icons.dart';
 import 'package:quickcheck/widgets/student_assessment_table.dart';
@@ -30,22 +32,49 @@ class HomePage extends StatelessWidget {
             appBar: AppBar(
               title: const Text("QuickCheck"),
               actions: [
-                TextButton(
-                    onPressed: () {
-                      // on AddStudent, navigate to the AddStudentPage
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AddStudentPage(callback: (student) {
-                              // on save button in AddStudentPage, add the student to the repo
-                              context
-                                  .read<StudentRepository>()
-                                  .addStudent(student);
-                            }),
-                          ));
+                PopupMenuButton(
+                    onSelected: (value) {
+                      if (value == 0) {
+                        // Add Student selected
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AddStudentPage(callback: (student) {
+                                // on save button in AddStudentPage, add the student to the repo
+                                context
+                                    .read<StudentRepository>()
+                                    .addStudent(student);
+                              }),
+                            ));
+                      } else if (value == 1) {
+                        // Add Group selected
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddGroupPage(
+                                  students: state.students,
+                                  callback: (group) {
+                                    // on save button in AddGroupPage, add the group to the repo
+                                    context
+                                        .read<GroupRepository>()
+                                        .addGroup(group);
+                                  }),
+                            ));
+                      }
                     },
-                    child: const Text("Add Student"))
+                    itemBuilder: ((context) => [
+                          PopupMenuItem(
+                              value: 0,
+                              child: Row(
+                                children: const [Text("Add Student")],
+                              )),
+                          PopupMenuItem(
+                              value: 1,
+                              child: Row(
+                                children: const [Text("Add Group")],
+                              )),
+                        ])),
               ],
             ),
             floatingActionButton: state.students.isNotEmpty

@@ -21,19 +21,26 @@ class AssessmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Text(
-        assessee.name ?? "NO NAME",
-        overflow: TextOverflow.clip,
-        style: (assessee is Group)
-            ? Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(fontWeight: FontWeight.bold)
-            : null,
-      ),
-      title: Expanded(
-        child: Row(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (assessee is Student)
+          const SizedBox(
+            width: 20,
+          ),
+        Expanded(
+          child: Text(
+            assessee.name ?? "NO NAME",
+            overflow: TextOverflow.clip,
+            style: (assessee is Group)
+                ? Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(fontWeight: FontWeight.bold)
+                : null,
+          ),
+        ),
+        Row(
           children: [
             for (int i = 4; i >= 0; i--)
               InkWell(
@@ -45,8 +52,8 @@ class AssessmentWidget extends StatelessWidget {
                 ),
               ),
           ],
-        ),
-      ),
+        )
+      ],
     );
   }
 }

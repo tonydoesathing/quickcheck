@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quickcheck/data/model/group.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/widgets/assessment_score.dart';
 
@@ -24,19 +25,27 @@ class AssessmentWidget extends StatelessWidget {
       leading: Text(
         assessee.name ?? "NO NAME",
         overflow: TextOverflow.clip,
+        style: (assessee is Group)
+            ? Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(fontWeight: FontWeight.bold)
+            : null,
       ),
-      title: Row(
-        children: [
-          for (int i = 4; i >= 0; i--)
-            InkWell(
-              onTap: () => callback?.call([assessee, score == i ? -1 : i]),
-              customBorder: const CircleBorder(),
-              child: Opacity(
-                opacity: score == i ? 1.0 : 0.5,
-                child: AssessmentScore(score: i),
+      title: Expanded(
+        child: Row(
+          children: [
+            for (int i = 4; i >= 0; i--)
+              InkWell(
+                onTap: () => callback?.call([assessee, score == i ? -1 : i]),
+                customBorder: const CircleBorder(),
+                child: Opacity(
+                  opacity: score == i ? 1.0 : 0.5,
+                  child: AssessmentScore(score: i),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

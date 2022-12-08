@@ -43,15 +43,30 @@ class GroupAssessmentTable extends StatelessWidget {
           ),
       ],
       rows: <DataRow>[
-        for (Group group in groups)
+        for (Group group in groups) ...[
           DataRow(
             cells: <DataCell>[
-              DataCell(Text(group.name)),
+              DataCell(Text(group.name,
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(fontWeight: FontWeight.bold))),
               for (Assessment assessment in assessments)
                 DataCell(
                     AssessmentScore(score: assessment.scoreMap[group] ?? -1)),
             ],
-          )
+          ),
+          for (Student student in group.members)
+            DataRow(
+              cells: <DataCell>[
+                DataCell(Text(student.name, textAlign: TextAlign.right)),
+                for (Assessment assessment in assessments)
+                  DataCell(AssessmentScore(
+                      score: assessment.scoreMap[student] ?? -1)),
+              ],
+            )
+        ]
       ],
     );
   }

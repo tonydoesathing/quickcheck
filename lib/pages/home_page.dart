@@ -87,7 +87,7 @@ class HomePage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AddAssessmentPage(
-                                    students: state.students,
+                                    groups: state.groups,
                                     callback: (assessment) {
                                       // on save of assessment, add to the repo
                                       context

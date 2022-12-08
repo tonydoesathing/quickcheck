@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quickcheck/data/model/assessment.dart';
+import 'package:quickcheck/data/model/group.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/widgets/assessment_widget.dart';
 
@@ -9,12 +10,12 @@ class AddAssessmentPage extends StatefulWidget {
   /// The callback for when the assessment is saved
   final Function(Assessment)? callback;
 
-  /// The list of students to assess
-  final List<Student> students;
+  /// The list of groups to assess
+  final List<Group> groups;
 
   /// Page where the user can add assessments
   /// Takes in a [callback] and a list of [Student]s and displays assement
-  const AddAssessmentPage({Key? key, this.callback, required this.students})
+  const AddAssessmentPage({Key? key, this.callback, required this.groups})
       : super(key: key);
 
   @override
@@ -26,11 +27,21 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
   final TextEditingController _controller = TextEditingController();
 
   /// The map part of the assessment
-  late Map<Student, int> _classAssessment;
+  final Map<dynamic, int> _classAssessment = {};
+
+  /// A lookup array of members
+  final List<dynamic> assessees = [];
 
   @override
   void initState() {
-    _classAssessment = {for (var student in widget.students) student: -1};
+    for (Group group in widget.groups) {
+      _classAssessment[group] = -1;
+      assessees.add(group);
+      for (Student student in group.members) {
+        _classAssessment[student] = -1;
+        assessees.add(student);
+      }
+    }
     super.initState();
   }
 
@@ -47,7 +58,7 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
         title: const Text("Add Assessment"),
       ),
       body: ListView.builder(
-        itemCount: widget.students.length + 1,
+        itemCount: assessees.length + 1,
         padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 0.0),
         itemBuilder: (context, index) {
           // render name textbox first
@@ -62,10 +73,10 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
           }
           // otherwise render assessment widget
           return AssessmentWidget(
-            student: widget.students[index - 1],
-            score: _classAssessment[widget.students[index - 1]] ?? -1,
+            assessee: assessees[index - 1],
+            score: _classAssessment[assessees[index - 1]] ?? -1,
             callback: (assessment) {
-              // first value is [Student]
+              // first value is [Student] or [Group]
               // second value is the score
               setState(() {
                 _classAssessment[assessment[0]] = assessment[1];

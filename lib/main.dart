@@ -15,6 +15,8 @@
 // StudentRepository
 
 import 'package:flutter/material.dart';
+import 'package:quickcheck/data/repository/group_repository.dart';
+import 'package:quickcheck/data/repository/local_group_repository.dart';
 import 'package:quickcheck/pages/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,21 +28,26 @@ import 'data/repository/student_repository.dart';
 void main() {
   final StudentRepository studentRepository = LocalStudentRepository();
   final AssessmentRepository assessmentRepository = LocalAssessmentRepository();
+  final GroupRepository groupRepository = LocalGroupRepository();
 
   runApp(App(
-      studentRepository: studentRepository,
-      assessmentRepository: assessmentRepository));
+    studentRepository: studentRepository,
+    assessmentRepository: assessmentRepository,
+    groupRepository: groupRepository,
+  ));
 }
 
 /// The main app of the application; serves as a wrapper for a MaterialApp and loads HomePage
 class App extends StatelessWidget {
   final StudentRepository studentRepository;
   final AssessmentRepository assessmentRepository;
+  final GroupRepository groupRepository;
 
   const App(
       {Key? key,
       required this.studentRepository,
-      required this.assessmentRepository})
+      required this.assessmentRepository,
+      required this.groupRepository})
       : super(key: key);
 
   // This widget is the root of your application.
@@ -51,12 +58,16 @@ class App extends StatelessWidget {
         RepositoryProvider<StudentRepository>.value(
           value: studentRepository,
         ),
+        RepositoryProvider<GroupRepository>.value(
+          value: groupRepository,
+        ),
         RepositoryProvider<AssessmentRepository>.value(
           value: assessmentRepository,
         ),
       ],
       child: MaterialApp(
         title: 'Home',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
           primarySwatch: Colors.blue,

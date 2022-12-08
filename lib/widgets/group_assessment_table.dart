@@ -43,7 +43,6 @@ class GroupAssessmentTable extends StatelessWidget {
           DataRow(
             cells: <DataCell>[
               DataCell(Text(group.name,
-                  textAlign: TextAlign.left,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium!
@@ -56,7 +55,9 @@ class GroupAssessmentTable extends StatelessWidget {
           for (Student student in group.members)
             DataRow(
               cells: <DataCell>[
-                DataCell(Text(student.name, textAlign: TextAlign.right)),
+                DataCell(Container(
+                    alignment: Alignment.centerRight,
+                    child: Text(student.name))),
                 for (Assessment assessment in assessments)
                   DataCell(AssessmentScore(
                       score: assessment.scoreMap[student] ?? -1)),

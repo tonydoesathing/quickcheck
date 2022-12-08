@@ -12,6 +12,7 @@ import 'package:quickcheck/pages/add_group_page.dart';
 import 'package:quickcheck/pages/add_student_page.dart';
 import 'package:quickcheck/widgets/quick_check_icons_icons.dart';
 import 'package:quickcheck/widgets/student_assessment_table.dart';
+import 'package:quickcheck/widgets/group_assessment_table.dart';
 
 /// The home page of the app, which displays a table of the students and their assessment results
 class HomePage extends StatelessWidget {
@@ -23,7 +24,7 @@ class HomePage extends StatelessWidget {
     // create a HomePageBloc from the repositories and have it load from them
     return BlocProvider(
       create: (context) => HomePageBloc(context.read<StudentRepository>(),
-          context.read<AssessmentRepository>())
+          context.read<AssessmentRepository>(), context.read<GroupRepository>())
         ..add(LoadStudentTableEvent()),
       // On new state changes of the HomePageBloc, re-render the page
       child: BlocBuilder<HomePageBloc, HomePageState>(
@@ -109,9 +110,9 @@ class HomePage extends StatelessWidget {
                       scrollDirection: Axis.vertical,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        child: StudentAssessmentTable(
-                            students: state.students,
-                            assessments: state.assessments),
+                        child: GroupAssessmentTable(
+                            assessments: state.assessments,
+                            groups: state.groups),
                       ),
                     ),
                   )

@@ -8,16 +8,12 @@ import 'package:quickcheck/widgets/assessment_score.dart';
 /// Student names are the first column, and each column after that is their score for the associated assessment,
 /// with the assessment name at the top
 class GroupAssessmentTable extends StatelessWidget {
-  final List<Student> students;
   final List<Assessment> assessments;
   final List<Group> groups;
 
   /// Create a table from a list of [students] and a list of [assessments]
   const GroupAssessmentTable(
-      {Key? key,
-      required this.students,
-      required this.assessments,
-      required this.groups})
+      {Key? key, required this.assessments, required this.groups})
       : super(key: key);
 
   @override

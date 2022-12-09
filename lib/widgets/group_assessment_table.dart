@@ -18,56 +18,61 @@ class GroupAssessmentTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DataTable(
-      columns: <DataColumn>[
-        const DataColumn(
-          label: Expanded(
-            child: Text(
-              '',
-              style: TextStyle(fontStyle: FontStyle.italic),
-            ),
-          ),
-        ),
-        for (Assessment assessment in assessments)
-          DataColumn(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 70.0),
+      child: DataTable(
+        columns: <DataColumn>[
+          const DataColumn(
             label: Expanded(
               child: Text(
-                assessment.name,
-                style: TextStyle(fontStyle: FontStyle.italic),
+                '',
               ),
             ),
           ),
-      ],
-      rows: <DataRow>[
-        for (Group group in groups) ...[
-          DataRow(
-            cells: <DataCell>[
-              DataCell(Text(group.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(fontWeight: FontWeight.bold))),
-              for (Assessment assessment in assessments)
-                DataCell(
-                    AssessmentScore(score: assessment.scoreMap[group] ?? -1)),
-            ],
-          ),
-          for (Student student in group.members)
+          for (Assessment assessment in assessments)
+            DataColumn(
+              label: Expanded(
+                child: Text(
+                  assessment.name,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
+        ],
+        rows: <DataRow>[
+          for (Group group in groups) ...[
             DataRow(
               cells: <DataCell>[
-                DataCell(Row(children: [
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Text(student.name)
-                ])),
+                DataCell(Text(group.name,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold))),
                 for (Assessment assessment in assessments)
-                  DataCell(AssessmentScore(
-                      score: assessment.scoreMap[student] ?? -1)),
+                  DataCell(Center(
+                      child: AssessmentScore(
+                          score: assessment.scoreMap[group] ?? -1))),
               ],
-            )
-        ]
-      ],
+            ),
+            for (Student student in group.members)
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Row(children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(student.name)
+                  ])),
+                  for (Assessment assessment in assessments)
+                    DataCell(Center(
+                      child: AssessmentScore(
+                          score: assessment.scoreMap[student] ?? -1),
+                    )),
+                ],
+              )
+          ]
+        ],
+      ),
     );
   }
 }

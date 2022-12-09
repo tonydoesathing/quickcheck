@@ -28,7 +28,7 @@ class NetworkedStudentRepository extends StudentRepository {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: student.toJson(),
+      body: jsonEncode(student.toJson()),
     );
     if (response.statusCode != 201) {
       return false;
@@ -36,7 +36,7 @@ class NetworkedStudentRepository extends StudentRepository {
 
     // add the newly-created student
     _students.add(Student.fromJson(jsonDecode(response.body)));
-    _streamController.add(_students);
+    _streamController.add(List<Student>.of(_students));
     return true;
   }
 
@@ -67,8 +67,8 @@ class NetworkedStudentRepository extends StudentRepository {
       Iterable l = jsonDecode(response.body);
       // make json list into Student list
       _students = List<Student>.from(l.map((json) => Student.fromJson(json)));
-      _streamController.add(_students);
-      return _students;
+      _streamController.add(List<Student>.of(_students));
+      return List<Student>.of(_students);
     }
     throw ConnectionFailedException(
         url: '${url}students/', statuscode: response.statusCode);

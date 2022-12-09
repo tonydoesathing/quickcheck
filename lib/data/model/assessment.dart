@@ -32,6 +32,11 @@ class Assessment extends Equatable {
     );
   }
 
+  factory Assessment.fromJson(Map<String, dynamic> json){
+    
+    return Assessment(id: json['id'], name: json['name'], scoreMap: scoreMap)
+  }
+
   @override
   List<Object?> get props => [id, name, scoreMap];
 }

@@ -8,6 +8,7 @@ import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/data/repository/student_repository.dart';
 import 'package:http/http.dart' as http;
 
+/// A networked [Group] repository
 class NetworkedGroupRepository extends GroupRepository {
   /// the URL of the API
   final String url;

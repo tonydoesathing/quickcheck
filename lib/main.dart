@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/data/repository/local_group_repository.dart';
+import 'package:quickcheck/data/repository/networked_student_repository.dart';
 import 'package:quickcheck/pages/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,7 +27,10 @@ import 'data/repository/local_assessment_repository.dart';
 import 'data/repository/student_repository.dart';
 
 void main() {
-  final StudentRepository studentRepository = LocalStudentRepository();
+  const String endpointURL = "http://127.0.0.1:8000/api/";
+
+  final StudentRepository studentRepository =
+      NetworkedStudentRepository(endpointURL);
   final AssessmentRepository assessmentRepository = LocalAssessmentRepository();
   final GroupRepository groupRepository = LocalGroupRepository();
 

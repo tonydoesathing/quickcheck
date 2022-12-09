@@ -105,16 +105,20 @@ class HomePage extends StatelessWidget {
                 : null,
             // render the table if not loading
             body: (state is DisplayStudentTable)
-                ? Center(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: GroupAssessmentTable(
-                            assessments: state.assessments,
-                            groups: state.groups),
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: GroupAssessmentTable(
+                                assessments: state.assessments,
+                                groups: state.groups),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   )
                 // render that we're loading if we're loading
                 : const Center(

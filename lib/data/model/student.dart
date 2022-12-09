@@ -40,14 +40,14 @@ class Student extends Equatable {
   }
 
   /// Returns a JSON representation of a Student
-  String toJson() {
-    return jsonEncode(<String, String>{
+  Map<String, dynamic> toJson() {
+    return {
       if (id != null) 'id': id.toString(),
       'name': name,
-      if (groups != null) 'groups': groups.toString()
-    });
+      if (groups != null) 'groups': groups
+    };
   }
 
   @override
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [id, name, groups];
 }

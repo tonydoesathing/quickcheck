@@ -65,8 +65,9 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
               // there was an update to the group repository
               // emit DisplayStudentTable using the group data and grabbing the students
               // and assessments from the current state
+              print(data);
               return DisplayStudentTable(
-                  state.students, state.assessments, data);
+                  state.students, state.assessments, List<Group>.of(data));
             }
             // there was an event that there shouldn't've been
             throw Exception("Received unknown event on stream");

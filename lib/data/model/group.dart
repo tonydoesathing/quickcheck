@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:quickcheck/data/model/student.dart';
 
@@ -29,6 +31,25 @@ class Group extends Equatable {
         id: id ?? this.id,
         name: name ?? this.name,
         members: members ?? this.members);
+  }
+
+  /// Returns a [Group] from a json map
+  factory Group.fromJson(Map<String, dynamic> json) {
+    return Group(
+        name: json['name'],
+        id: json['id'],
+        members: (json['student_set'] as List)
+            .map((element) => Student.fromJson(element))
+            .toList());
+  }
+
+  /// Returns a JSON representation of a Student
+  Map<String, dynamic> toJson() {
+    return {
+      if (id != null) 'id': id,
+      'name': name,
+      'student_set': members.map((student) => student.id).toList()
+    };
   }
 
   @override

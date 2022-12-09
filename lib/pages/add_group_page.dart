@@ -1,29 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:quickcheck/data/model/group.dart';
 import 'package:quickcheck/data/model/student.dart';
 
-/// The page where new students can be added.
+/// The page where new groups can be added.
 /// Consists of a textfield, a save button, and a cancel button.
-/// On save, it calls the optional [callback]. On cancel, it returns
+/// On save, it calls the [callback]. On cancel, it returns
 /// to the preivous page.
-class AddStudentPage extends StatefulWidget {
+class AddGroupPage extends StatefulWidget {
   /// the callback to be called on save
-  final Function(Student) callback;
+  final Function(Group) callback;
 
-  /// The page where new students can be added.
-  /// Takes an optional [callback], which is called on save with the new student.
-  const AddStudentPage({Key? key, required this.callback}) : super(key: key);
+  /// Students to potentially add to the group
+  final List<Student> students;
+
+  /// The page where new groups can be added.
+  /// Takes a [callback], which is called on save with the new group.
+  const AddGroupPage({Key? key, required this.callback, required this.students})
+      : super(key: key);
 
   @override
-  State<AddStudentPage> createState() => _AddStudentPageState();
+  State<AddGroupPage> createState() => _AddGroupPageState();
 }
 
-class _AddStudentPageState extends State<AddStudentPage> {
+class _AddGroupPageState extends State<AddGroupPage> {
   /// The controller for the textfield
   final TextEditingController _controller = TextEditingController();
 
+  /// The collection of students and whether or not they're in the group
+  final Map<Student, bool> students = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // initialize the students map with false
+    for (Student student in widget.students) {
+      students[student] = false;
+    }
+  }
+
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
-    if (_controller.text.isNotEmpty) {
+    if (_controller.text.isNotEmpty || students.containsValue(true)) {
       return await showDialog(
               context: context,
               builder: ((context) {
@@ -59,19 +76,43 @@ class _AddStudentPageState extends State<AddStudentPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Add Student"),
+          title: const Text("Add Group"),
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-              child: TextField(
-                controller: _controller,
-                decoration: const InputDecoration(labelText: "Name (required)"),
-              ),
-            )
-          ],
-        ),
+        body: ListView.builder(
+            itemCount: widget.students.length + 2,
+            padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 0.0),
+            itemBuilder: ((context, index) {
+              // render name textbox first
+              if (index == 0) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  child: TextField(
+                    controller: _controller,
+                    decoration:
+                        const InputDecoration(labelText: "Name (required)"),
+                  ),
+                );
+              } else if (index == 1) {
+                // render the title for the students
+                return Center(
+                    child: Text(
+                  "Students",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ));
+              }
+              // otherwise render the students
+              return CheckboxListTile(
+                  value: students[widget.students[index - 2]],
+                  title: Text(widget.students[index - 2].name),
+                  onChanged: ((value) {
+                    setState(() {
+                      students[widget.students[index - 2]] = value!;
+                    });
+                  }));
+            })),
         bottomNavigationBar: BottomAppBar(
             child: Container(
           height: 75,
@@ -90,8 +131,8 @@ class _AddStudentPageState extends State<AddStudentPage> {
                           context: context,
                           builder: ((context) {
                             return AlertDialog(
-                              title: const Text("Improper student formatting"),
-                              content: const Text("A student requires a name!"),
+                              title: const Text("Improper group formatting"),
+                              content: const Text("A group requires a name!"),
                               actions: [
                                 ElevatedButton(
                                     onPressed: () =>
@@ -113,9 +154,13 @@ class _AddStudentPageState extends State<AddStudentPage> {
                           }));
                       return;
                     }
+                    // remove the students that aren't selected
+                    students.removeWhere((key, value) => value == false);
                     // call the callback
                     // and go to previous page
-                    widget.callback.call(Student(name: _controller.text));
+                    widget.callback.call(Group(
+                        name: _controller.text,
+                        members: students.keys.toList()));
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.save),

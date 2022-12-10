@@ -43,7 +43,7 @@ class Group extends Equatable {
             .toList());
   }
 
-  /// Returns a JSON representation of a Student
+  /// Returns a JSON representation of a [Group]
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,

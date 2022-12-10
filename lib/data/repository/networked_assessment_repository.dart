@@ -77,11 +77,33 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
   Future<List<Assessment>> getAssessments() async {
     Response response = await http.get(Uri.parse('${url}assessments/'));
     if (response.statusCode == 200 && response.body != "400") {
-      // should be a list of json groups
-      Iterable l = jsonDecode(response.body);
+      // should be a list of json assessments
+      List jsonAssessments = jsonDecode(response.body);
+
+      // this is to properly format the response
+      // if the API returns properly formatted data, this is unneccessary
+      for (int i = 0; i < jsonAssessments.length; i++) {
+        // for each assessment, rebuild the groupscore_set with group data
+        List newGroupScore = [];
+        List groupscore = jsonAssessments[i]['groupscore_set'];
+        for (int j = 0; j < groupscore.length; j++) {
+          // fetch the group associated with each id of the group
+          Response groupResponse = await http
+              .get(Uri.parse('${url}groups/${groupscore[j]['group']['id']}'));
+          if (response.statusCode == 200 && response.body != "400") {
+            newGroupScore.add({
+              'score': groupscore[j]['score'],
+              'assessment': groupscore[j]['assessment'],
+              'group': jsonDecode(groupResponse.body)
+            });
+          }
+        }
+        jsonAssessments[i]['groupscore_set'] = newGroupScore;
+      }
+
       // make json list into Assessment list
-      _assessments =
-          List<Assessment>.from(l.map((json) => Assessment.fromJson(json)));
+      _assessments = List<Assessment>.from(
+          jsonAssessments.map((json) => Assessment.fromJson(json)));
       // ship it down the stream
       _streamController.add(List<Assessment>.of(_assessments));
       return List<Assessment>.of(_assessments);

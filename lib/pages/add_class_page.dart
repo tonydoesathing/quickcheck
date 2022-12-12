@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quickcheck/data/model/class.dart';
 
 /// The page where new classs can be added.
 /// Consists of a textfield, a save button, and a cancel button.
@@ -6,10 +7,10 @@ import 'package:flutter/material.dart';
 /// to the preivous page.
 class AddClassPage extends StatefulWidget {
   /// the callback to be called on save
-  final Function(String) callback;
+  final Function(Class) callback;
 
   /// The page where new classs can be added.
-  /// Takes an optional [callback], which is called on save with the name of the new class.
+  /// Takes an optional [callback], which is called on save with the new class.
   const AddClassPage({Key? key, required this.callback}) : super(key: key);
 
   @override
@@ -114,7 +115,7 @@ class _AddClassPageState extends State<AddClassPage> {
                     }
                     // call the callback
                     // and go to previous page
-                    widget.callback.call(_controller.text);
+                    widget.callback.call(Class(name: _controller.text));
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.save),

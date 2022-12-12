@@ -10,7 +10,7 @@ abstract class GroupRepository {
   void dispose();
 
   /// Returns a list of Groups
-  Future<List<Group>> getGroups();
+  Future<List<Group>> getGroups(int classId);
 
   /// Returns a group from an ID
   Future<Group> getGroup(int id);

@@ -45,10 +45,9 @@ class LocalGroupRepository extends GroupRepository {
 
   @override
 
-  /// Get list of groups
-  Future<List<Group>> getGroups() async {
-    _streamController.add(List<Group>.of(_groups));
-    return List<Group>.of(_groups);
+  /// Get list of groups for a class
+  Future<List<Group>> getGroups(int classId) async {
+    return List<Group>.of(_groups.where((group) => group.classId == classId));
   }
 
   @override

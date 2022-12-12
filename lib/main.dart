@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/data/repository/local_group_repository.dart';
+import 'package:quickcheck/data/repository/networked_assessment_repository.dart';
 import 'package:quickcheck/data/repository/networked_group_repository.dart';
 import 'package:quickcheck/data/repository/networked_student_repository.dart';
 import 'package:quickcheck/pages/home_page.dart';
@@ -32,7 +33,8 @@ void main() {
 
   final StudentRepository studentRepository =
       NetworkedStudentRepository(endpointURL);
-  final AssessmentRepository assessmentRepository = LocalAssessmentRepository();
+  final AssessmentRepository assessmentRepository =
+      NetworkedAssessmentRepository(endpointURL);
   final GroupRepository groupRepository = NetworkedGroupRepository(endpointURL);
 
   runApp(App(

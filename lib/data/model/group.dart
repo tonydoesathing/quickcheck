@@ -45,7 +45,7 @@ class Group extends Equatable {
         members: (json['student_set'] as List)
             .map((element) => Student.fromJson(element))
             .toList(),
-        classId: json['class']);
+        classId: json['class'] ?? 0);
   }
 
   /// Returns a JSON representation of a [Group]

@@ -53,7 +53,7 @@ class Assessment extends Equatable {
         id: json['id'],
         name: json['name'],
         scoreMap: scoremap,
-        classId: json['class']);
+        classId: json['class'] ?? 0);
   }
 
   /// Returns a JSON representation of an [Assessment]
@@ -77,5 +77,5 @@ class Assessment extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, name, scoreMap];
+  List<Object?> get props => [id, name, scoreMap, classId];
 }

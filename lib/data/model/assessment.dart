@@ -53,7 +53,7 @@ class Assessment extends Equatable {
         id: json['id'],
         name: json['name'],
         scoreMap: scoremap,
-        classId: json['class'] ?? 0);
+        classId: json['class_id'] ?? 0);
   }
 
   /// Returns a JSON representation of an [Assessment]
@@ -72,7 +72,7 @@ class Assessment extends Equatable {
       'name': name,
       'student_scores': studentScores,
       'group_scores': groupScores,
-      'class': classId
+      'class_id': classId
     };
   }
 

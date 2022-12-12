@@ -41,7 +41,7 @@ class Student extends Equatable {
         id: json['id'],
         groups:
             (json['groups'] as List).map((element) => element as int).toList(),
-        classId: json['class'] ?? 0);
+        classId: json['class_id'] ?? 0);
   }
 
   /// Returns a JSON representation of a Student
@@ -50,7 +50,7 @@ class Student extends Equatable {
       if (id != null) 'id': id.toString(),
       'name': name,
       if (groups != null) 'groups': groups,
-      'class': classId
+      'class_id': classId
     };
   }
 

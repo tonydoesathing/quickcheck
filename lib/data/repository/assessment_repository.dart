@@ -10,7 +10,7 @@ abstract class AssessmentRepository {
   void dispose();
 
   /// Returns a list of Assessments
-  Future<List<Assessment>> getAssessments();
+  Future<List<Assessment>> getAssessments(int classId);
 
   /// Returns a Assessment from an ID
   Future<Assessment> getAssessment(int id);

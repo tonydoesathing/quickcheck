@@ -47,9 +47,9 @@ class LocalAssessmentRepository extends AssessmentRepository {
   @override
 
   /// Get list of assessments
-  Future<List<Assessment>> getAssessments() async {
-    _streamController.add(List<Assessment>.of(_assessments));
-    return List<Assessment>.of(_assessments);
+  Future<List<Assessment>> getAssessments(int classId) async {
+    return List<Assessment>.of(
+        _assessments.where((assessment) => assessment.classId == classId));
   }
 
   @override

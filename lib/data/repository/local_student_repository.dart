@@ -47,9 +47,9 @@ class LocalStudentRepository extends StudentRepository {
   @override
 
   /// Get list of students
-  Future<List<Student>> getStudents() async {
-    _streamController.add(List<Student>.of(_students));
-    return List<Student>.of(_students);
+  Future<List<Student>> getStudents(int classId) async {
+    return List<Student>.of(
+        _students.where((student) => student.classId == classId));
   }
 
   @override

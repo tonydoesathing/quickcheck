@@ -74,7 +74,7 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
   @override
 
   /// Get list of assessments
-  Future<List<Assessment>> getAssessments() async {
+  Future<List<Assessment>> getAssessments(int classId) async {
     Response response = await http.get(Uri.parse('${url}assessments/'));
     if (response.statusCode == 200 && response.body != "400") {
       // should be a list of json assessments

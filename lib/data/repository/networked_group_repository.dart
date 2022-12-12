@@ -8,6 +8,9 @@ import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/data/repository/student_repository.dart';
 import 'package:http/http.dart' as http;
 
+import 'networked_student_repository.dart';
+
+/// A networked [Group] repository
 class NetworkedGroupRepository extends GroupRepository {
   /// the URL of the API
   final String url;
@@ -45,7 +48,6 @@ class NetworkedGroupRepository extends GroupRepository {
     // normal code:
     // _groups.add(Group.fromJson(jsonDecode(response.body)));
     _streamController.add(List<Group>.of(_groups));
-    // await getGroups();
     return true;
   }
 
@@ -86,21 +88,4 @@ class NetworkedGroupRepository extends GroupRepository {
 
   @override
   Stream<List<Group>> get groups => _streamController.stream;
-}
-
-/// An exception for not being able to connect to an endpoint
-class ConnectionFailedException implements Exception {
-  /// statuscode of the response
-  final int? statuscode;
-
-  /// url of the endpoint
-  final String? url;
-
-  /// Unable to connect to an endpoint
-  ConnectionFailedException({this.url, this.statuscode});
-
-  @override
-  String toString() {
-    return "Unable to connect: ${url ?? ""} ${statuscode ?? ""}";
-  }
 }

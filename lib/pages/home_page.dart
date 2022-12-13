@@ -113,8 +113,10 @@ class HomePage extends StatelessWidget {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: GroupAssessmentTable(
-                                assessments: state.assessments,
-                                groups: state.groups),
+                              assessments: state.assessments,
+                              groups: state.groups,
+                              students: state.students,
+                            ),
                           ),
                         ),
                       ),

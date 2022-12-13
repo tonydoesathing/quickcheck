@@ -14,20 +14,24 @@ class Student extends Equatable {
   /// the groups a student is in
   final List<int>? groups;
 
+  /// The class the student belongs to
+  final int classId;
+
   /// Create a [Student]
   ///
   /// The [name] must not be null
-  const Student({this.id, required this.name, this.groups});
+  const Student({this.id, required this.name, this.groups, this.classId = 0});
 
   // Returns a new Student with specified changes
   Student copyWith({
     int? id,
     String? name,
+    int? classId,
   }) {
     return Student(
-      id: id ?? this.id,
-      name: name ?? this.name,
-    );
+        id: id ?? this.id,
+        name: name ?? this.name,
+        classId: classId ?? this.classId);
   }
 
   /// Returns a [Student] from a json map
@@ -36,7 +40,8 @@ class Student extends Equatable {
         name: json['name'],
         id: json['id'],
         groups:
-            (json['groups'] as List).map((element) => element as int).toList());
+            (json['groups'] as List).map((element) => element as int).toList(),
+        classId: json['class_id'] ?? 0);
   }
 
   /// Returns a JSON representation of a Student
@@ -44,10 +49,11 @@ class Student extends Equatable {
     return {
       if (id != null) 'id': id.toString(),
       'name': name,
-      if (groups != null) 'groups': groups
+      if (groups != null) 'groups': groups,
+      'class_id': classId
     };
   }
 
   @override
-  List<Object?> get props => [id, name, groups];
+  List<Object?> get props => [id, name, groups, classId];
 }

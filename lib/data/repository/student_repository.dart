@@ -10,7 +10,7 @@ abstract class StudentRepository {
   void dispose();
 
   /// Returns a list of Students
-  Future<List<Student>> getStudents();
+  Future<List<Student>> getStudents(int classId);
 
   /// Returns a student from an ID
   Future<Student> getStudent(int id);

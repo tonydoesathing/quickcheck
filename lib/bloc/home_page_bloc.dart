@@ -26,10 +26,10 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     on<LoadStudentTableEvent>(
       (event, emit) async {
         // fetch required info
-        final List<Student> students = await studentRepository.getStudents();
+        final List<Student> students = await studentRepository.getStudents(0);
         final List<Assessment> assessments =
-            await assessmentRepository.getAssessments();
-        final List<Group> groups = await groupRepository.getGroups();
+            await assessmentRepository.getAssessments(0);
+        final List<Group> groups = await groupRepository.getGroups(0);
         // request to display the info and subscribe to repo changes
         add(DisplayStudentTableEvent(students, assessments, groups));
       },

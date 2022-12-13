@@ -71,7 +71,7 @@ class NetworkedGroupRepository extends GroupRepository {
   }
 
   @override
-  Future<List<Group>> getGroups() async {
+  Future<List<Group>> getGroups(int classId) async {
     Response response = await http.get(Uri.parse('${url}groups/'));
     if (response.statusCode == 200 && response.body != "400") {
       // should be a list of json groups

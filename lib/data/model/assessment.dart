@@ -14,22 +14,23 @@ class Assessment extends Equatable {
   /// Maps from Student/Group to assessment score
   final Map<dynamic, int> scoreMap;
 
+  /// The class the group belongs to
+  final int classId;
+
   /// Create an [Assessment]
   ///
   /// The [name] and [scoreMap] must not be null
-  const Assessment({this.id, required this.name, required this.scoreMap});
+  const Assessment(
+      {this.id, required this.name, required this.scoreMap, this.classId = 0});
 
   /// Returns a new Assessment with specified changes
-  Assessment copyWith({
-    int? id,
-    String? name,
-    Map<dynamic, int>? scoreMap,
-  }) {
+  Assessment copyWith(
+      {int? id, String? name, Map<dynamic, int>? scoreMap, int? classId}) {
     return Assessment(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      scoreMap: scoreMap ?? this.scoreMap,
-    );
+        id: id ?? this.id,
+        name: name ?? this.name,
+        scoreMap: scoreMap ?? this.scoreMap,
+        classId: classId ?? this.classId);
   }
 
   /// Returns an assessment from a JSON String
@@ -48,7 +49,11 @@ class Assessment extends Equatable {
         scoremap[Group.fromJson(element["group"])] = element["score"];
       },
     );
-    return Assessment(id: json['id'], name: json['name'], scoreMap: scoremap);
+    return Assessment(
+        id: json['id'],
+        name: json['name'],
+        scoreMap: scoremap,
+        classId: json['class_id'] ?? 0);
   }
 
   /// Returns a JSON representation of an [Assessment]
@@ -66,10 +71,11 @@ class Assessment extends Equatable {
       if (id != null) 'id': id,
       'name': name,
       'student_scores': studentScores,
-      'group_scores': groupScores
+      'group_scores': groupScores,
+      'class_id': classId
     };
   }
 
   @override
-  List<Object?> get props => [id, name, scoreMap];
+  List<Object?> get props => [id, name, scoreMap, classId];
 }

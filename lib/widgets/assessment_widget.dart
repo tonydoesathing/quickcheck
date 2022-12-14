@@ -21,6 +21,9 @@ class AssessmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (assessee == 1) {
+      return const SizedBox(height: 40);
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [

@@ -46,6 +46,7 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
         assessees.add(student);
       }
     }
+    assessees.add(1);
     for (Student student in widget.students) {
       if (student.groups == null || student.groups!.isEmpty) {
         assessees.add(student);

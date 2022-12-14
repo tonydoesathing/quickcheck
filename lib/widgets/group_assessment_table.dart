@@ -10,12 +10,15 @@ import 'package:quickcheck/widgets/assessment_score.dart';
 class GroupAssessmentTable extends StatelessWidget {
   final List<Assessment> assessments;
   final List<Group> groups;
+  final List<Student> students;
 
   /// Create a table from a list of [students] and a list of [assessments]
   const GroupAssessmentTable(
-      {Key? key, required this.assessments, required this.groups})
+      {Key? key,
+      required this.assessments,
+      required this.groups,
+      required this.students})
       : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -69,8 +72,42 @@ class GroupAssessmentTable extends StatelessWidget {
                           score: assessment.scoreMap[student] ?? -1),
                     )),
                 ],
-              )
-          ]
+              ),
+          ],
+          DataRow(
+            cells: <DataCell>[
+              DataCell(Row(children: const [
+                SizedBox(
+                  width: 20,
+                ),
+                Text('')
+              ])),
+              for (Assessment assessment in assessments)
+                DataCell(Center(
+                  child: Container(),
+                )),
+            ],
+          ),
+          for (Student student in students)
+            if (student.groups == null || student.groups!.isEmpty)
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Row(children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      student.name,
+                      style: const TextStyle(fontStyle: FontStyle.italic),
+                    )
+                  ])),
+                  for (Assessment assessment in assessments)
+                    DataCell(Center(
+                      child: AssessmentScore(
+                          score: assessment.scoreMap[student] ?? -1),
+                    )),
+                ],
+              ),
         ],
       ),
     );

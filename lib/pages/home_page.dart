@@ -89,6 +89,7 @@ class HomePage extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) => AddAssessmentPage(
                                     groups: state.groups,
+                                    students: state.students,
                                     callback: (assessment) {
                                       // on save of assessment, add to the repo
                                       context
@@ -113,8 +114,10 @@ class HomePage extends StatelessWidget {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: GroupAssessmentTable(
-                                assessments: state.assessments,
-                                groups: state.groups),
+                              assessments: state.assessments,
+                              groups: state.groups,
+                              students: state.students,
+                            ),
                           ),
                         ),
                       ),

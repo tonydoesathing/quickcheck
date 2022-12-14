@@ -40,13 +40,15 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  AddStudentPage(callback: (student) {
-                                // on save button in AddStudentPage, add the student to the repo
-                                context
-                                    .read<StudentRepository>()
-                                    .addStudent(student);
-                              }),
+                              builder: (context) => AddStudentPage(
+                                callback: (student) {
+                                  // on save button in AddStudentPage, add the student to the repo
+                                  context
+                                      .read<StudentRepository>()
+                                      .addStudent(student);
+                                },
+                                groups: state.groups,
+                              ),
                             ));
                       } else if (value == 1) {
                         // Add Group selected

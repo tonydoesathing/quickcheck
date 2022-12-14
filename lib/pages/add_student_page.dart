@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quickcheck/data/model/student.dart';
+import 'package:quickcheck/data/model/group.dart';
 
 /// The page where new students can be added.
 /// Consists of a textfield, a save button, and a cancel button.
@@ -9,9 +10,13 @@ class AddStudentPage extends StatefulWidget {
   /// the callback to be called on save
   final Function(Student) callback;
 
+  /// Groups to potentially add students to
+  final List<Group> groups;
+
   /// The page where new students can be added.
   /// Takes an optional [callback], which is called on save with the new student.
-  const AddStudentPage({Key? key, required this.callback}) : super(key: key);
+  const AddStudentPage({Key? key, required this.callback, required this.groups})
+      : super(key: key);
 
   @override
   State<AddStudentPage> createState() => _AddStudentPageState();
@@ -20,6 +25,18 @@ class AddStudentPage extends StatefulWidget {
 class _AddStudentPageState extends State<AddStudentPage> {
   /// The controller for the textfield
   final TextEditingController _controller = TextEditingController();
+
+  /// The collection of groups and whether or not the student is in that group
+  final Map<Group, bool> groups = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // initialize the groups map with false
+    for (Group group in widget.groups) {
+      groups[group] = false;
+    }
+  }
 
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
@@ -61,17 +78,46 @@ class _AddStudentPageState extends State<AddStudentPage> {
         appBar: AppBar(
           title: const Text("Add Student"),
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-              child: TextField(
-                controller: _controller,
-                decoration: const InputDecoration(labelText: "Name (required)"),
-              ),
-            )
-          ],
-        ),
+        body: ListView.builder(
+            itemCount: widget.groups.length + 2,
+            padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 0.0),
+            itemBuilder: ((context, index) {
+              // render name textbox first
+              if (index == 0) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 24.0, right: 24.0, top: 8),
+                      child: TextField(
+                        controller: _controller,
+                        decoration:
+                            const InputDecoration(labelText: "Name (required)"),
+                      ),
+                    )
+                  ],
+                );
+              } else if (index == 1) {
+                // render the title for the groups
+                return Center(
+                    child: Text(
+                  "Groups",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ));
+              }
+              // otherwise render the groups
+              return CheckboxListTile(
+                  value: groups[widget.groups[index - 2]],
+                  title: Text(widget.groups[index - 2].name),
+                  onChanged: ((value) {
+                    setState(() {
+                      groups[widget.groups[index - 2]] = value!;
+                    });
+                  }));
+            })),
         bottomNavigationBar: BottomAppBar(
             child: Container(
           height: 75,
@@ -115,7 +161,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
                     }
                     // call the callback
                     // and go to previous page
-                    widget.callback.call(Student(name: _controller.text));
+                    widget.callback.call(Student(
+                        name: _controller.text,
+                        groups:
+                            groups.keys.toList().map((x) => x.id!).toList()));
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.save),

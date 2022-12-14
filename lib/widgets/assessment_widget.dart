@@ -22,7 +22,12 @@ class AssessmentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (assessee == 1) {
-      return const SizedBox(height: 40);
+      return Container(
+          padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+          child: const Text(
+            'Ungrouped Students',
+            style: TextStyle(fontStyle: FontStyle.italic),
+          ));
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,

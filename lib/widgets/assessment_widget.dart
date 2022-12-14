@@ -23,10 +23,13 @@ class AssessmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (assessee == 1) {
       return Container(
-          padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-          child: const Text(
+          padding: const EdgeInsets.fromLTRB(0, 45, 0, 20),
+          child: Text(
             'Ungrouped Students',
-            style: TextStyle(fontStyle: FontStyle.italic),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(fontWeight: FontWeight.bold),
           ));
     }
     return Row(

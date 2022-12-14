@@ -25,7 +25,7 @@ class Group extends Equatable {
   ///
   /// The [classId] must not be null
   const Group(
-      {this.id, required this.name, this.members = const [], this.classId = 0});
+      {this.id, required this.name, this.members = const [], this.classId = 1});
 
   // Returns a new Group with specified changes
   Group copyWith(
@@ -45,7 +45,7 @@ class Group extends Equatable {
         members: (json['student_set'] as List)
             .map((element) => Student.fromJson(element))
             .toList(),
-        classId: json['class_id'] ?? 0);
+        classId: json['class_id'] ?? 1);
   }
 
   /// Returns a JSON representation of a [Group]

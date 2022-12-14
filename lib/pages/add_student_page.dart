@@ -84,18 +84,13 @@ class _AddStudentPageState extends State<AddStudentPage> {
             itemBuilder: ((context, index) {
               // render name textbox first
               if (index == 0) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 24.0, right: 24.0, top: 8),
-                      child: TextField(
-                        controller: _controller,
-                        decoration:
-                            const InputDecoration(labelText: "Name (required)"),
-                      ),
-                    )
-                  ],
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 32),
+                  child: TextField(
+                    controller: _controller,
+                    decoration:
+                        const InputDecoration(labelText: "Name (required)"),
+                  ),
                 );
               } else if (index == 1) {
                 // render the title for the groups
@@ -111,7 +106,13 @@ class _AddStudentPageState extends State<AddStudentPage> {
               // otherwise render the groups
               return CheckboxListTile(
                   value: groups[widget.groups[index - 2]],
-                  title: Text(widget.groups[index - 2].name),
+                  title: Text(
+                    widget.groups[index - 2].name,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
                   onChanged: ((value) {
                     setState(() {
                       groups[widget.groups[index - 2]] = value!;
@@ -159,12 +160,16 @@ class _AddStudentPageState extends State<AddStudentPage> {
                           }));
                       return;
                     }
+                    // take out false values
+                    groups.removeWhere((key, value) => value == false);
+
                     // call the callback
                     // and go to previous page
                     widget.callback.call(Student(
                         name: _controller.text,
-                        groups:
-                            groups.keys.toList().map((x) => x.id!).toList()));
+                        groups: groups.keys
+                            .map((element) => element.id!)
+                            .toList()));
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.save),

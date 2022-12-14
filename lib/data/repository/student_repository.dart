@@ -16,7 +16,7 @@ abstract class StudentRepository {
   Future<Student> getStudent(int id);
 
   /// Tries to add student to repository and returns whether or not it was successful
-  Future<bool> addStudent(Student student);
+  Future<Student?> addStudent(Student student);
 }
 
 /// [Student] with id of [id] could not be found in datastore

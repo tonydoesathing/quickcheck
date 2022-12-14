@@ -26,7 +26,7 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
   @override
 
   /// Add assessment to _assessments list.
-  Future<bool> addAssessment(Assessment assessment) async {
+  Future<Assessment?> addAssessment(Assessment assessment) async {
     Response response = await http.post(
       Uri.parse('${url}assessments/'),
       headers: <String, String>{
@@ -35,7 +35,7 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
       body: jsonEncode(assessment.toJson()),
     );
     if (response.statusCode != 201) {
-      return false;
+      return null;
     }
 
     // add the newly-created assessment
@@ -43,11 +43,13 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
     // (no objects), I'm just copying over the ID into the O.G. assessment
     // just delete workaround and uncomment normal code
     // starting workaround
-    _assessments.add(assessment.copyWith(id: jsonDecode(response.body)['id']));
+    final Assessment newAssessment =
+        assessment.copyWith(id: jsonDecode(response.body)['id']);
+    _assessments.add(newAssessment);
     // normal code:
     // _assessments.add(Assessment.fromJson(jsonDecode(response.body)));
     _streamController.add(List<Assessment>.of(_assessments));
-    return true;
+    return newAssessment;
   }
 
   @override

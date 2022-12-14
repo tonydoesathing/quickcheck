@@ -27,7 +27,7 @@ class NetworkedGroupRepository extends GroupRepository {
   NetworkedGroupRepository(this.url);
 
   @override
-  Future<bool> addGroup(Group group) async {
+  Future<Group?> addGroup(Group group) async {
     Response response = await http.post(
       Uri.parse('${url}groups/'),
       headers: <String, String>{
@@ -36,7 +36,7 @@ class NetworkedGroupRepository extends GroupRepository {
       body: jsonEncode(group.toJson()),
     );
     if (response.statusCode != 201) {
-      return false;
+      return null;
     }
 
     // add the newly-created group
@@ -44,11 +44,12 @@ class NetworkedGroupRepository extends GroupRepository {
     // (only student id's not objects), I'm just copying over the ID into the O.G. group
     // just delete workaround and uncomment normal code
     // starting workaround
-    _groups.add(group.copyWith(id: jsonDecode(response.body)['id']));
+    final Group newGroup = group.copyWith(id: jsonDecode(response.body)['id']);
+    _groups.add(newGroup);
     // normal code:
     // _groups.add(Group.fromJson(jsonDecode(response.body)));
     _streamController.add(List<Group>.of(_groups));
-    return true;
+    return newGroup;
   }
 
   @override

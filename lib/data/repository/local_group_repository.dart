@@ -15,14 +15,14 @@ class LocalGroupRepository extends GroupRepository {
   @override
 
   /// Add Group to _groups list.
-  Future<bool> addGroup(Group group) async {
+  Future<Group?> addGroup(Group group) async {
     try {
       Group newGroup = group.copyWith(id: group.id ?? _groups.length + 1);
       _groups.add(newGroup);
       _streamController.add(List<Group>.of(_groups));
-      return true;
+      return newGroup;
     } catch (e) {
-      return false;
+      return null;
     }
   }
 

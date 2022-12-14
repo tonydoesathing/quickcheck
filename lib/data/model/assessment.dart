@@ -21,7 +21,7 @@ class Assessment extends Equatable {
   ///
   /// The [name] and [scoreMap] must not be null
   const Assessment(
-      {this.id, required this.name, required this.scoreMap, this.classId = 0});
+      {this.id, required this.name, required this.scoreMap, this.classId = 1});
 
   /// Returns a new Assessment with specified changes
   Assessment copyWith(
@@ -53,7 +53,7 @@ class Assessment extends Equatable {
         id: json['id'],
         name: json['name'],
         scoreMap: scoremap,
-        classId: json['class_id'] ?? 0);
+        classId: json['class_id'] ?? 1);
   }
 
   /// Returns a JSON representation of an [Assessment]

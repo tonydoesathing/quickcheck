@@ -16,7 +16,7 @@ abstract class ClassRepository {
   Future<Class> getClass(int id);
 
   /// Tries to add class to repository and returns whether or not it was successful
-  Future<bool> addClass(Class clss);
+  Future<Class?> addClass(Class clss);
 }
 
 /// [Class] with id of [id] could not be found in datastore

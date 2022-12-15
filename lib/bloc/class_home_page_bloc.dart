@@ -83,17 +83,28 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
             final List<Group> newGroups = List.from(state.groups);
             newGroups.add(group);
             List<Student> newStudents = state.students;
+            final List<Assessment> newAssessments =
+                List.from(state.assessments);
             // if there were students added, update the students and emit
             newStudents = newStudents.map<Student>(
               (element) {
                 for (Student student in group.members) {
                   if (student.id == element.id) {
+                    // fix assessements as well
+                    for (Assessment assessment in newAssessments) {
+                      if (assessment.scoreMap.containsKey(element)) {
+                        assessment.scoreMap[student] =
+                            assessment.scoreMap[element]!;
+                        assessment.scoreMap.remove(element);
+                      }
+                    }
                     return student;
                   }
                 }
                 return element;
               },
             ).toList();
+
             emit(DisplayClassGroupTable(
                 newStudents, state.assessments, newGroups));
           } else {

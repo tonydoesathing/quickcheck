@@ -51,17 +51,24 @@ class Class extends Equatable {
   /// Returns a [Class] from a json map
   factory Class.fromJson(Map<String, dynamic> json) {
     return Class(
-        name: json['name'],
-        id: json['id'],
-        students: (json['student_set'] as List)
-            .map((element) => Student.fromJson(element))
-            .toList(),
-        groups: (json['group_set'] as List)
-            .map((element) => Group.fromJson(element))
-            .toList(),
-        assessments: (json['assessment_set'] as List)
-            .map((element) => Assessment.fromJson(element))
-            .toList());
+      name: json['name'],
+      id: json['id'],
+      students: json['student_set'] != null
+          ? (json['student_set'] as List)
+              .map((element) => Student.fromJson(element))
+              .toList()
+          : [],
+      groups: json['group_set'] != null
+          ? (json['group_set'] as List)
+              .map((element) => Group.fromJson(element))
+              .toList()
+          : [],
+      assessments: json['assessment_set'] != null
+          ? (json['assessment_set'] as List)
+              .map((element) => Assessment.fromJson(element))
+              .toList()
+          : [],
+    );
   }
 
   /// Returns a JSON representation of a [Class]

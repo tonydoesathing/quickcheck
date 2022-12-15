@@ -22,7 +22,7 @@ class NetworkedStudentRepository extends StudentRepository {
   NetworkedStudentRepository(this.url);
 
   @override
-  Future<bool> addStudent(Student student) async {
+  Future<Student?> addStudent(Student student) async {
     Response response = await http.post(
       Uri.parse('${url}students/'),
       headers: <String, String>{
@@ -31,13 +31,14 @@ class NetworkedStudentRepository extends StudentRepository {
       body: jsonEncode(student.toJson()),
     );
     if (response.statusCode != 201) {
-      return false;
+      return null;
     }
 
     // add the newly-created student
-    _students.add(Student.fromJson(jsonDecode(response.body)));
+    final Student newStudent = Student.fromJson(jsonDecode(response.body));
+    _students.add(newStudent);
     _streamController.add(List<Student>.of(_students));
-    return true;
+    return newStudent;
   }
 
   @override

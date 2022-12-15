@@ -13,9 +13,13 @@ class AddAssessmentPage extends StatefulWidget {
   /// The list of groups to assess
   final List<Group> groups;
 
+  /// The list of studetns
+  final List<Student> students;
+
   /// Page where the user can add assessments
   /// Takes in a [callback] and a list of [Student]s and displays assement
-  const AddAssessmentPage({Key? key, this.callback, required this.groups})
+  const AddAssessmentPage(
+      {Key? key, this.callback, required this.groups, required this.students})
       : super(key: key);
 
   @override
@@ -39,6 +43,12 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
       assessees.add(group);
       for (Student student in group.members) {
         _classAssessment[student] = -1;
+        assessees.add(student);
+      }
+    }
+    assessees.add(1);
+    for (Student student in widget.students) {
+      if (student.groups == null || student.groups!.isEmpty) {
         assessees.add(student);
       }
     }

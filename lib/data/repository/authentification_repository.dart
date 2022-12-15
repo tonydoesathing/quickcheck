@@ -1,15 +1,7 @@
-class AuthenticationRepository {
-  final String url;
+abstract class AuthenticationRepository {
+  Future<String> getUrl();
 
-  final String token;
+  Future<String> getToken();
 
-  const AuthenticationRepository({required this.url, required this.token});
-
-  Future<String> getUrl() async {
-    return url;
-  }
-
-  Future<String> getToken() async {
-    return url;
-  }
+  Future<String?> login(String username, String password);
 }

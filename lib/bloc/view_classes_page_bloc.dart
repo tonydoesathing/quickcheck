@@ -9,14 +9,15 @@ class ViewClassesPageBloc
   ViewClassesPageBloc(this._classRepository) : super(const LoadingClasses([])) {
     on<LoadClassesEvent>((event, emit) async {
       List<Class> classes = await _classRepository.getClasses();
-      emit(DisplayClasses(classes));
+      emit(DisplayClasses(List.from(classes)));
     });
 
     on<AddClassEvent>((event, emit) async {
       try {
+        final List<Class> classes = List.from(state.classes);
         Class? newClass = await _classRepository.addClass(event.theClass);
         if (newClass != null) {
-          final List<Class> classes = state.classes.toList()..add(newClass);
+          classes.add(newClass);
           emit(DisplayClasses(classes));
         } else {
           emit(DisplayClassesError(

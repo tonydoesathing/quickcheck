@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/bloc/view_classes_page_bloc.dart';
+import 'package:quickcheck/data/model/class.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
 
 /// Displays all of the classes for a user
@@ -25,7 +26,13 @@ class ViewClassesPage extends StatelessWidget {
             appBar: AppBar(
               title: const Text("Classes"),
               actions: [
-                TextButton(onPressed: () {}, child: const Text("Add Class"))
+                TextButton(
+                    onPressed: () {
+                      context
+                          .read<ViewClassesPageBloc>()
+                          .add(AddClassEvent(Class(name: "name")));
+                    },
+                    child: const Text("Add Class"))
               ],
             ),
             body: (state is DisplayClasses)
@@ -36,7 +43,7 @@ class ViewClassesPage extends StatelessWidget {
                       return Card(
                         clipBehavior: Clip.hardEdge,
                         child: ListTile(
-                          title: Text(state.classes[index].name),
+                          title: Text('${state.classes[index].name} ${index}'),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
                             // navigate to the appropriate class home page

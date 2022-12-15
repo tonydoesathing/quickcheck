@@ -87,8 +87,6 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
               (element) {
                 for (Student student in group.members) {
                   if (student.id == element.id) {
-                    print('Student in group: $student');
-                    print('Student in list: $element');
                     return student;
                   }
                 }

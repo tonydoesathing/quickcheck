@@ -39,15 +39,8 @@ class NetworkedGroupRepository extends GroupRepository {
       return null;
     }
 
-    // add the newly-created group
-    // as a workaround for the addGroup API request not returning a full group
-    // (only student id's not objects), I'm just copying over the ID into the O.G. group
-    // just delete workaround and uncomment normal code
-    // starting workaround
-    final Group newGroup = group.copyWith(id: jsonDecode(response.body)['id']);
+    final Group newGroup = Group.fromJson(jsonDecode(response.body));
     _groups.add(newGroup);
-    // normal code:
-    // _groups.add(Group.fromJson(jsonDecode(response.body)));
     _streamController.add(List<Group>.of(_groups));
     return newGroup;
   }

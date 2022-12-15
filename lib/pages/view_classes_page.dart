@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/bloc/view_classes_page_bloc.dart';
 import 'package:quickcheck/data/model/class.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
+import 'package:quickcheck/pages/add_class_page.dart';
 
 /// Displays all of the classes for a user
 /// Tapping a class takes the user to that class's page
@@ -28,9 +29,19 @@ class ViewClassesPage extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () {
-                      context
-                          .read<ViewClassesPageBloc>()
-                          .add(AddClassEvent(Class(name: "name")));
+                      BuildContext blocContext = context;
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddClassPage(
+                              callback: (theClass) {
+                                // on save button in AddStudentPage, add the student to the repo
+                                blocContext
+                                    .read<ViewClassesPageBloc>()
+                                    .add(AddClassEvent(theClass));
+                              },
+                            ),
+                          ));
                     },
                     child: const Text("Add Class"))
               ],

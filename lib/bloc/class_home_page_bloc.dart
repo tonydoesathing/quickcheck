@@ -39,8 +39,8 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       (event, emit) async {
         // add the student to the repo
         try {
-          final Student? student =
-              await studentRepository.addStudent(event.student);
+          final Student? student = await studentRepository
+              .addStudent(event.student.copyWith(classId: theClass.id));
 
           if (student != null) {
             final List<Student> newStudents = List.from(state.students);
@@ -77,7 +77,8 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       (event, emit) async {
         try {
           // add the group to the repo
-          final Group? group = await groupRepository.addGroup(event.group);
+          final Group? group = await groupRepository
+              .addGroup(event.group.copyWith(classId: theClass.id));
           if (group != null) {
             final List<Group> newGroups = List.from(state.groups);
             newGroups.add(group);
@@ -109,10 +110,27 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
     );
 
     on<AddAssessmentEvent>(
-      (event, emit) {
-        // add the assessment to the repo
+      (event, emit) async {
+        try {
+          // add the assessment to the repo
+          final Assessment? assessment = await assessmentRepository
+              .addAssessment(event.assessment.copyWith(classId: theClass.id));
 
-        // if there was an error, emit error state
+          if (assessment != null) {
+            final List<Assessment> newAssessments =
+                List.from(state.assessments);
+            newAssessments.add(assessment);
+            emit(DisplayClassGroupTable(
+                state.students, newAssessments, state.groups));
+          } else {
+            emit(DisplayClassGroupTableError(state.students, state.assessments,
+                state.groups, Exception("Assessment addition failed")));
+          }
+        } catch (e) {
+          // if there was an error, emit error state
+          emit(DisplayClassGroupTableError(
+              state.students, state.assessments, state.groups, e));
+        }
       },
     );
   }

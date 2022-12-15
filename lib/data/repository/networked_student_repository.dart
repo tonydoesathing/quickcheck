@@ -62,7 +62,8 @@ class NetworkedStudentRepository extends StudentRepository {
 
   @override
   Future<List<Student>> getStudents(int classId) async {
-    Response response = await http.get(Uri.parse('${url}students/'));
+    Response response =
+        await http.get(Uri.parse('${url}students/?class_id=$classId'));
     if (response.statusCode == 200 && response.body != "400") {
       // should be a list of json students
       Iterable l = jsonDecode(response.body);

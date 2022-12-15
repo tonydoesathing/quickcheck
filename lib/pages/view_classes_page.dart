@@ -4,6 +4,7 @@ import 'package:quickcheck/bloc/view_classes_page_bloc.dart';
 import 'package:quickcheck/data/model/class.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
 import 'package:quickcheck/pages/add_class_page.dart';
+import 'package:quickcheck/pages/class_home_page.dart';
 
 /// Displays all of the classes for a user
 /// Tapping a class takes the user to that class's page
@@ -57,7 +58,14 @@ class ViewClassesPage extends StatelessWidget {
                           title: Text(state.classes[index].name),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
-                            // navigate to the appropriate class home page
+                            // navigate to the appropriate class's home page
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ClassHomePage(
+                                    theClass: state.classes[index],
+                                  ),
+                                ));
                           },
                         ),
                       );

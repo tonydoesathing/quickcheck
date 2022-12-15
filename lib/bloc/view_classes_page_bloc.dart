@@ -14,10 +14,14 @@ class ViewClassesPageBloc
 
     on<AddClassEvent>((event, emit) async {
       try {
-        int id = await _classRepository.addClass(event.theClass);
-        final List<Class> classes = state.classes.toList()
-          ..add(event.theClass.copyWith(id: id));
-        emit(DisplayClasses(classes));
+        Class? newClass = await _classRepository.addClass(event.theClass);
+        if (newClass != null) {
+          final List<Class> classes = state.classes.toList()..add(newClass);
+          emit(DisplayClasses(classes));
+        } else {
+          emit(DisplayClassesError(
+              state.classes, Exception("Could not add the class")));
+        }
       } catch (e) {
         emit(DisplayClassesError(state.classes, e));
       }

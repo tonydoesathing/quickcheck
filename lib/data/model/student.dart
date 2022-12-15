@@ -20,7 +20,7 @@ class Student extends Equatable {
   /// Create a [Student]
   ///
   /// The [name] must not be null
-  const Student({this.id, required this.name, this.groups, this.classId = 0});
+  const Student({this.id, required this.name, this.groups, this.classId = 1});
 
   // Returns a new Student with specified changes
   Student copyWith({
@@ -41,7 +41,7 @@ class Student extends Equatable {
         id: json['id'],
         groups:
             (json['groups'] as List).map((element) => element as int).toList(),
-        classId: json['class_id'] ?? 0);
+        classId: json['class_id'] ?? 1);
   }
 
   /// Returns a JSON representation of a Student

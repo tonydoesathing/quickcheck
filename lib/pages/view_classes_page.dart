@@ -31,10 +31,17 @@ class ViewClassesPage extends StatelessWidget {
             body: (state is DisplayClasses)
                 ? ListView.builder(
                     itemCount: state.classes.length,
+                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(state.classes[index].name),
-                        trailing: const Icon(Icons.chevron_right),
+                      return Card(
+                        clipBehavior: Clip.hardEdge,
+                        child: ListTile(
+                          title: Text(state.classes[index].name),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            // navigate to the appropriate class home page
+                          },
+                        ),
                       );
                     },
                   )

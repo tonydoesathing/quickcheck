@@ -40,13 +40,15 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  AddStudentPage(callback: (student) {
-                                // on save button in AddStudentPage, add the student to the repo
-                                context
-                                    .read<StudentRepository>()
-                                    .addStudent(student);
-                              }),
+                              builder: (context) => AddStudentPage(
+                                callback: (student) {
+                                  // on save button in AddStudentPage, add the student to the repo
+                                  context
+                                      .read<StudentRepository>()
+                                      .addStudent(student);
+                                },
+                                groups: state.groups,
+                              ),
                             ));
                       } else if (value == 1) {
                         // Add Group selected
@@ -89,6 +91,7 @@ class HomePage extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) => AddAssessmentPage(
                                     groups: state.groups,
+                                    students: state.students,
                                     callback: (assessment) {
                                       // on save of assessment, add to the repo
                                       context
@@ -113,8 +116,10 @@ class HomePage extends StatelessWidget {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: GroupAssessmentTable(
-                                assessments: state.assessments,
-                                groups: state.groups),
+                              assessments: state.assessments,
+                              groups: state.groups,
+                              students: state.students,
+                            ),
                           ),
                         ),
                       ),

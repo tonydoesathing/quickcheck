@@ -15,15 +15,15 @@ class LocalAssessmentRepository extends AssessmentRepository {
   @override
 
   /// Add assessment to _assessments list.
-  Future<bool> addAssessment(Assessment assessment) async {
+  Future<Assessment?> addAssessment(Assessment assessment) async {
     try {
       Assessment newAssessment =
           assessment.copyWith(id: assessment.id ?? _assessments.length + 1);
       _assessments.add(newAssessment);
       _streamController.add(List<Assessment>.of(_assessments));
-      return true;
+      return newAssessment;
     } catch (e) {
-      return false;
+      return null;
     }
   }
 

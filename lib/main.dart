@@ -15,13 +15,16 @@
 // StudentRepository
 
 import 'package:flutter/material.dart';
+import 'package:quickcheck/data/repository/class_repository.dart';
 import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/data/repository/local_group_repository.dart';
 import 'package:quickcheck/data/repository/networked_assessment_repository.dart';
+import 'package:quickcheck/data/repository/networked_class_repository.dart';
 import 'package:quickcheck/data/repository/networked_group_repository.dart';
 import 'package:quickcheck/data/repository/networked_student_repository.dart';
 import 'package:quickcheck/pages/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quickcheck/pages/view_classes_page.dart';
 
 import 'data/repository/assessment_repository.dart';
 import 'data/repository/local_student_repository.dart';
@@ -36,11 +39,13 @@ void main() {
   final AssessmentRepository assessmentRepository =
       NetworkedAssessmentRepository(endpointURL);
   final GroupRepository groupRepository = NetworkedGroupRepository(endpointURL);
+  final ClassRepository classRepository = NetworkedClassRepository(endpointURL);
 
   runApp(App(
     studentRepository: studentRepository,
     assessmentRepository: assessmentRepository,
     groupRepository: groupRepository,
+    classRepository: classRepository,
   ));
 }
 
@@ -49,12 +54,14 @@ class App extends StatelessWidget {
   final StudentRepository studentRepository;
   final AssessmentRepository assessmentRepository;
   final GroupRepository groupRepository;
+  final ClassRepository classRepository;
 
   const App(
       {Key? key,
       required this.studentRepository,
       required this.assessmentRepository,
-      required this.groupRepository})
+      required this.groupRepository,
+      required this.classRepository})
       : super(key: key);
 
   // This widget is the root of your application.
@@ -71,6 +78,9 @@ class App extends StatelessWidget {
         RepositoryProvider<AssessmentRepository>.value(
           value: assessmentRepository,
         ),
+        RepositoryProvider<ClassRepository>.value(
+          value: classRepository,
+        ),
       ],
       child: MaterialApp(
         title: 'Home',
@@ -79,7 +89,7 @@ class App extends StatelessWidget {
           useMaterial3: true,
           primarySwatch: Colors.blue,
         ),
-        home: const HomePage(),
+        home: const ViewClassesPage(),
       ),
     );
   }

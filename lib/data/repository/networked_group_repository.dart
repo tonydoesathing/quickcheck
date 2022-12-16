@@ -13,6 +13,9 @@ import 'networked_student_repository.dart';
 
 /// A networked [Group] repository
 class NetworkedGroupRepository extends GroupRepository {
+  /// endpoint
+  static const String endpoint = "api/groups/";
+
   /// the authenitcation repository
   final AuthenticationRepository authenticationRepository;
 
@@ -34,9 +37,10 @@ class NetworkedGroupRepository extends GroupRepository {
       throw Exception('No url');
     }
     Response response = await http.post(
-      Uri.parse('${url}groups/'),
+      Uri.parse('$url$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token ${await authenticationRepository.getToken()}'
       },
       body: jsonEncode(group.toJson()),
     );
@@ -61,7 +65,10 @@ class NetworkedGroupRepository extends GroupRepository {
     if (url == null) {
       throw Exception('No url');
     }
-    Response response = await http.get(Uri.parse('${url}groups/$id'));
+    Response response = await http.get(Uri.parse('$url$endpoint$id'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json group
       return Group.fromJson(jsonDecode(response.body));
@@ -69,7 +76,7 @@ class NetworkedGroupRepository extends GroupRepository {
       throw GroupNotFoundException(id: id);
     } else {
       throw ConnectionFailedException(
-          url: '${url}groups/$id', statuscode: response.statusCode);
+          url: '$url$endpoint$id', statuscode: response.statusCode);
     }
   }
 
@@ -79,8 +86,11 @@ class NetworkedGroupRepository extends GroupRepository {
     if (url == null) {
       throw Exception('No url');
     }
-    Response response =
-        await http.get(Uri.parse('${url}groups/?class_id=$classId'));
+    Response response = await http.get(
+        Uri.parse('$url$endpoint?class_id=$classId'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // should be a list of json groups
       Iterable l = jsonDecode(response.body);
@@ -91,7 +101,8 @@ class NetworkedGroupRepository extends GroupRepository {
       return List<Group>.of(_groups);
     }
     throw ConnectionFailedException(
-        url: '${url}groups/', statuscode: response.statusCode);
+        url: '$url$endpoint?class_id=$classId',
+        statuscode: response.statusCode);
   }
 
   @override

@@ -1,15 +1,45 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/pages/view_classes_page.dart';
 import '/data/repository/networked_authentification_repository.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
-  LoginPage({super.key});
+  Future<void> errorDialog(
+      BuildContext context, String title, String content) async {
+    await showDialog(
+        context: context,
+        builder: ((context) {
+          return AlertDialog(
+            title: Text(title),
+            content: Text(content),
+            actions: [
+              ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: ElevatedButton.styleFrom(
+                    // Foreground color
+                    onPrimary: Theme.of(context).colorScheme.onPrimary,
+                    // Background color
+                    primary: Theme.of(context).colorScheme.primary,
+                  ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                  child: const Text("Okay"))
+            ],
+          );
+        }));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +48,6 @@ class LoginPage extends StatelessWidget {
         title: const Text("Login"),
       ),
       body: Card(
-        color: Color.fromARGB(189, 57, 57, 221),
         child: Column(
           children: [
             Padding(
@@ -62,89 +91,21 @@ class LoginPage extends StatelessWidget {
                   onPressed: () async {
                     if (_usernameController.text.isEmpty) {
                       // prompt user to input username
-                      await showDialog(
-                          context: context,
-                          builder: ((context) {
-                            return AlertDialog(
-                              title: const Text("Username required"),
-                              content: const Text("Please enter a username"),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    style: ElevatedButton.styleFrom(
-                                      // Foreground color
-                                      onPrimary: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                      // Background color
-                                      primary:
-                                          Theme.of(context).colorScheme.primary,
-                                    ).copyWith(
-                                        elevation:
-                                            ButtonStyleButton.allOrNull(0.0)),
-                                    child: const Text("Okay"))
-                              ],
-                            );
-                          }));
+                      await errorDialog(context, "Username required",
+                          "Please enter a username");
                     } else if (_passwordController.text.isEmpty) {
                       // prompt user to input username
-                      await showDialog(
-                          context: context,
-                          builder: ((context) {
-                            return AlertDialog(
-                              title: const Text("Password required"),
-                              content: const Text("Please enter a password"),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    style: ElevatedButton.styleFrom(
-                                      // Foreground color
-                                      onPrimary: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                      // Background color
-                                      primary:
-                                          Theme.of(context).colorScheme.primary,
-                                    ).copyWith(
-                                        elevation:
-                                            ButtonStyleButton.allOrNull(0.0)),
-                                    child: const Text("Okay"))
-                              ],
-                            );
-                          }));
+                      await errorDialog(context, "Password Required",
+                          "Please enter a password");
                     } else if (_addressController.text.isEmpty) {
                       // prompt user to input username
-                      await showDialog(
-                          context: context,
-                          builder: ((context) {
-                            return AlertDialog(
-                              title: const Text("Server address required"),
-                              content:
-                                  const Text("Please enter a server address"),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    style: ElevatedButton.styleFrom(
-                                      // Foreground color
-                                      onPrimary: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                      // Background color
-                                      primary:
-                                          Theme.of(context).colorScheme.primary,
-                                    ).copyWith(
-                                        elevation:
-                                            ButtonStyleButton.allOrNull(0.0)),
-                                    child: const Text("Okay"))
-                              ],
-                            );
-                          }));
+                      await errorDialog(context, "Server address required",
+                          "Please enter a server address");
                     } else {
+                      // set the URL
                       context.read<AuthenticationRepository>().url =
                           _addressController.text;
+                      // try and log in
                       String? token;
                       try {
                         token = await context
@@ -152,67 +113,19 @@ class LoginPage extends StatelessWidget {
                             .login(_usernameController.text,
                                 _passwordController.text);
                       } catch (E) {
-                        await showDialog(
-                            context: context,
-                            builder: ((context) {
-                              return AlertDialog(
-                                title: const Text("Invalid server address"),
-                                content: const Text(
-                                    "Could not connect to the specified server"),
-                                actions: [
-                                  ElevatedButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      style: ElevatedButton.styleFrom(
-                                        // Foreground color
-                                        onPrimary: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
-                                        // Background color
-                                        primary: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ).copyWith(
-                                          elevation:
-                                              ButtonStyleButton.allOrNull(0.0)),
-                                      child: const Text("Okay"))
-                                ],
-                              );
-                            }));
+                        await errorDialog(context, "Invalid server address",
+                            "Could not connect to the specified server");
                       }
                       if (token == null) {
-                        await showDialog(
-                            context: context,
-                            builder: ((context) {
-                              return AlertDialog(
-                                title: const Text("Invalid request"),
-                                content: const Text(
-                                    "The server address, username or password was incorrect"),
-                                actions: [
-                                  ElevatedButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      style: ElevatedButton.styleFrom(
-                                        // Foreground color
-                                        onPrimary: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
-                                        // Background color
-                                        primary: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ).copyWith(
-                                          elevation:
-                                              ButtonStyleButton.allOrNull(0.0)),
-                                      child: const Text("Okay"))
-                                ],
-                              );
-                            }));
+                        // failed to get a token
+                        await errorDialog(context, "Invalid request",
+                            "The server address, username, or password was incorrect");
                       } else {
+                        // got a token; go to ViewClassesPage
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ViewClassesPage(),
+                              builder: (context) => const ViewClassesPage(),
                             ));
                       }
                     }

@@ -33,11 +33,10 @@ class NetworkedAuthenticationRepository extends AuthenticationRepository {
         "password": password,
       }),
     );
-    print(response.body);
     if (response.statusCode != 200 || response.body == '400') {
       return null;
     }
-    token = jsonDecode(response.body);
+    token = jsonDecode(response.body)['token'];
     return token;
   }
 }

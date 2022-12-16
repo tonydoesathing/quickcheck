@@ -11,10 +11,14 @@ import 'networked_student_repository.dart';
 
 /// An implementation of the [AssessmentRepository] making use of a networked datastore.
 class NetworkedAssessmentRepository extends AssessmentRepository {
+  /// endpoint
+  static const String endpoint = "api/assessments/";
+
   /// Stream used to update listeners with changes
   final StreamController<List<Assessment>> _streamController =
       StreamController<List<Assessment>>.broadcast();
 
+  /// the auth repo
   final AuthenticationRepository authenticationRepository;
 
   /// The cache for assessments
@@ -33,9 +37,10 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
       throw Exception('No url');
     }
     Response response = await http.post(
-      Uri.parse('${url}assessments/'),
+      Uri.parse('$url$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token ${await authenticationRepository.getToken()}'
       },
       body: jsonEncode(assessment.toJson()),
     );
@@ -70,7 +75,10 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
     if (url == null) {
       throw Exception('No url');
     }
-    Response response = await http.get(Uri.parse('${url}assessments/$id'));
+    Response response = await http.get(Uri.parse('$url$endpoint$id'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json assessment
       return Assessment.fromJson(jsonDecode(response.body));
@@ -78,7 +86,7 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
       throw AssessmentNotFoundException(id: id);
     } else {
       throw ConnectionFailedException(
-          url: '${url}assessments/$id', statuscode: response.statusCode);
+          url: '$url$endpoint$id', statuscode: response.statusCode);
     }
   }
 
@@ -90,8 +98,11 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
     if (url == null) {
       throw Exception('No url');
     }
-    Response response =
-        await http.get(Uri.parse('${url}assessments/?class_id=$classId'));
+    Response response = await http.get(
+        Uri.parse('$url$endpoint?class_id=$classId'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // should be a list of json assessments
       List jsonAssessments = jsonDecode(response.body);
@@ -104,7 +115,8 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
       return List<Assessment>.of(_assessments);
     }
     throw ConnectionFailedException(
-        url: '${url}groups/', statuscode: response.statusCode);
+        url: '$url$endpoint?class_id=$classId',
+        statuscode: response.statusCode);
   }
 
   @override

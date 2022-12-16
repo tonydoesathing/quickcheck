@@ -8,7 +8,10 @@ import 'package:quickcheck/data/repository/student_repository.dart';
 import 'package:http/http.dart' as http;
 
 class NetworkedStudentRepository extends StudentRepository {
-  /// the URL of the API
+  /// the endppoint
+  static const String endpoint = "api/students/";
+
+  /// the auth repo
   final AuthenticationRepository authenticationRepository;
 
   /// local cache of students
@@ -29,9 +32,10 @@ class NetworkedStudentRepository extends StudentRepository {
       throw Exception('No url');
     }
     Response response = await http.post(
-      Uri.parse('${url}students/'),
+      Uri.parse('$url$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token ${await authenticationRepository.getToken()}'
       },
       body: jsonEncode(student.toJson()),
     );
@@ -57,7 +61,10 @@ class NetworkedStudentRepository extends StudentRepository {
     if (url == null) {
       throw Exception('No url');
     }
-    Response response = await http.get(Uri.parse('${url}students/$id'));
+    Response response = await http.get(Uri.parse('$url$endpoint$id'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json student
       return Student.fromJson(jsonDecode(response.body));
@@ -65,7 +72,7 @@ class NetworkedStudentRepository extends StudentRepository {
       throw StudentNotFoundException(id: id);
     } else {
       throw ConnectionFailedException(
-          url: '${url}students/$id', statuscode: response.statusCode);
+          url: '$url$endpoint$id', statuscode: response.statusCode);
     }
   }
 
@@ -75,8 +82,11 @@ class NetworkedStudentRepository extends StudentRepository {
     if (url == null) {
       throw Exception('No url');
     }
-    Response response =
-        await http.get(Uri.parse('${url}students/?class_id=$classId'));
+    Response response = await http.get(
+        Uri.parse('$url$endpoint?class_id=$classId'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // should be a list of json students
       Iterable l = jsonDecode(response.body);
@@ -86,7 +96,8 @@ class NetworkedStudentRepository extends StudentRepository {
       return List<Student>.of(_students);
     }
     throw ConnectionFailedException(
-        url: '${url}students/', statuscode: response.statusCode);
+        url: '$url$endpoint?class_id=$classId',
+        statuscode: response.statusCode);
   }
 
   @override

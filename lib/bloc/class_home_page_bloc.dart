@@ -73,6 +73,55 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       },
     );
 
+    on<EditStudentEvent>(
+      (event, emit) async {
+        // add the student to the repo
+        try {
+          final Student? student = await studentRepository
+              .editStudent(event.student.copyWith(classId: theClass.id));
+
+          if (student != null) {
+            final List<Student> newStudents = List.from(state.students);
+            // replace the student
+            int index =
+                newStudents.indexWhere((element) => element.id == student.id);
+            newStudents[index] = student;
+
+            List<Group> newGroups = state.groups;
+            // if there were groups added, update the groups and emit
+            if (student.groups != null && student.groups!.isNotEmpty) {
+              newGroups = state.groups.map<Group>(((element) {
+                if (student.groups!.contains(element.id)) {
+                  // check to see if has student; if so replace
+                  int i = element.members.indexWhere((s) => s.id == student.id);
+                  if (i != -1) {
+                    Group newGroup = element.copyWith();
+                    newGroup.members[i] = student;
+                    return newGroup;
+                  }
+                  // if not add
+                  return element.copyWith(
+                      members: List<Student>.from(element.members)
+                        ..add(student));
+                }
+                return element;
+              })).toList();
+            }
+
+            emit(DisplayClassGroupTable(
+                newStudents, state.assessments, newGroups));
+          } else {
+            emit(DisplayClassGroupTableError(state.students, state.assessments,
+                state.groups, Exception("Student addition failed")));
+          }
+        } catch (e) {
+          // if there was an error, emit error state
+          emit(DisplayClassGroupTableError(
+              state.students, state.assessments, state.groups, e));
+        }
+      },
+    );
+
     on<AddGroupEvent>(
       (event, emit) async {
         try {
@@ -165,6 +214,18 @@ class AddStudentEvent extends ClassHomePageEvent {
 
   /// Add a [student] to the class
   const AddStudentEvent(this.student);
+
+  @override
+  List<Object> get props => [student];
+}
+
+/// Edit a student in a class
+class EditStudentEvent extends ClassHomePageEvent {
+  /// The [Student] to add
+  final Student student;
+
+  /// Edit a [student] in the class
+  const EditStudentEvent(this.student);
 
   @override
   List<Object> get props => [student];

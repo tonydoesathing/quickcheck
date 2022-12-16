@@ -78,6 +78,25 @@ class NetworkedStudentRepository extends StudentRepository {
 
   @override
   Stream<List<Student>> get students => _streamController.stream;
+
+  @override
+  Future<Student?> editStudent(Student student) async {
+    Response response =
+        await http.put(Uri.parse('${url}students/${student.id}'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(student.toJson()));
+    if (response.statusCode == 200 && response.body != "400") {
+      // the body should be json student
+      return Student.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw StudentNotFoundException(id: student.id ?? -1);
+    } else {
+      throw ConnectionFailedException(
+          url: '${url}students/${student.id}', statuscode: response.statusCode);
+    }
+  }
 }
 
 /// An exception for not being able to connect to an endpoint

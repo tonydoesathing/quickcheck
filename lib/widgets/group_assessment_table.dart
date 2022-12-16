@@ -12,12 +12,20 @@ class GroupAssessmentTable extends StatelessWidget {
   final List<Group> groups;
   final List<Student> students;
 
+  /// Callback for when a student is clicked
+  final Function(Student)? onStudentClick;
+
+  /// Callback for when a group is clicked
+  final Function(Group)? onGroupClick;
+
   /// Create a table from a list of [students] and a list of [assessments]
   const GroupAssessmentTable(
       {Key? key,
       required this.assessments,
       required this.groups,
-      required this.students})
+      required this.students,
+      this.onStudentClick,
+      this.onGroupClick})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -46,11 +54,14 @@ class GroupAssessmentTable extends StatelessWidget {
           for (Group group in groups) ...[
             DataRow(
               cells: <DataCell>[
-                DataCell(Text(group.name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.bold))),
+                DataCell(TextButton(
+                  onPressed: () => onGroupClick?.call(group),
+                  child: Text(group.name,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontWeight: FontWeight.bold)),
+                )),
                 for (Assessment assessment in assessments)
                   DataCell(Center(
                       child: AssessmentScore(
@@ -64,7 +75,12 @@ class GroupAssessmentTable extends StatelessWidget {
                     const SizedBox(
                       width: 20,
                     ),
-                    Text(student.name)
+                    TextButton(
+                        onPressed: () => onStudentClick?.call(student),
+                        child: Text(
+                          student.name,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ))
                   ])),
                   for (Assessment assessment in assessments)
                     DataCell(Center(
@@ -96,9 +112,15 @@ class GroupAssessmentTable extends StatelessWidget {
                     const SizedBox(
                       width: 20,
                     ),
-                    Text(
-                      student.name,
-                      style: const TextStyle(fontStyle: FontStyle.italic),
+                    TextButton(
+                      onPressed: () => onStudentClick?.call(student),
+                      child: Text(
+                        student.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(fontStyle: FontStyle.italic),
+                      ),
                     )
                   ])),
                   for (Assessment assessment in assessments)

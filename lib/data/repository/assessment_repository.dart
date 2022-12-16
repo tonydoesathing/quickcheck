@@ -10,13 +10,13 @@ abstract class AssessmentRepository {
   void dispose();
 
   /// Returns a list of Assessments
-  Future<List<Assessment>> getAssessments();
+  Future<List<Assessment>> getAssessments(int classId);
 
   /// Returns a Assessment from an ID
   Future<Assessment> getAssessment(int id);
 
   /// Tries to add assessment to repository and returns whether or not it was successful
-  Future<bool> addAssessment(Assessment assessment);
+  Future<Assessment?> addAssessment(Assessment assessment);
 }
 
 /// [Assessment] with id of [id] could not be found in datastore

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:quickcheck/data/model/student.dart';
 
 /// The data model for a group
@@ -12,25 +13,28 @@ class Group extends Equatable {
   /// The name of the group
   final String name;
 
-  /// The students int the group
+  /// The students in the group
   final List<Student> members;
+
+  /// The class the group belongs to
+  final int classId;
 
   /// Create a [Group]
   ///
   /// The [name] must not be null
-  /// The [members] must not be null
-  const Group({this.id, required this.name, required this.members});
+  ///
+  /// The [classId] must not be null
+  const Group(
+      {this.id, required this.name, this.members = const [], this.classId = 1});
 
   // Returns a new Group with specified changes
-  Group copyWith({
-    int? id,
-    String? name,
-    List<Student>? members,
-  }) {
+  Group copyWith(
+      {int? id, String? name, List<Student>? members, int? classId}) {
     return Group(
         id: id ?? this.id,
         name: name ?? this.name,
-        members: members ?? this.members);
+        members: members ?? this.members,
+        classId: classId ?? this.classId);
   }
 
   /// Returns a [Group] from a json map
@@ -40,18 +44,20 @@ class Group extends Equatable {
         id: json['id'],
         members: (json['student_set'] as List)
             .map((element) => Student.fromJson(element))
-            .toList());
+            .toList(),
+        classId: json['class_id'] ?? 1);
   }
 
-  /// Returns a JSON representation of a Student
+  /// Returns a JSON representation of a [Group]
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
-      'student_set': members.map((student) => student.id).toList()
+      'student_set': members.map((student) => student.id).toList(),
+      'class_id': classId
     };
   }
 
   @override
-  List<Object?> get props => [id, name, members];
+  List<Object?> get props => [id, name, members, classId];
 }

@@ -1,42 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:quickcheck/data/model/student.dart';
-import 'package:quickcheck/data/model/group.dart';
+import 'package:quickcheck/data/model/class.dart';
 
-/// The page where new students can be added.
+/// The page where new classs can be added.
 /// Consists of a textfield, a save button, and a cancel button.
 /// On save, it calls the optional [callback]. On cancel, it returns
 /// to the preivous page.
-class AddStudentPage extends StatefulWidget {
+class AddClassPage extends StatefulWidget {
   /// the callback to be called on save
-  final Function(Student) callback;
+  final Function(Class) callback;
 
-  /// Groups to potentially add students to
-  final List<Group> groups;
-
-  /// The page where new students can be added.
-  /// Takes an optional [callback], which is called on save with the new student.
-  const AddStudentPage({Key? key, required this.callback, required this.groups})
-      : super(key: key);
+  /// The page where new classs can be added.
+  /// Takes an optional [callback], which is called on save with the new class.
+  const AddClassPage({Key? key, required this.callback}) : super(key: key);
 
   @override
-  State<AddStudentPage> createState() => _AddStudentPageState();
+  State<AddClassPage> createState() => _AddClassPageState();
 }
 
-class _AddStudentPageState extends State<AddStudentPage> {
+class _AddClassPageState extends State<AddClassPage> {
   /// The controller for the textfield
   final TextEditingController _controller = TextEditingController();
-
-  /// The collection of groups and whether or not the student is in that group
-  final Map<Group, bool> groups = {};
-
-  @override
-  void initState() {
-    super.initState();
-    // initialize the groups map with false
-    for (Group group in widget.groups) {
-      groups[group] = false;
-    }
-  }
 
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
@@ -76,49 +59,19 @@ class _AddStudentPageState extends State<AddStudentPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Add Student"),
+          title: const Text("Add Class"),
         ),
-        body: ListView.builder(
-            itemCount: widget.groups.length + 2,
-            padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 0.0),
-            itemBuilder: ((context, index) {
-              // render name textbox first
-              if (index == 0) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
-                  child: TextField(
-                    controller: _controller,
-                    decoration:
-                        const InputDecoration(labelText: "Name (required)"),
-                  ),
-                );
-              } else if (index == 1) {
-                // render the title for the groups
-                return Center(
-                    child: Text(
-                  "Groups",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ));
-              }
-              // otherwise render the groups
-              return CheckboxListTile(
-                  value: groups[widget.groups[index - 2]],
-                  title: Text(
-                    widget.groups[index - 2].name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  onChanged: ((value) {
-                    setState(() {
-                      groups[widget.groups[index - 2]] = value!;
-                    });
-                  }));
-            })),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
+              child: TextField(
+                controller: _controller,
+                decoration: const InputDecoration(labelText: "Name (required)"),
+              ),
+            )
+          ],
+        ),
         bottomNavigationBar: BottomAppBar(
             child: Container(
           height: 75,
@@ -137,8 +90,8 @@ class _AddStudentPageState extends State<AddStudentPage> {
                           context: context,
                           builder: ((context) {
                             return AlertDialog(
-                              title: const Text("Improper student formatting"),
-                              content: const Text("A student requires a name!"),
+                              title: const Text("Improper class formatting"),
+                              content: const Text("A class requires a name!"),
                               actions: [
                                 ElevatedButton(
                                     onPressed: () =>
@@ -160,16 +113,9 @@ class _AddStudentPageState extends State<AddStudentPage> {
                           }));
                       return;
                     }
-                    // take out false values
-                    groups.removeWhere((key, value) => value == false);
-
                     // call the callback
                     // and go to previous page
-                    widget.callback.call(Student(
-                        name: _controller.text,
-                        groups: groups.keys
-                            .map((element) => element.id!)
-                            .toList()));
+                    widget.callback.call(Class(name: _controller.text));
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.save),

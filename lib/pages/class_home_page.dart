@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quickcheck/bloc/class_home_page_bloc.dart';
 import 'package:quickcheck/bloc/home_page_bloc.dart';
+import 'package:quickcheck/data/model/class.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/pages/add_assessment_page.dart';
@@ -14,24 +16,34 @@ import 'package:quickcheck/widgets/quick_check_icons_icons.dart';
 import 'package:quickcheck/widgets/student_assessment_table.dart';
 import 'package:quickcheck/widgets/group_assessment_table.dart';
 
-/// The home page of the app, which displays a table of the students and their assessment results
-class HomePage extends StatelessWidget {
-  /// The home page of the app, which displays a table of the students and their assessment results
-  const HomePage({Key? key}) : super(key: key);
+/// The home page of for a class which displays a table of the students/groups and their assessment results
+class ClassHomePage extends StatelessWidget {
+  final Class theClass;
+
+  /// The home page of for a class which displays a table of the students/groups and their assessment results
+  const ClassHomePage({Key? key, required this.theClass}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // create a HomePageBloc from the repositories and have it load from them
     return BlocProvider(
-      create: (context) => HomePageBloc(context.read<StudentRepository>(),
-          context.read<AssessmentRepository>(), context.read<GroupRepository>())
-        ..add(LoadStudentTableEvent()),
+      create: (context) => ClassHomePageBloc(
+          context.read<StudentRepository>(),
+          context.read<AssessmentRepository>(),
+          context.read<GroupRepository>(),
+          theClass)
+        ..add(LoadClassGroupTableEvent()),
       // On new state changes of the HomePageBloc, re-render the page
-      child: BlocBuilder<HomePageBloc, HomePageState>(
+      child: BlocConsumer<ClassHomePageBloc, ClassHomePageState>(
+        listener: (context, state) {
+          if (state is DisplayClassGroupTableError) {
+            throw state.error;
+          }
+        },
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text("QuickCheck"),
+              title: Text(theClass.name),
               actions: [
                 PopupMenuButton(
                     onSelected: (value) {
@@ -40,28 +52,29 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AddStudentPage(
+                              builder: (pageContext) => AddStudentPage(
                                 callback: (student) {
-                                  // on save button in AddStudentPage, add the student to the repo
+                                  // on save button in AddStudentPage, add the student
                                   context
-                                      .read<StudentRepository>()
-                                      .addStudent(student);
+                                      .read<ClassHomePageBloc>()
+                                      .add(AddStudentEvent(student));
                                 },
                                 groups: state.groups,
                               ),
                             ));
                       } else if (value == 1) {
                         // Add Group selected
+
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AddGroupPage(
+                              builder: (pageContext) => AddGroupPage(
                                   students: state.students,
                                   callback: (group) {
-                                    // on save button in AddGroupPage, add the group to the repo
+                                    // on save button in AddGroupPage, add the group
                                     context
-                                        .read<GroupRepository>()
-                                        .addGroup(group);
+                                        .read<ClassHomePageBloc>()
+                                        .add(AddGroupEvent(group));
                                   }),
                             ));
                       }
@@ -84,19 +97,19 @@ class HomePage extends StatelessWidget {
                 ? FloatingActionButton.extended(
                     onPressed: () {
                       // if we're not loading:
-                      if (state is DisplayStudentTable) {
+                      if (state is DisplayClassGroupTable) {
                         // Add Assessment button should take us to the AddAssessmentPage
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AddAssessmentPage(
+                              builder: (pageContext) => AddAssessmentPage(
                                     groups: state.groups,
                                     students: state.students,
                                     callback: (assessment) {
-                                      // on save of assessment, add to the repo
+                                      // on save of assessment, add the assessment
                                       context
-                                          .read<AssessmentRepository>()
-                                          .addAssessment(assessment);
+                                          .read<ClassHomePageBloc>()
+                                          .add(AddAssessmentEvent(assessment));
                                     },
                                   )),
                         );
@@ -107,7 +120,7 @@ class HomePage extends StatelessWidget {
                   )
                 : null,
             // render the table if not loading
-            body: (state is DisplayStudentTable)
+            body: (state is DisplayClassGroupTable)
                 ? Row(
                     children: [
                       Expanded(

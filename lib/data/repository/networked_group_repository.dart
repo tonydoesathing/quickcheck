@@ -4,13 +4,20 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/group.dart';
 import 'package:quickcheck/data/model/student.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/data/repository/student_repository.dart';
 import 'package:http/http.dart' as http;
 
+import 'networked_student_repository.dart';
+
+/// A networked [Group] repository
 class NetworkedGroupRepository extends GroupRepository {
-  /// the URL of the API
-  final String url;
+  /// endpoint
+  static const String endpoint = "api/groups/";
+
+  /// the authenitcation repository
+  final AuthenticationRepository authenticationRepository;
 
   /// local cache of groups
   List<Group> _groups = [];
@@ -21,32 +28,30 @@ class NetworkedGroupRepository extends GroupRepository {
 
   /// A networked [Group] repository
   /// Takes the [url] of the endpoint
-  NetworkedGroupRepository(this.url);
+  NetworkedGroupRepository(this.authenticationRepository);
 
   @override
-  Future<bool> addGroup(Group group) async {
+  Future<Group?> addGroup(Group group) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.post(
-      Uri.parse('${url}groups/'),
+      Uri.parse('$url$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token ${await authenticationRepository.getToken()}'
       },
       body: jsonEncode(group.toJson()),
     );
     if (response.statusCode != 201) {
-      return false;
+      return null;
     }
 
-    // add the newly-created group
-    // as a workaround for the addGroup API request not returning a full group
-    // (only student id's not objects), I'm just copying over the ID into the O.G. group
-    // just delete workaround and uncomment normal code
-    // starting workaround
-    _groups.add(group.copyWith(id: jsonDecode(response.body)['id']));
-    // normal code:
-    // _groups.add(Group.fromJson(jsonDecode(response.body)));
+    final Group newGroup = Group.fromJson(jsonDecode(response.body));
+    _groups.add(newGroup);
     _streamController.add(List<Group>.of(_groups));
-    // await getGroups();
-    return true;
+    return newGroup;
   }
 
   @override
@@ -56,7 +61,14 @@ class NetworkedGroupRepository extends GroupRepository {
 
   @override
   Future<Group> getGroup(int id) async {
-    Response response = await http.get(Uri.parse('${url}groups/$id'));
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.get(Uri.parse('$url$endpoint$id'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json group
       return Group.fromJson(jsonDecode(response.body));
@@ -64,13 +76,21 @@ class NetworkedGroupRepository extends GroupRepository {
       throw GroupNotFoundException(id: id);
     } else {
       throw ConnectionFailedException(
-          url: '${url}groups/$id', statuscode: response.statusCode);
+          url: '$url$endpoint$id', statuscode: response.statusCode);
     }
   }
 
   @override
-  Future<List<Group>> getGroups() async {
-    Response response = await http.get(Uri.parse('${url}groups/'));
+  Future<List<Group>> getGroups(int classId) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.get(
+        Uri.parse('$url$endpoint?class_id=$classId'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // should be a list of json groups
       Iterable l = jsonDecode(response.body);
@@ -81,26 +101,10 @@ class NetworkedGroupRepository extends GroupRepository {
       return List<Group>.of(_groups);
     }
     throw ConnectionFailedException(
-        url: '${url}groups/', statuscode: response.statusCode);
+        url: '$url$endpoint?class_id=$classId',
+        statuscode: response.statusCode);
   }
 
   @override
   Stream<List<Group>> get groups => _streamController.stream;
-}
-
-/// An exception for not being able to connect to an endpoint
-class ConnectionFailedException implements Exception {
-  /// statuscode of the response
-  final int? statuscode;
-
-  /// url of the endpoint
-  final String? url;
-
-  /// Unable to connect to an endpoint
-  ConnectionFailedException({this.url, this.statuscode});
-
-  @override
-  String toString() {
-    return "Unable to connect: ${url ?? ""} ${statuscode ?? ""}";
-  }
 }

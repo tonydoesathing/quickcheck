@@ -21,6 +21,17 @@ class AssessmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (assessee == 1) {
+      return Container(
+          padding: const EdgeInsets.fromLTRB(0, 45, 0, 20),
+          child: Text(
+            'Ungrouped Students',
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(fontWeight: FontWeight.bold),
+          ));
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -29,16 +40,19 @@ class AssessmentWidget extends StatelessWidget {
             width: 20,
           ),
         Expanded(
-          child: Text(
-            assessee.name ?? "NO NAME",
-            overflow: TextOverflow.clip,
-            style: (assessee is Group)
-                ? Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.bold)
-                : null,
-          ),
+          child: Text(assessee.name ?? "NO NAME",
+              overflow: TextOverflow.clip,
+              style: (assessee is Group)
+                  ? Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(fontWeight: FontWeight.bold)
+                  : (assessee.groups == null || assessee.groups!.isEmpty)
+                      ? Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontStyle: FontStyle.italic)
+                      : null),
         ),
         Row(
           children: [

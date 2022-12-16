@@ -10,13 +10,13 @@ abstract class StudentRepository {
   void dispose();
 
   /// Returns a list of Students
-  Future<List<Student>> getStudents();
+  Future<List<Student>> getStudents(int classId);
 
   /// Returns a student from an ID
   Future<Student> getStudent(int id);
 
   /// Tries to add student to repository and returns whether or not it was successful
-  Future<bool> addStudent(Student student);
+  Future<Student?> addStudent(Student student);
 }
 
 /// [Student] with id of [id] could not be found in datastore

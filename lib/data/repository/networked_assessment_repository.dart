@@ -1,0 +1,126 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:quickcheck/data/model/assessment.dart';
+import 'package:quickcheck/data/repository/assessment_repository.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
+
+import 'networked_student_repository.dart';
+
+/// An implementation of the [AssessmentRepository] making use of a networked datastore.
+class NetworkedAssessmentRepository extends AssessmentRepository {
+  /// endpoint
+  static const String endpoint = "api/assessments/";
+
+  /// Stream used to update listeners with changes
+  final StreamController<List<Assessment>> _streamController =
+      StreamController<List<Assessment>>.broadcast();
+
+  /// the auth repo
+  final AuthenticationRepository authenticationRepository;
+
+  /// The cache for assessments
+  List<Assessment> _assessments = [];
+
+  /// A networked [Assessment] repository
+  /// Takes the [url] of the endpoint
+  NetworkedAssessmentRepository(this.authenticationRepository);
+
+  @override
+
+  /// Add assessment to _assessments list.
+  Future<Assessment?> addAssessment(Assessment assessment) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.post(
+      Uri.parse('$url$endpoint'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token ${await authenticationRepository.getToken()}'
+      },
+      body: jsonEncode(assessment.toJson()),
+    );
+    if (response.statusCode != 201) {
+      return null;
+    }
+
+    // add the newly-created assessment
+    // as a workaround for the addAssessment API request not returning a full assessment
+    // (no objects), I'm just copying over the ID into the O.G. assessment
+    // just delete workaround and uncomment normal code
+    // starting workaround
+    final Assessment newAssessment =
+        assessment.copyWith(id: jsonDecode(response.body)['id']);
+    _assessments.add(newAssessment);
+    // normal code:
+    // _assessments.add(Assessment.fromJson(jsonDecode(response.body)));
+    _streamController.add(List<Assessment>.of(_assessments));
+    return newAssessment;
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+  }
+
+  @override
+
+  /// Get assessment by ID.
+  Future<Assessment> getAssessment(int id) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.get(Uri.parse('$url$endpoint$id'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
+    if (response.statusCode == 200 && response.body != "400") {
+      // the body should be json assessment
+      return Assessment.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw AssessmentNotFoundException(id: id);
+    } else {
+      throw ConnectionFailedException(
+          url: '$url$endpoint$id', statuscode: response.statusCode);
+    }
+  }
+
+  @override
+
+  /// Get list of assessments
+  Future<List<Assessment>> getAssessments(int classId) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.get(
+        Uri.parse('$url$endpoint?class_id=$classId'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
+    if (response.statusCode == 200 && response.body != "400") {
+      // should be a list of json assessments
+      List jsonAssessments = jsonDecode(response.body);
+
+      // make json list into Assessment list
+      _assessments = List<Assessment>.from(
+          jsonAssessments.map((json) => Assessment.fromJson(json)));
+      // ship it down the stream
+      _streamController.add(List<Assessment>.of(_assessments));
+      return List<Assessment>.of(_assessments);
+    }
+    throw ConnectionFailedException(
+        url: '$url$endpoint?class_id=$classId',
+        statuscode: response.statusCode);
+  }
+
+  @override
+  Stream<List<Assessment>> get assessments {
+    return _streamController.stream;
+  }
+}

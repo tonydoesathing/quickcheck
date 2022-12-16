@@ -3,12 +3,16 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/student.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/data/repository/student_repository.dart';
 import 'package:http/http.dart' as http;
 
 class NetworkedStudentRepository extends StudentRepository {
-  /// the URL of the API
-  final String url;
+  /// the endppoint
+  static const String endpoint = "api/students/";
+
+  /// the auth repo
+  final AuthenticationRepository authenticationRepository;
 
   /// local cache of students
   List<Student> _students = [];
@@ -19,25 +23,31 @@ class NetworkedStudentRepository extends StudentRepository {
 
   /// A networked [Student] repository
   /// Takes the [url] of the endpoint
-  NetworkedStudentRepository(this.url);
+  NetworkedStudentRepository(this.authenticationRepository);
 
   @override
-  Future<bool> addStudent(Student student) async {
+  Future<Student?> addStudent(Student student) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.post(
-      Uri.parse('${url}students/'),
+      Uri.parse('$url$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token ${await authenticationRepository.getToken()}'
       },
       body: jsonEncode(student.toJson()),
     );
     if (response.statusCode != 201) {
-      return false;
+      return null;
     }
 
     // add the newly-created student
-    _students.add(Student.fromJson(jsonDecode(response.body)));
+    final Student newStudent = Student.fromJson(jsonDecode(response.body));
+    _students.add(newStudent);
     _streamController.add(List<Student>.of(_students));
-    return true;
+    return newStudent;
   }
 
   @override
@@ -47,7 +57,14 @@ class NetworkedStudentRepository extends StudentRepository {
 
   @override
   Future<Student> getStudent(int id) async {
-    Response response = await http.get(Uri.parse('${url}students/$id'));
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.get(Uri.parse('$url$endpoint$id'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json student
       return Student.fromJson(jsonDecode(response.body));
@@ -55,13 +72,21 @@ class NetworkedStudentRepository extends StudentRepository {
       throw StudentNotFoundException(id: id);
     } else {
       throw ConnectionFailedException(
-          url: '${url}students/$id', statuscode: response.statusCode);
+          url: '$url$endpoint$id', statuscode: response.statusCode);
     }
   }
 
   @override
-  Future<List<Student>> getStudents() async {
-    Response response = await http.get(Uri.parse('${url}students/'));
+  Future<List<Student>> getStudents(int classId) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.get(
+        Uri.parse('$url$endpoint?class_id=$classId'),
+        headers: <String, String>{
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        });
     if (response.statusCode == 200 && response.body != "400") {
       // should be a list of json students
       Iterable l = jsonDecode(response.body);
@@ -71,7 +96,8 @@ class NetworkedStudentRepository extends StudentRepository {
       return List<Student>.of(_students);
     }
     throw ConnectionFailedException(
-        url: '${url}students/', statuscode: response.statusCode);
+        url: '$url$endpoint?class_id=$classId',
+        statuscode: response.statusCode);
   }
 
   @override

@@ -15,15 +15,15 @@ class LocalStudentRepository extends StudentRepository {
   @override
 
   /// Add student to _students list.
-  Future<bool> addStudent(Student student) async {
+  Future<Student?> addStudent(Student student) async {
     try {
       Student newStudent =
           student.copyWith(id: student.id ?? _students.length + 1);
       _students.add(newStudent);
       _streamController.add(List<Student>.of(_students));
-      return true;
+      return newStudent;
     } catch (e) {
-      return false;
+      return null;
     }
   }
 
@@ -47,9 +47,9 @@ class LocalStudentRepository extends StudentRepository {
   @override
 
   /// Get list of students
-  Future<List<Student>> getStudents() async {
-    _streamController.add(List<Student>.of(_students));
-    return List<Student>.of(_students);
+  Future<List<Student>> getStudents(int classId) async {
+    return List<Student>.of(
+        _students.where((student) => student.classId == classId));
   }
 
   @override

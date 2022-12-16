@@ -4,8 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:quickcheck/data/repository/authentification_repository.dart';
 
-abstract class NetworkedAuthenticationRepository
-    extends AuthenticationRepository {
+class NetworkedAuthenticationRepository extends AuthenticationRepository {
   final String url;
 
   String? token;

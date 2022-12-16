@@ -3,12 +3,13 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/student.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/data/repository/student_repository.dart';
 import 'package:http/http.dart' as http;
 
 class NetworkedStudentRepository extends StudentRepository {
   /// the URL of the API
-  final String url;
+  final AuthenticationRepository authenticationRepository;
 
   /// local cache of students
   List<Student> _students = [];
@@ -19,10 +20,14 @@ class NetworkedStudentRepository extends StudentRepository {
 
   /// A networked [Student] repository
   /// Takes the [url] of the endpoint
-  NetworkedStudentRepository(this.url);
+  NetworkedStudentRepository(this.authenticationRepository);
 
   @override
   Future<Student?> addStudent(Student student) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.post(
       Uri.parse('${url}students/'),
       headers: <String, String>{
@@ -48,6 +53,10 @@ class NetworkedStudentRepository extends StudentRepository {
 
   @override
   Future<Student> getStudent(int id) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.get(Uri.parse('${url}students/$id'));
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json student
@@ -62,6 +71,10 @@ class NetworkedStudentRepository extends StudentRepository {
 
   @override
   Future<List<Student>> getStudents(int classId) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response =
         await http.get(Uri.parse('${url}students/?class_id=$classId'));
     if (response.statusCode == 200 && response.body != "400") {

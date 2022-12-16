@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
+import 'package:quickcheck/pages/view_classes_page.dart';
 import '/data/repository/networked_authentification_repository.dart';
 
 class LoginPage extends StatelessWidget {
@@ -16,7 +18,7 @@ class LoginPage extends StatelessWidget {
         title: const Text("Login"),
       ),
       body: Card(
-        color: const Color.fromARGB(172, 14, 14, 196),
+        color: Color.fromARGB(189, 57, 57, 221),
         child: Column(
           children: [
             Padding(
@@ -85,7 +87,6 @@ class LoginPage extends StatelessWidget {
                               ],
                             );
                           }));
-                      return;
                     } else if (_passwordController.text.isEmpty) {
                       // prompt user to input username
                       await showDialog(
@@ -113,7 +114,6 @@ class LoginPage extends StatelessWidget {
                               ],
                             );
                           }));
-                      return;
                     } else if (_addressController.text.isEmpty) {
                       // prompt user to input username
                       await showDialog(
@@ -142,12 +142,44 @@ class LoginPage extends StatelessWidget {
                               ],
                             );
                           }));
-                      return;
                     } else {
-                      String? token = RepositoryProvider.of(context)
-                          .authentificationRepository
-                          .login(_usernameController.text,
-                              _passwordController.text) as String?;
+                      context.read<AuthenticationRepository>().url =
+                          _addressController.text;
+                      String? token;
+                      try {
+                        token = await context
+                            .read<AuthenticationRepository>()
+                            .login(_usernameController.text,
+                                _passwordController.text);
+                      } catch (E) {
+                        await showDialog(
+                            context: context,
+                            builder: ((context) {
+                              return AlertDialog(
+                                title: const Text("Invalid server address"),
+                                content: const Text(
+                                    "Could not connect to the specified server"),
+                                actions: [
+                                  ElevatedButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      style: ElevatedButton.styleFrom(
+                                        // Foreground color
+                                        onPrimary: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                        // Background color
+                                        primary: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ).copyWith(
+                                          elevation:
+                                              ButtonStyleButton.allOrNull(0.0)),
+                                      child: const Text("Okay"))
+                                ],
+                              );
+                            }));
+                      }
                       if (token == null) {
                         await showDialog(
                             context: context,
@@ -176,7 +208,12 @@ class LoginPage extends StatelessWidget {
                                 ],
                               );
                             }));
-                        return;
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewClassesPage(),
+                            ));
                       }
                     }
                   },

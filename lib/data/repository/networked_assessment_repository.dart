@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/assessment.dart';
 import 'package:quickcheck/data/repository/assessment_repository.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
 
 import 'networked_student_repository.dart';
 
@@ -14,19 +15,23 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
   final StreamController<List<Assessment>> _streamController =
       StreamController<List<Assessment>>.broadcast();
 
-  final String url;
+  final AuthenticationRepository authenticationRepository;
 
   /// The cache for assessments
   List<Assessment> _assessments = [];
 
   /// A networked [Assessment] repository
   /// Takes the [url] of the endpoint
-  NetworkedAssessmentRepository(this.url);
+  NetworkedAssessmentRepository(this.authenticationRepository);
 
   @override
 
   /// Add assessment to _assessments list.
   Future<Assessment?> addAssessment(Assessment assessment) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.post(
       Uri.parse('${url}assessments/'),
       headers: <String, String>{
@@ -61,6 +66,10 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
 
   /// Get assessment by ID.
   Future<Assessment> getAssessment(int id) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.get(Uri.parse('${url}assessments/$id'));
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json assessment
@@ -77,6 +86,10 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
 
   /// Get list of assessments
   Future<List<Assessment>> getAssessments(int classId) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response =
         await http.get(Uri.parse('${url}assessments/?class_id=$classId'));
     if (response.statusCode == 200 && response.body != "400") {

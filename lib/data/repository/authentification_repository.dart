@@ -1,7 +1,9 @@
 abstract class AuthenticationRepository {
-  Future<String> getUrl();
+  set url(String url) {}
 
-  Future<String> getToken();
+  Future<String?> getUrl();
+
+  Future<String?> getToken();
 
   Future<String?> login(String username, String password);
 }

@@ -5,32 +5,36 @@ import 'package:http/http.dart';
 import 'package:quickcheck/data/repository/authentification_repository.dart';
 
 class NetworkedAuthenticationRepository extends AuthenticationRepository {
-  final String url;
+  String? url;
 
   String? token;
 
-  NetworkedAuthenticationRepository({required this.url, this.token});
+  NetworkedAuthenticationRepository({this.url, this.token});
 
   @override
-  Future<String> getUrl() async {
+  Future<String?> getUrl() async {
     return url;
   }
 
   @override
-  Future<String> getToken() async {
-    return token!;
+  Future<String?> getToken() async {
+    return token;
   }
 
   @override
   Future<String?> login(String username, String password) async {
     Response response = await http.post(
       Uri.parse('${url}auth/api-token-auth/'),
-      body: {
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
         "username": username,
         "password": password,
-      },
+      }),
     );
-    if (response.statusCode != 201) {
+    print(response.body);
+    if (response.statusCode != 200 || response.body == '400') {
       return null;
     }
     token = jsonDecode(response.body);

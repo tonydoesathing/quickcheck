@@ -37,15 +37,16 @@ import '/data/repository/authentification_repository.dart';
 
 void main() {
   const String endpointURL = "http://127.0.0.1:8000/api/";
-
-  final StudentRepository studentRepository =
-      NetworkedStudentRepository(endpointURL);
-  final AssessmentRepository assessmentRepository =
-      NetworkedAssessmentRepository(endpointURL);
-  final GroupRepository groupRepository = NetworkedGroupRepository(endpointURL);
-  final ClassRepository classRepository = NetworkedClassRepository(endpointURL);
   final AuthenticationRepository authentificationRepository =
-      NetworkedAuthenticationRepository(url: endpointURL);
+      NetworkedAuthenticationRepository();
+  final StudentRepository studentRepository =
+      NetworkedStudentRepository(authentificationRepository);
+  final AssessmentRepository assessmentRepository =
+      NetworkedAssessmentRepository(authentificationRepository);
+  final GroupRepository groupRepository =
+      NetworkedGroupRepository(authentificationRepository);
+  final ClassRepository classRepository =
+      NetworkedClassRepository(authentificationRepository);
 
   runApp(App(
     studentRepository: studentRepository,

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/class.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
 import 'package:quickcheck/data/repository/networked_student_repository.dart';
 
@@ -14,17 +15,21 @@ class NetworkedClassRepository implements ClassRepository {
       StreamController<List<Class>>.broadcast();
 
   /// the url of the endpoint
-  final String url;
+  final AuthenticationRepository authenticationRepository;
 
   /// the cache of the classes
   List<Class> _classesCache = [];
 
   /// A networked [Class] repository
   /// Takes the [url] of the endpoint
-  NetworkedClassRepository(this.url);
+  NetworkedClassRepository(this.authenticationRepository);
 
   @override
   Future<Class?> addClass(Class clss) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.post(
       Uri.parse('${url}classes/'),
       headers: <String, String>{
@@ -51,6 +56,10 @@ class NetworkedClassRepository implements ClassRepository {
 
   @override
   Future<Class> getClass(int id) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.get(Uri.parse('${url}classes/$id'));
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json assessment
@@ -65,6 +74,10 @@ class NetworkedClassRepository implements ClassRepository {
 
   @override
   Future<List<Class>> getClasses() async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.get(Uri.parse('${url}classes/'));
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json assessment

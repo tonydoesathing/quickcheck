@@ -36,7 +36,6 @@ import 'data/repository/student_repository.dart';
 import '/data/repository/authentification_repository.dart';
 
 void main() {
-  const String endpointURL = "http://127.0.0.1:8000/api/";
   final AuthenticationRepository authentificationRepository =
       NetworkedAuthenticationRepository();
   final StudentRepository studentRepository =
@@ -102,7 +101,7 @@ class App extends StatelessWidget {
           useMaterial3: true,
           primarySwatch: Colors.blue,
         ),
-        home: LoginPage(),
+        home: const LoginPage(),
       ),
     );
   }

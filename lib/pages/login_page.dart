@@ -6,6 +6,7 @@ import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/pages/view_classes_page.dart';
 import '/data/repository/networked_authentification_repository.dart';
 
+/// The page to allow a user to log in
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
+  /// generate an error dialog with a [title] and [content]
   Future<void> errorDialog(
       BuildContext context, String title, String content) async {
     await showDialog(

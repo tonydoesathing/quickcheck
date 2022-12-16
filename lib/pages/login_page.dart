@@ -52,7 +52,10 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.only(top: 50),
             child: Text(
               'Quickcheck',
-              style: Theme.of(context).textTheme.displayLarge,
+              style: Theme.of(context)
+                  .textTheme
+                  .displayLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
           ),
           Padding(

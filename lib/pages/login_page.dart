@@ -44,97 +44,119 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
-      ),
-      body: Card(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-              child: TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: "Username"),
-              ),
+      body: SingleChildScrollView(
+        child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 50),
+            child: Text(
+              'Quickcheck',
+              style: Theme.of(context).textTheme.displayLarge,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-              child: TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                ),
-                obscureText: true,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-              child: TextField(
-                controller: _addressController,
-                decoration: const InputDecoration(labelText: "Server Address"),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: SizedBox(
-          height: 75,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                          onPrimary: Theme.of(context).colorScheme.onPrimary,
-                          primary: Theme.of(context).colorScheme.primary)
-                      .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                  onPressed: () async {
-                    if (_usernameController.text.isEmpty) {
-                      // prompt user to input username
-                      await errorDialog(context, "Username required",
-                          "Please enter a username");
-                    } else if (_passwordController.text.isEmpty) {
-                      // prompt user to input username
-                      await errorDialog(context, "Password Required",
-                          "Please enter a password");
-                    } else if (_addressController.text.isEmpty) {
-                      // prompt user to input username
-                      await errorDialog(context, "Server address required",
-                          "Please enter a server address");
-                    } else {
-                      // set the URL
-                      context.read<AuthenticationRepository>().url =
-                          _addressController.text;
-                      // try and log in
-                      String? token;
-                      try {
-                        token = await context
-                            .read<AuthenticationRepository>()
-                            .login(_usernameController.text,
-                                _passwordController.text);
-                      } catch (E) {
-                        await errorDialog(context, "Invalid server address",
-                            "Could not connect to the specified server");
-                      }
-                      if (token == null) {
-                        // failed to get a token
-                        await errorDialog(context, "Invalid request",
-                            "The server address, username, or password was incorrect");
-                      } else {
-                        // got a token; go to ViewClassesPage
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ViewClassesPage(),
-                            ));
-                      }
-                    }
-                  },
-                  icon: const Icon(Icons.login),
-                  label: const Text("Log in")),
-            ],
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.all(50),
+            child: Card(
+              child: Column(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
+                    child: TextField(
+                      controller: _usernameController,
+                      decoration: const InputDecoration(labelText: "Username"),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        labelText: "Password",
+                      ),
+                      obscureText: true,
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
+                    child: TextField(
+                      controller: _addressController,
+                      decoration:
+                          const InputDecoration(labelText: "Server Address"),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 75,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                                    onPrimary:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                    primary:
+                                        Theme.of(context).colorScheme.primary)
+                                .copyWith(
+                                    elevation:
+                                        ButtonStyleButton.allOrNull(0.0)),
+                            onPressed: () async {
+                              if (_usernameController.text.isEmpty) {
+                                // prompt user to input username
+                                await errorDialog(context, "Username required",
+                                    "Please enter a username");
+                              } else if (_passwordController.text.isEmpty) {
+                                // prompt user to input username
+                                await errorDialog(context, "Password Required",
+                                    "Please enter a password");
+                              } else if (_addressController.text.isEmpty) {
+                                // prompt user to input username
+                                await errorDialog(
+                                    context,
+                                    "Server address required",
+                                    "Please enter a server address");
+                              } else {
+                                // set the URL
+                                context.read<AuthenticationRepository>().url =
+                                    _addressController.text;
+                                // try and log in
+                                String? token;
+                                try {
+                                  token = await context
+                                      .read<AuthenticationRepository>()
+                                      .login(_usernameController.text,
+                                          _passwordController.text);
+                                } catch (E) {
+                                  await errorDialog(
+                                      context,
+                                      "Invalid server address",
+                                      "Could not connect to the specified server");
+                                }
+                                if (token == null) {
+                                  // failed to get a token
+                                  await errorDialog(context, "Invalid request",
+                                      "The server address, username, or password was incorrect");
+                                } else {
+                                  // got a token; go to ViewClassesPage
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ViewClassesPage(),
+                                      ));
+                                }
+                              }
+                            },
+                            icon: const Icon(Icons.login),
+                            label: const Text("Log in")),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ]),
       ),
     );
   }

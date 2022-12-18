@@ -77,6 +77,8 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       (event, emit) async {
         // add the student to the repo
         try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
           // get the student in the repo
           final Student oldStudent =
               await studentRepository.getStudent(event.student.id!);

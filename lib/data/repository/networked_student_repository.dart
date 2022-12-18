@@ -105,12 +105,16 @@ class NetworkedStudentRepository extends StudentRepository {
 
   @override
   Future<Student?> editStudent(Student student) async {
-    Response response =
-        await http.put(Uri.parse('${url}students/${student.id}'),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode(student.toJson()));
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.put(Uri.parse('$url$endpoint${student.id}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Token ${await authenticationRepository.getToken()}'
+        },
+        body: jsonEncode(student.toJson()));
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json student
       return Student.fromJson(jsonDecode(response.body));
@@ -118,7 +122,7 @@ class NetworkedStudentRepository extends StudentRepository {
       throw StudentNotFoundException(id: student.id ?? -1);
     } else {
       throw ConnectionFailedException(
-          url: '${url}students/${student.id}', statuscode: response.statusCode);
+          url: '$url$endpoint${student.id}', statuscode: response.statusCode);
     }
   }
 }

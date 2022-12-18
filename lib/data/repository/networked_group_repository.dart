@@ -56,10 +56,15 @@ class NetworkedGroupRepository extends GroupRepository {
 
   @override
   Future<Group?> editGroup(Group group) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
     Response response = await http.put(
-      Uri.parse('${url}groups/${group.id}'),
+      Uri.parse('$url$endpoint${group.id}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token ${await authenticationRepository.getToken()}'
       },
       body: jsonEncode(group.toJson()),
     );
@@ -77,7 +82,7 @@ class NetworkedGroupRepository extends GroupRepository {
       throw GroupNotFoundException(id: group.id ?? -1);
     } else {
       throw ConnectionFailedException(
-          url: '${url}groups/${group.id}', statuscode: response.statusCode);
+          url: '$url$endpoint${group.id}', statuscode: response.statusCode);
     }
   }
 

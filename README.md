@@ -11,5 +11,10 @@
 
 QuickCheck is a cross-platform application for teachers that assists in rapid formative assessment so they can focus more on teaching and less on organization.
 
+This application relies on the [QuickCheck Backend](https://github.com/tonydoesathing/quickcheck-backend) for data synchronization.
+
 ## To Build
-With Dart, Flutter, and Android Studio set up, run `flutter pub get` in the project directory, followed by `flutter build apk`.
+With Dart, Flutter, and Android Studio set up, run `flutter pub get` in the project directory, followed by `flutter build web` (or any other distribution platform).
+
+## To Demo
+Try it at [QuickCheck Web](https://tonydoesathing.github.io/quickcheck/). 

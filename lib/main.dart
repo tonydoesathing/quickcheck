@@ -15,6 +15,7 @@
 // StudentRepository
 
 import 'package:flutter/material.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
 import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/data/repository/local_group_repository.dart';
@@ -22,7 +23,9 @@ import 'package:quickcheck/data/repository/networked_assessment_repository.dart'
 import 'package:quickcheck/data/repository/networked_class_repository.dart';
 import 'package:quickcheck/data/repository/networked_group_repository.dart';
 import 'package:quickcheck/data/repository/networked_student_repository.dart';
+import 'package:quickcheck/data/repository/networked_authentification_repository.dart';
 import 'package:quickcheck/pages/home_page.dart';
+import 'package:quickcheck/pages/login_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/pages/view_classes_page.dart';
 
@@ -30,22 +33,26 @@ import 'data/repository/assessment_repository.dart';
 import 'data/repository/local_student_repository.dart';
 import 'data/repository/local_assessment_repository.dart';
 import 'data/repository/student_repository.dart';
+import '/data/repository/authentification_repository.dart';
 
 void main() {
-  const String endpointURL = "http://127.0.0.1:8000/api/";
-
+  final AuthenticationRepository authentificationRepository =
+      NetworkedAuthenticationRepository();
   final StudentRepository studentRepository =
-      NetworkedStudentRepository(endpointURL);
+      NetworkedStudentRepository(authentificationRepository);
   final AssessmentRepository assessmentRepository =
-      NetworkedAssessmentRepository(endpointURL);
-  final GroupRepository groupRepository = NetworkedGroupRepository(endpointURL);
-  final ClassRepository classRepository = NetworkedClassRepository(endpointURL);
+      NetworkedAssessmentRepository(authentificationRepository);
+  final GroupRepository groupRepository =
+      NetworkedGroupRepository(authentificationRepository);
+  final ClassRepository classRepository =
+      NetworkedClassRepository(authentificationRepository);
 
   runApp(App(
     studentRepository: studentRepository,
     assessmentRepository: assessmentRepository,
     groupRepository: groupRepository,
     classRepository: classRepository,
+    authentificationRepository: authentificationRepository,
   ));
 }
 
@@ -55,13 +62,15 @@ class App extends StatelessWidget {
   final AssessmentRepository assessmentRepository;
   final GroupRepository groupRepository;
   final ClassRepository classRepository;
+  final AuthenticationRepository authentificationRepository;
 
   const App(
       {Key? key,
       required this.studentRepository,
       required this.assessmentRepository,
       required this.groupRepository,
-      required this.classRepository})
+      required this.classRepository,
+      required this.authentificationRepository})
       : super(key: key);
 
   // This widget is the root of your application.
@@ -81,6 +90,9 @@ class App extends StatelessWidget {
         RepositoryProvider<ClassRepository>.value(
           value: classRepository,
         ),
+        RepositoryProvider<AuthenticationRepository>.value(
+          value: authentificationRepository,
+        )
       ],
       child: MaterialApp(
         title: 'Home',
@@ -89,7 +101,7 @@ class App extends StatelessWidget {
           useMaterial3: true,
           primarySwatch: Colors.blue,
         ),
-        home: const ViewClassesPage(),
+        home: const LoginPage(),
       ),
     );
   }

@@ -77,39 +77,52 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       (event, emit) async {
         // add the student to the repo
         try {
+          // get the student in the repo
+          final Student oldStudent =
+              await studentRepository.getStudent(event.student.id!);
+
           final Student? student = await studentRepository
               .editStudent(event.student.copyWith(classId: theClass.id));
 
-          if (student != null) {
-            final List<Student> newStudents = List.from(state.students);
-            // replace the student
-            int index =
-                newStudents.indexWhere((element) => element.id == student.id);
-            newStudents[index] = student;
-
-            List<Group> newGroups = state.groups;
-            // if there were groups added, update the groups and emit
-            if (student.groups != null && student.groups!.isNotEmpty) {
-              newGroups = state.groups.map<Group>(((element) {
-                if (student.groups!.contains(element.id)) {
-                  // check to see if has student; if so replace
-                  int i = element.members.indexWhere((s) => s.id == student.id);
-                  if (i != -1) {
-                    Group newGroup = element.copyWith();
-                    newGroup.members[i] = student;
-                    return newGroup;
-                  }
-                  // if not add
-                  return element.copyWith(
-                      members: List<Student>.from(element.members)
-                        ..add(student));
-                }
-                return element;
-              })).toList();
+          if (event.student.groups != null) {
+            // add student to groups
+            for (int groupId in event.student.groups!) {
+              // get the group
+              Group group = await groupRepository.getGroup(groupId);
+              // if the student isn't in the group, add it
+              int idx = group.members
+                  .indexWhere((element) => element.id == event.student.id);
+              if (idx == -1) {
+                group.members.add(event.student);
+                await groupRepository.editGroup(group);
+              }
             }
+            // remove student from old groups
+            if (oldStudent.groups != null) {
+              for (int id in oldStudent.groups!) {
+                if (event.student.groups != null) {
+                  if (!event.student.groups!.contains(id)) {
+                    // get the group
+                    Group group = await groupRepository.getGroup(id);
+                    // remove the student
+                    group.members.removeWhere(
+                        (element) => element.id == event.student.id);
+                    await groupRepository.editGroup(group);
+                  }
+                }
+              }
+            }
+          }
 
-            emit(DisplayClassGroupTable(
-                newStudents, state.assessments, newGroups));
+          if (student != null) {
+            final List<Student> newStudents =
+                await studentRepository.getStudents(theClass.id!);
+            final List<Assessment> newAssessments =
+                await assessmentRepository.getAssessments(theClass.id!);
+            final List<Group> newGroups =
+                await groupRepository.getGroups(theClass.id!);
+            emit(
+                DisplayClassGroupTable(newStudents, newAssessments, newGroups));
           } else {
             emit(DisplayClassGroupTableError(state.students, state.assessments,
                 state.groups, Exception("Student addition failed")));

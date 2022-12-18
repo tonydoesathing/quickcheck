@@ -81,7 +81,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Add Student"),
+          title: Text(widget.student == null ? "Add Student" : "Edit Student"),
         ),
         body: ListView.builder(
             itemCount: widget.groups.length + 2,

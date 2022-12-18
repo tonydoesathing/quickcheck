@@ -46,6 +46,33 @@ class NetworkedGroupRepository extends GroupRepository {
   }
 
   @override
+  Future<Group?> editGroup(Group group) async {
+    Response response = await http.put(
+      Uri.parse('${url}groups/${group.id}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(group.toJson()),
+    );
+    if (response.statusCode == 200 && response.body != "400") {
+      // the body should be json group
+      // edit local cache
+      int index = _groups.indexWhere((element) => element.id == group.id);
+      if (index == -1) {
+        throw GroupNotFoundException(id: group.id ?? -1);
+      }
+      _groups[index] = group;
+      _streamController.add(List.from(_groups));
+      return Group.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw GroupNotFoundException(id: group.id ?? -1);
+    } else {
+      throw ConnectionFailedException(
+          url: '${url}groups/${group.id}', statuscode: response.statusCode);
+    }
+  }
+
+  @override
   void dispose() {
     _streamController.close();
   }

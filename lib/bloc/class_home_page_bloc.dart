@@ -127,7 +127,7 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
                 DisplayClassGroupTable(newStudents, newAssessments, newGroups));
           } else {
             emit(DisplayClassGroupTableError(state.students, state.assessments,
-                state.groups, Exception("Student addition failed")));
+                state.groups, Exception("Student edit failed")));
           }
         } catch (e) {
           // if there was an error, emit error state
@@ -181,6 +181,36 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
               state.students, state.assessments, state.groups, e));
         }
         // if there was an error, emit error state
+      },
+    );
+
+    on<EditGroupEvent>(
+      (event, emit) async {
+        try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
+          // edit the group in the repo
+          final Group? group = await groupRepository
+              .editGroup(event.group.copyWith(classId: theClass.id));
+
+          if (group != null) {
+            final List<Student> newStudents =
+                await studentRepository.getStudents(theClass.id!);
+            final List<Assessment> newAssessments =
+                await assessmentRepository.getAssessments(theClass.id!);
+            final List<Group> newGroups =
+                await groupRepository.getGroups(theClass.id!);
+            emit(
+                DisplayClassGroupTable(newStudents, newAssessments, newGroups));
+          } else {
+            emit(DisplayClassGroupTableError(state.students, state.assessments,
+                state.groups, Exception("Group edit failed")));
+          }
+        } catch (e) {
+          // if there was an error, emit error state
+          emit(DisplayClassGroupTableError(
+              state.students, state.assessments, state.groups, e));
+        }
       },
     );
 
@@ -253,6 +283,18 @@ class AddGroupEvent extends ClassHomePageEvent {
 
   /// Add a [group] to the class
   const AddGroupEvent(this.group);
+
+  @override
+  List<Object> get props => [group];
+}
+
+/// Add a group to a class
+class EditGroupEvent extends ClassHomePageEvent {
+  /// The [Group] to edit
+  final Group group;
+
+  /// Edit a [group] in the class
+  const EditGroupEvent(this.group);
 
   @override
   List<Object> get props => [group];

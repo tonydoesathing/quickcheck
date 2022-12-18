@@ -73,6 +73,7 @@ class NetworkedGroupRepository extends GroupRepository {
       // edit local cache
       int index = _groups.indexWhere((element) => element.id == group.id);
       if (index == -1) {
+        // could not find the group id
         throw GroupNotFoundException(id: group.id ?? -1);
       }
       _groups[index] = group;

@@ -149,6 +149,22 @@ class ClassHomePage extends StatelessWidget {
                                           )),
                                 );
                               },
+                              onGroupClick: (group) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (pageContext) => AddGroupPage(
+                                            callback: (g) {
+                                              // on save of group, edit the group
+                                              context
+                                                  .read<ClassHomePageBloc>()
+                                                  .add(EditGroupEvent(g));
+                                            },
+                                            students: state.students,
+                                            group: group,
+                                          )),
+                                );
+                              },
                             ),
                           ),
                         ),

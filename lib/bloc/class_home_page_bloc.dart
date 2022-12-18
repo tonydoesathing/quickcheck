@@ -39,6 +39,8 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       (event, emit) async {
         // add the student to the repo
         try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
           final Student? student = await studentRepository
               .addStudent(event.student.copyWith(classId: theClass.id));
 
@@ -140,6 +142,8 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
     on<AddGroupEvent>(
       (event, emit) async {
         try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
           // add the group to the repo
           final Group? group = await groupRepository
               .addGroup(event.group.copyWith(classId: theClass.id));
@@ -217,6 +221,8 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
     on<AddAssessmentEvent>(
       (event, emit) async {
         try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
           // add the assessment to the repo
           final Assessment? assessment = await assessmentRepository
               .addAssessment(event.assessment.copyWith(classId: theClass.id));

@@ -117,6 +117,8 @@ class _AddStudentPageState extends State<AddStudentPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          shadowColor: Theme.of(context).colorScheme.shadow,
           title: Text(widget.student == null ? "Add Student" : "Edit Student"),
         ),
         body: ListView.builder(
@@ -146,7 +148,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
                 ));
               }
               // otherwise render the groups
-              return CheckboxListTile(
+              return Padding(
+                padding: EdgeInsets.only(
+                    bottom: ((index == widget.groups.length + 1) ? 16.0 : 0)),
+                child: CheckboxListTile(
                   value: groups[widget.groups[index - 2]],
                   title: Text(
                     widget.groups[index - 2].name,
@@ -159,10 +164,15 @@ class _AddStudentPageState extends State<AddStudentPage> {
                     setState(() {
                       groups[widget.groups[index - 2]] = value!;
                     });
-                  }));
+                  }),
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  checkColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+              );
             })),
         bottomNavigationBar: BottomAppBar(
             child: Container(
+          color: Theme.of(context).colorScheme.surface,
           height: 75,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,

@@ -82,16 +82,29 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
             );
           }
           // otherwise render assessment widget
-          return AssessmentWidget(
-            assessee: assessees[index - 1],
-            score: _classAssessment[assessees[index - 1]] ?? -1,
-            callback: (assessment) {
-              // first value is [Student] or [Group]
-              // second value is the score
-              setState(() {
-                _classAssessment[assessment[0]] = assessment[1];
-              });
-            },
+          return Padding(
+            padding: EdgeInsets.only(
+                top: (assessees[index - 1] is Group && index != 1)
+                    ? 20
+                    : 0), // add extra padding between groups
+            child: AssessmentWidget(
+              assessee: assessees[index - 1],
+              score: _classAssessment[assessees[index - 1]] ?? -1,
+              callback: (assessment) {
+                // first value is [Student] or [Group]
+                // second value is the score
+                setState(() {
+                  var element = assessment[0];
+                  int score = assessment[1];
+                  if (element is Group) {
+                    for (Student student in element.members) {
+                      _classAssessment[student] = score;
+                    }
+                  }
+                  _classAssessment[element] = score;
+                });
+              },
+            ),
           );
         },
       ),

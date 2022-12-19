@@ -222,7 +222,7 @@ class TableCell extends StatelessWidget {
     this.widget,
     Key? key,
     this.onTap,
-    this.colorHorizontalBorder,
+    this.colorHorizontalBorder = Colors.black38,
     this.colorVerticalBorder = Colors.black38,
   }) : super(key: key);
 
@@ -230,7 +230,7 @@ class TableCell extends StatelessWidget {
     this.widget,
     Key? key,
     this.onTap,
-    this.colorHorizontalBorder,
+    this.colorHorizontalBorder = Colors.black38,
     this.colorVerticalBorder = Colors.black38,
   }) : super(key: key);
 
@@ -256,9 +256,9 @@ class TableCell extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border(
-            left: colorHorizontalBorder == null
-                ? BorderSide.none
-                : BorderSide(color: colorHorizontalBorder!),
+            // left: colorHorizontalBorder == null
+            //     ? BorderSide.none
+            //     : BorderSide(color: colorHorizontalBorder!),
             right: colorHorizontalBorder == null
                 ? BorderSide.none
                 : BorderSide(color: colorHorizontalBorder!),

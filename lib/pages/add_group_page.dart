@@ -47,6 +47,40 @@ class _AddGroupPageState extends State<AddGroupPage> {
     _controller.text = widget.group?.name ?? "";
   }
 
+  /// submit the group
+  Future<void> _submit() async {
+    if (_controller.text.isEmpty) {
+      // prompt user to input name
+      await showDialog(
+          context: context,
+          builder: ((context) {
+            return AlertDialog(
+              title: const Text("Improper group formatting"),
+              content: const Text("A group requires a name!"),
+              actions: [
+                ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    style: ElevatedButton.styleFrom(
+                      // Foreground color
+                      onPrimary: Theme.of(context).colorScheme.onPrimary,
+                      // Background color
+                      primary: Theme.of(context).colorScheme.primary,
+                    ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                    child: const Text("Okay"))
+              ],
+            );
+          }));
+      return;
+    }
+    // remove the students that aren't selected
+    students.removeWhere((key, value) => value == false);
+    // call the callback
+    // and go to previous page
+    widget.callback
+        .call(Group(name: _controller.text, members: students.keys.toList()));
+    Navigator.pop(context);
+  }
+
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
     if (_controller.text.isNotEmpty || students.containsValue(true)) {
@@ -96,6 +130,7 @@ class _AddGroupPageState extends State<AddGroupPage> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 32.0),
                   child: TextField(
+                    onSubmitted: (value) async => await _submit(),
                     controller: _controller,
                     decoration:
                         const InputDecoration(labelText: "Name (required)"),
@@ -133,46 +168,7 @@ class _AddGroupPageState extends State<AddGroupPage> {
                           onPrimary: Theme.of(context).colorScheme.onPrimary,
                           primary: Theme.of(context).colorScheme.primary)
                       .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                  onPressed: () async {
-                    if (_controller.text.isEmpty) {
-                      // prompt user to input name
-                      await showDialog(
-                          context: context,
-                          builder: ((context) {
-                            return AlertDialog(
-                              title: const Text("Improper group formatting"),
-                              content: const Text("A group requires a name!"),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    style: ElevatedButton.styleFrom(
-                                      // Foreground color
-                                      onPrimary: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                      // Background color
-                                      primary:
-                                          Theme.of(context).colorScheme.primary,
-                                    ).copyWith(
-                                        elevation:
-                                            ButtonStyleButton.allOrNull(0.0)),
-                                    child: const Text("Okay"))
-                              ],
-                            );
-                          }));
-                      return;
-                    }
-                    // remove the students that aren't selected
-                    students.removeWhere((key, value) => value == false);
-                    // call the callback
-                    // and go to previous page
-                    widget.callback.call(Group(
-                        id: widget.group?.id,
-                        name: _controller.text,
-                        members: students.keys.toList()));
-                    Navigator.pop(context);
-                  },
+                  onPressed: () async => await _submit(),
                   icon: const Icon(Icons.save),
                   label: const Text("Save")),
               Padding(

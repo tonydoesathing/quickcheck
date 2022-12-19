@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _addressController = TextEditingController();
 
   /// generate an error dialog with a [title] and [content]
-  Future<void> errorDialog(
+  Future<void> _errorDialog(
       BuildContext context, String title, String content) async {
     await showDialog(
         context: context,
@@ -41,6 +41,47 @@ class _LoginPageState extends State<LoginPage> {
             ],
           );
         }));
+  }
+
+  Future<void> _submit() async {
+    if (_usernameController.text.isEmpty) {
+      // prompt user to input username
+      await _errorDialog(
+          context, "Username required", "Please enter a username");
+    } else if (_passwordController.text.isEmpty) {
+      // prompt user to input username
+      await _errorDialog(
+          context, "Password Required", "Please enter a password");
+    } else if (_addressController.text.isEmpty) {
+      // prompt user to input username
+      await _errorDialog(
+          context, "Server address required", "Please enter a server address");
+    } else {
+      // set the URL
+      context.read<AuthenticationRepository>().url = _addressController.text;
+      // try and log in
+      String? token;
+      try {
+        token = await context
+            .read<AuthenticationRepository>()
+            .login(_usernameController.text, _passwordController.text);
+      } catch (E) {
+        await _errorDialog(context, "Invalid server address",
+            "Could not connect to the specified server");
+      }
+      if (token == null) {
+        // failed to get a token
+        await _errorDialog(context, "Invalid request",
+            "The server address, username, or password was incorrect");
+      } else {
+        // got a token; go to ViewClassesPage
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ViewClassesPage(),
+            ));
+      }
+    }
   }
 
   @override
@@ -67,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                         const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
                     child: TextField(
                       controller: _usernameController,
+                      onSubmitted: (value) => _submit(),
                       decoration: const InputDecoration(labelText: "Username"),
                     ),
                   ),
@@ -75,6 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                         const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
                     child: TextFormField(
                       controller: _passwordController,
+                      onFieldSubmitted: (value) => _submit(),
                       decoration: const InputDecoration(
                         labelText: "Password",
                       ),
@@ -86,6 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                         const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
                     child: TextField(
                       controller: _addressController,
+                      onSubmitted: (value) => _submit(),
                       decoration:
                           const InputDecoration(labelText: "Server Address"),
                     ),
@@ -104,53 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                                 .copyWith(
                                     elevation:
                                         ButtonStyleButton.allOrNull(0.0)),
-                            onPressed: () async {
-                              if (_usernameController.text.isEmpty) {
-                                // prompt user to input username
-                                await errorDialog(context, "Username required",
-                                    "Please enter a username");
-                              } else if (_passwordController.text.isEmpty) {
-                                // prompt user to input username
-                                await errorDialog(context, "Password Required",
-                                    "Please enter a password");
-                              } else if (_addressController.text.isEmpty) {
-                                // prompt user to input username
-                                await errorDialog(
-                                    context,
-                                    "Server address required",
-                                    "Please enter a server address");
-                              } else {
-                                // set the URL
-                                context.read<AuthenticationRepository>().url =
-                                    _addressController.text;
-                                // try and log in
-                                String? token;
-                                try {
-                                  token = await context
-                                      .read<AuthenticationRepository>()
-                                      .login(_usernameController.text,
-                                          _passwordController.text);
-                                } catch (E) {
-                                  await errorDialog(
-                                      context,
-                                      "Invalid server address",
-                                      "Could not connect to the specified server");
-                                }
-                                if (token == null) {
-                                  // failed to get a token
-                                  await errorDialog(context, "Invalid request",
-                                      "The server address, username, or password was incorrect");
-                                } else {
-                                  // got a token; go to ViewClassesPage
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ViewClassesPage(),
-                                      ));
-                                }
-                              }
-                            },
+                            onPressed: () async => await _submit(),
                             icon: const Icon(Icons.login),
                             label: const Text("Log in")),
                       ],

@@ -61,6 +61,14 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
     return '${date.month}/${date.day}/${date.year}';
   }
 
+  /// submit the assessment
+  Future<void> _submit() async {
+    Navigator.pop(context);
+    widget.callback?.call(Assessment(
+        name: _controller.text.isEmpty ? _getDateString() : _controller.text,
+        scoreMap: _classAssessment));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,16 +90,29 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
             );
           }
           // otherwise render assessment widget
-          return AssessmentWidget(
-            assessee: assessees[index - 1],
-            score: _classAssessment[assessees[index - 1]] ?? -1,
-            callback: (assessment) {
-              // first value is [Student] or [Group]
-              // second value is the score
-              setState(() {
-                _classAssessment[assessment[0]] = assessment[1];
-              });
-            },
+          return Padding(
+            padding: EdgeInsets.only(
+                top: (assessees[index - 1] is Group && index != 1)
+                    ? 20
+                    : 0), // add extra padding between groups
+            child: AssessmentWidget(
+              assessee: assessees[index - 1],
+              score: _classAssessment[assessees[index - 1]] ?? -1,
+              callback: (assessment) {
+                // first value is [Student] or [Group]
+                // second value is the score
+                setState(() {
+                  var element = assessment[0];
+                  int score = assessment[1];
+                  if (element is Group) {
+                    for (Student student in element.members) {
+                      _classAssessment[student] = score;
+                    }
+                  }
+                  _classAssessment[element] = score;
+                });
+              },
+            ),
           );
         },
       ),
@@ -106,14 +127,7 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
                         onPrimary: Theme.of(context).colorScheme.onPrimary,
                         primary: Theme.of(context).colorScheme.primary)
                     .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                onPressed: () {
-                  Navigator.pop(context);
-                  widget.callback?.call(Assessment(
-                      name: _controller.text.isEmpty
-                          ? _getDateString()
-                          : _controller.text,
-                      scoreMap: _classAssessment));
-                },
+                onPressed: () async => await _submit(),
                 icon: const Icon(Icons.save),
                 label: const Text("Save")),
             Padding(

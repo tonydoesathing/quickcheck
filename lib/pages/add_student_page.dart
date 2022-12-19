@@ -13,9 +13,13 @@ class AddStudentPage extends StatefulWidget {
   /// Groups to potentially add students to
   final List<Group> groups;
 
+  /// Initial data to populate fields with
+  final Student? student;
+
   /// The page where new students can be added.
   /// Takes an optional [callback], which is called on save with the new student.
-  const AddStudentPage({Key? key, required this.callback, required this.groups})
+  const AddStudentPage(
+      {Key? key, required this.callback, required this.groups, this.student})
       : super(key: key);
 
   @override
@@ -32,10 +36,11 @@ class _AddStudentPageState extends State<AddStudentPage> {
   @override
   void initState() {
     super.initState();
-    // initialize the groups map with false
+    // initialize the groups map with false or the group value
     for (Group group in widget.groups) {
-      groups[group] = false;
+      groups[group] = widget.student?.groups?.contains(group.id) ?? false;
     }
+    _controller.text = widget.student?.name ?? "";
   }
 
   /// prompt user if they want to lose their work
@@ -112,7 +117,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Add Student"),
+          title: Text(widget.student == null ? "Add Student" : "Edit Student"),
         ),
         body: ListView.builder(
             itemCount: widget.groups.length + 2,

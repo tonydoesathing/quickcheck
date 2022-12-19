@@ -10,12 +10,16 @@ class AddGroupPage extends StatefulWidget {
   /// the callback to be called on save
   final Function(Group) callback;
 
+  /// a group to populate fields with
+  final Group? group;
+
   /// Students to potentially add to the group
   final List<Student> students;
 
   /// The page where new groups can be added.
   /// Takes a [callback], which is called on save with the new group.
-  const AddGroupPage({Key? key, required this.callback, required this.students})
+  const AddGroupPage(
+      {Key? key, required this.callback, required this.students, this.group})
       : super(key: key);
 
   @override
@@ -34,8 +38,13 @@ class _AddGroupPageState extends State<AddGroupPage> {
     super.initState();
     // initialize the students map with false
     for (Student student in widget.students) {
-      students[student] = false;
+      // return if student is in group already, if group exists
+      students[student] = widget.group != null
+          ? widget.group!.members.contains(student)
+          : false;
     }
+
+    _controller.text = widget.group?.name ?? "";
   }
 
   /// submit the group
@@ -110,7 +119,7 @@ class _AddGroupPageState extends State<AddGroupPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Add Group"),
+          title: Text(widget.group == null ? "Add Group" : "Edit Group"),
         ),
         body: ListView.builder(
             itemCount: widget.students.length + 2,

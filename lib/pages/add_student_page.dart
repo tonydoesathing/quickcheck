@@ -69,6 +69,42 @@ class _AddStudentPageState extends State<AddStudentPage> {
     return true;
   }
 
+  /// submit the student
+  Future<void> _submit() async {
+    if (_controller.text.isEmpty) {
+      // prompt user to input name
+      await showDialog(
+          context: context,
+          builder: ((context) {
+            return AlertDialog(
+              title: const Text("Improper student formatting"),
+              content: const Text("A student requires a name!"),
+              actions: [
+                ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    style: ElevatedButton.styleFrom(
+                      // Foreground color
+                      onPrimary: Theme.of(context).colorScheme.onPrimary,
+                      // Background color
+                      primary: Theme.of(context).colorScheme.primary,
+                    ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                    child: const Text("Okay"))
+              ],
+            );
+          }));
+      return;
+    }
+    // take out false values
+    groups.removeWhere((key, value) => value == false);
+
+    // call the callback
+    // and go to previous page
+    widget.callback.call(Student(
+        name: _controller.text,
+        groups: groups.keys.map((element) => element.id!).toList()));
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     // WillPopScope checks to see if the user can go back
@@ -87,51 +123,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 32),
                   child: TextField(
-                    onSubmitted: (value) async {
-                      if (_controller.text.isEmpty) {
-                        // prompt user to input name
-                        await showDialog(
-                            context: context,
-                            builder: ((context) {
-                              return AlertDialog(
-                                title:
-                                    const Text("Improper student formatting"),
-                                content:
-                                    const Text("A student requires a name!"),
-                                actions: [
-                                  ElevatedButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      style: ElevatedButton.styleFrom(
-                                        // Foreground color
-                                        onPrimary: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
-                                        // Background color
-                                        primary: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ).copyWith(
-                                          elevation:
-                                              ButtonStyleButton.allOrNull(0.0)),
-                                      child: const Text("Okay"))
-                                ],
-                              );
-                            }));
-                        return;
-                      }
-                      // take out false values
-                      groups.removeWhere((key, value) => value == false);
-
-                      // call the callback
-                      // and go to previous page
-                      widget.callback.call(Student(
-                          name: _controller.text,
-                          groups: groups.keys
-                              .map((element) => element.id!)
-                              .toList()));
-                      Navigator.pop(context);
-                    },
+                    onSubmitted: (value) async => await _submit(),
                     controller: _controller,
                     decoration:
                         const InputDecoration(labelText: "Name (required)"),
@@ -175,48 +167,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
                           onPrimary: Theme.of(context).colorScheme.onPrimary,
                           primary: Theme.of(context).colorScheme.primary)
                       .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                  onPressed: () async {
-                    if (_controller.text.isEmpty) {
-                      // prompt user to input name
-                      await showDialog(
-                          context: context,
-                          builder: ((context) {
-                            return AlertDialog(
-                              title: const Text("Improper student formatting"),
-                              content: const Text("A student requires a name!"),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    style: ElevatedButton.styleFrom(
-                                      // Foreground color
-                                      onPrimary: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                      // Background color
-                                      primary:
-                                          Theme.of(context).colorScheme.primary,
-                                    ).copyWith(
-                                        elevation:
-                                            ButtonStyleButton.allOrNull(0.0)),
-                                    child: const Text("Okay"))
-                              ],
-                            );
-                          }));
-                      return;
-                    }
-                    // take out false values
-                    groups.removeWhere((key, value) => value == false);
-
-                    // call the callback
-                    // and go to previous page
-                    widget.callback.call(Student(
-                        name: _controller.text,
-                        groups: groups.keys
-                            .map((element) => element.id!)
-                            .toList()));
-                    Navigator.pop(context);
-                  },
+                  onPressed: () async => await _submit(),
                   icon: const Icon(Icons.save),
                   label: const Text("Save")),
               Padding(

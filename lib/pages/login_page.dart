@@ -1,5 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
-
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/data/repository/authentification_repository.dart';
@@ -49,15 +49,11 @@ class _LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Column(children: [
           Padding(
-            padding: const EdgeInsets.only(top: 50),
-            child: Text(
-              'Quickcheck',
-              style: Theme.of(context)
-                  .textTheme
-                  .displayLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-          ),
+              padding: const EdgeInsets.only(top: 50),
+              child: SvgPicture.asset(
+                'assets/QuickCheckLogo.svg',
+                width: 300,
+              )),
           Padding(
             padding: const EdgeInsets.all(50),
             child: Card(

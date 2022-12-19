@@ -49,11 +49,14 @@ class _LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Column(children: [
           Padding(
-              padding: const EdgeInsets.only(top: 50),
-              child: SvgPicture.asset(
-                'assets/QuickCheckLogo.svg',
-                width: 300,
-              )),
+            padding: const EdgeInsets.only(
+              top: 75,
+            ),
+            child: SvgPicture.asset(
+              'assets/QuickCheckLogo.svg',
+              width: 250,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(50),
             child: Card(

@@ -15,8 +15,11 @@ abstract class GroupRepository {
   /// Returns a group from an ID
   Future<Group> getGroup(int id);
 
-  /// Tries to add group to repository and returns whether or not it was successful
+  /// Tries to add group to repository and returns the group or null if failed
   Future<Group?> addGroup(Group group);
+
+  /// Tries to edit a group in repository and returns the group or null if failed
+  Future<Group?> editGroup(Group group);
 }
 
 /// [Group] with id of [id] could not be found in datastore

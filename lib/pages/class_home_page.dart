@@ -132,6 +132,39 @@ class ClassHomePage extends StatelessWidget {
                               assessments: state.assessments,
                               groups: state.groups,
                               students: state.students,
+                              onStudentClick: (student) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (pageContext) => AddStudentPage(
+                                            groups: state.groups,
+                                            student: student,
+                                            callback: (student) {
+                                              // on save of student, edit the student
+                                              context
+                                                  .read<ClassHomePageBloc>()
+                                                  .add(EditStudentEvent(
+                                                      student));
+                                            },
+                                          )),
+                                );
+                              },
+                              onGroupClick: (group) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (pageContext) => AddGroupPage(
+                                            callback: (g) {
+                                              // on save of group, edit the group
+                                              context
+                                                  .read<ClassHomePageBloc>()
+                                                  .add(EditGroupEvent(g));
+                                            },
+                                            students: state.students,
+                                            group: group,
+                                          )),
+                                );
+                              },
                             ),
                           ),
                         ),

@@ -39,6 +39,8 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       (event, emit) async {
         // add the student to the repo
         try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
           final Student? student = await studentRepository
               .addStudent(event.student.copyWith(classId: theClass.id));
 
@@ -73,9 +75,75 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       },
     );
 
+    on<EditStudentEvent>(
+      (event, emit) async {
+        // add the student to the repo
+        try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
+          // get the student in the repo
+          final Student oldStudent =
+              await studentRepository.getStudent(event.student.id!);
+
+          final Student? student = await studentRepository
+              .editStudent(event.student.copyWith(classId: theClass.id));
+
+          if (event.student.groups != null) {
+            // add student to groups
+            for (int groupId in event.student.groups!) {
+              // get the group
+              Group group = await groupRepository.getGroup(groupId);
+              // if the student isn't in the group, add it
+              int idx = group.members
+                  .indexWhere((element) => element.id == event.student.id);
+              if (idx == -1) {
+                group.members.add(event.student);
+                await groupRepository.editGroup(group);
+              }
+            }
+            // remove student from old groups
+            if (oldStudent.groups != null) {
+              for (int id in oldStudent.groups!) {
+                if (event.student.groups != null) {
+                  if (!event.student.groups!.contains(id)) {
+                    // get the group
+                    Group group = await groupRepository.getGroup(id);
+                    // remove the student
+                    group.members.removeWhere(
+                        (element) => element.id == event.student.id);
+                    await groupRepository.editGroup(group);
+                  }
+                }
+              }
+            }
+          }
+
+          if (student != null) {
+            final List<Student> newStudents =
+                await studentRepository.getStudents(theClass.id!);
+            final List<Assessment> newAssessments =
+                await assessmentRepository.getAssessments(theClass.id!);
+            final List<Group> newGroups =
+                await groupRepository.getGroups(theClass.id!);
+            emit(
+                DisplayClassGroupTable(newStudents, newAssessments, newGroups));
+          } else {
+            emit(DisplayClassGroupTableError(state.students, state.assessments,
+                state.groups, Exception("Student edit failed")));
+          }
+        } catch (e) {
+          // if there was an error, emit error state
+          emit(DisplayClassGroupTableError(
+              state.students, state.assessments, state.groups, e));
+        }
+      },
+    );
+
     on<AddGroupEvent>(
       (event, emit) async {
         try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
           // add the group to the repo
           final Group? group = await groupRepository
               .addGroup(event.group.copyWith(classId: theClass.id));
@@ -120,9 +188,41 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
       },
     );
 
+    on<EditGroupEvent>(
+      (event, emit) async {
+        try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
+          // edit the group in the repo
+          final Group? group = await groupRepository
+              .editGroup(event.group.copyWith(classId: theClass.id));
+
+          if (group != null) {
+            final List<Student> newStudents =
+                await studentRepository.getStudents(theClass.id!);
+            final List<Assessment> newAssessments =
+                await assessmentRepository.getAssessments(theClass.id!);
+            final List<Group> newGroups =
+                await groupRepository.getGroups(theClass.id!);
+            emit(
+                DisplayClassGroupTable(newStudents, newAssessments, newGroups));
+          } else {
+            emit(DisplayClassGroupTableError(state.students, state.assessments,
+                state.groups, Exception("Group edit failed")));
+          }
+        } catch (e) {
+          // if there was an error, emit error state
+          emit(DisplayClassGroupTableError(
+              state.students, state.assessments, state.groups, e));
+        }
+      },
+    );
+
     on<AddAssessmentEvent>(
       (event, emit) async {
         try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
           // add the assessment to the repo
           final Assessment? assessment = await assessmentRepository
               .addAssessment(event.assessment.copyWith(classId: theClass.id));
@@ -170,6 +270,18 @@ class AddStudentEvent extends ClassHomePageEvent {
   List<Object> get props => [student];
 }
 
+/// Edit a student in a class
+class EditStudentEvent extends ClassHomePageEvent {
+  /// The [Student] to add
+  final Student student;
+
+  /// Edit a [student] in the class
+  const EditStudentEvent(this.student);
+
+  @override
+  List<Object> get props => [student];
+}
+
 /// Add a group to a class
 class AddGroupEvent extends ClassHomePageEvent {
   /// The [Group] to add
@@ -177,6 +289,18 @@ class AddGroupEvent extends ClassHomePageEvent {
 
   /// Add a [group] to the class
   const AddGroupEvent(this.group);
+
+  @override
+  List<Object> get props => [group];
+}
+
+/// Add a group to a class
+class EditGroupEvent extends ClassHomePageEvent {
+  /// The [Group] to edit
+  final Group group;
+
+  /// Edit a [group] in the class
+  const EditGroupEvent(this.group);
 
   @override
   List<Object> get props => [group];

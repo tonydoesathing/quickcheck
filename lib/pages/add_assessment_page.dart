@@ -61,6 +61,14 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
     return '${date.month}/${date.day}/${date.year}';
   }
 
+  /// submit the assessment
+  Future<void> _submit() async {
+    Navigator.pop(context);
+    widget.callback?.call(Assessment(
+        name: _controller.text.isEmpty ? _getDateString() : _controller.text,
+        scoreMap: _classAssessment));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,14 +127,7 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
                         onPrimary: Theme.of(context).colorScheme.onPrimary,
                         primary: Theme.of(context).colorScheme.primary)
                     .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                onPressed: () {
-                  Navigator.pop(context);
-                  widget.callback?.call(Assessment(
-                      name: _controller.text.isEmpty
-                          ? _getDateString()
-                          : _controller.text,
-                      scoreMap: _classAssessment));
-                },
+                onPressed: () async => await _submit(),
                 icon: const Icon(Icons.save),
                 label: const Text("Save")),
             Padding(

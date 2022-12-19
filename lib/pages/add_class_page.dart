@@ -21,6 +21,37 @@ class _AddClassPageState extends State<AddClassPage> {
   /// The controller for the textfield
   final TextEditingController _controller = TextEditingController();
 
+  /// submit the class
+  Future<void> _submit() async {
+    if (_controller.text.isEmpty) {
+      // prompt user to input name
+      await showDialog(
+          context: context,
+          builder: ((context) {
+            return AlertDialog(
+              title: const Text("Improper class formatting"),
+              content: const Text("A class requires a name!"),
+              actions: [
+                ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    style: ElevatedButton.styleFrom(
+                      // Foreground color
+                      onPrimary: Theme.of(context).colorScheme.onPrimary,
+                      // Background color
+                      primary: Theme.of(context).colorScheme.primary,
+                    ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                    child: const Text("Okay"))
+              ],
+            );
+          }));
+      return;
+    }
+    // call the callback
+    // and go to previous page
+    widget.callback.call(Class(name: _controller.text));
+    Navigator.pop(context);
+  }
+
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
     if (_controller.text.isNotEmpty) {
@@ -66,6 +97,7 @@ class _AddClassPageState extends State<AddClassPage> {
             Padding(
               padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
               child: TextField(
+                onSubmitted: (value) async => await _submit(),
                 controller: _controller,
                 decoration: const InputDecoration(labelText: "Name (required)"),
               ),
@@ -83,41 +115,7 @@ class _AddClassPageState extends State<AddClassPage> {
                           onPrimary: Theme.of(context).colorScheme.onPrimary,
                           primary: Theme.of(context).colorScheme.primary)
                       .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                  onPressed: () async {
-                    if (_controller.text.isEmpty) {
-                      // prompt user to input name
-                      await showDialog(
-                          context: context,
-                          builder: ((context) {
-                            return AlertDialog(
-                              title: const Text("Improper class formatting"),
-                              content: const Text("A class requires a name!"),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    style: ElevatedButton.styleFrom(
-                                      // Foreground color
-                                      onPrimary: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                      // Background color
-                                      primary:
-                                          Theme.of(context).colorScheme.primary,
-                                    ).copyWith(
-                                        elevation:
-                                            ButtonStyleButton.allOrNull(0.0)),
-                                    child: const Text("Okay"))
-                              ],
-                            );
-                          }));
-                      return;
-                    }
-                    // call the callback
-                    // and go to previous page
-                    widget.callback.call(Class(name: _controller.text));
-                    Navigator.pop(context);
-                  },
+                  onPressed: () async => await _submit(),
                   icon: const Icon(Icons.save),
                   label: const Text("Save")),
               Padding(

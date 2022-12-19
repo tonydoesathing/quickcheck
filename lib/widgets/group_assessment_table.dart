@@ -15,12 +15,20 @@ class GroupAssessmentTable extends StatelessWidget {
   List<Student> ungroupedStudents = [];
   List groupsAndStudents = [];
 
+  /// Callback for when a student is clicked
+  final Function(Student)? onStudentClick;
+
+  /// Callback for when a group is clicked
+  final Function(Group)? onGroupClick;
+
   /// Create a table from a list of [students] and a list of [assessments]
   GroupAssessmentTable(
       {Key? key,
       required this.assessments,
       required this.groups,
-      required this.students})
+      required this.students,
+      this.onStudentClick,
+      this.onGroupClick})
       : super(key: key) {
     // generate list to render
     for (Group group in groups) {
@@ -75,13 +83,16 @@ class GroupAssessmentTable extends StatelessWidget {
             if (element is Group) {
               return TableCell.stickyRow(
                   widget: Expanded(
-                child: Text(
-                  element.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(fontWeight: FontWeight.bold),
-                  overflow: TextOverflow.fade,
+                child: TextButton(
+                  onPressed: () => onGroupClick?.call(element),
+                  child: Text(
+                    element.name,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.fade,
+                  ),
                 ),
               ));
             } else if (element is Student) {
@@ -92,7 +103,11 @@ class GroupAssessmentTable extends StatelessWidget {
                     width: 20,
                   ),
                   Expanded(
-                      child: Text(element.name, overflow: TextOverflow.fade))
+                      child: TextButton(
+                          onPressed: () => onStudentClick?.call(element),
+                          child: Text(element.name,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              overflow: TextOverflow.fade)))
                 ]),
               ));
             }
@@ -126,13 +141,21 @@ class GroupAssessmentTable extends StatelessWidget {
                 width: 20,
               ),
               Expanded(
-                child: Text(
-                    ungroupedStudents[rowIndex -
-                            groupsAndStudents.length -
-                            1 -
-                            (groupsAndStudents.isNotEmpty ? 1 : 0)]
-                        .name,
-                    overflow: TextOverflow.fade),
+                child: TextButton(
+                  onPressed: () => onStudentClick?.call(ungroupedStudents[
+                      rowIndex -
+                          groupsAndStudents.length -
+                          1 -
+                          (groupsAndStudents.isNotEmpty ? 1 : 0)]),
+                  child: Text(
+                      ungroupedStudents[rowIndex -
+                              groupsAndStudents.length -
+                              1 -
+                              (groupsAndStudents.isNotEmpty ? 1 : 0)]
+                          .name,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      overflow: TextOverflow.fade),
+                ),
               )
             ]),
           ));

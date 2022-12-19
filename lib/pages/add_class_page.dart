@@ -66,6 +66,40 @@ class _AddClassPageState extends State<AddClassPage> {
             Padding(
               padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
               child: TextField(
+                onSubmitted: (value) async {
+                  if (_controller.text.isEmpty) {
+                    // prompt user to input name
+                    await showDialog(
+                        context: context,
+                        builder: ((context) {
+                          return AlertDialog(
+                            title: const Text("Improper class formatting"),
+                            content: const Text("A class requires a name!"),
+                            actions: [
+                              ElevatedButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  style: ElevatedButton.styleFrom(
+                                    // Foreground color
+                                    onPrimary:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                    // Background color
+                                    primary:
+                                        Theme.of(context).colorScheme.primary,
+                                  ).copyWith(
+                                      elevation:
+                                          ButtonStyleButton.allOrNull(0.0)),
+                                  child: const Text("Okay"))
+                            ],
+                          );
+                        }));
+                    return;
+                  }
+                  // call the callback
+                  // and go to previous page
+                  widget.callback.call(Class(name: _controller.text));
+                  Navigator.pop(context);
+                },
                 controller: _controller,
                 decoration: const InputDecoration(labelText: "Name (required)"),
               ),

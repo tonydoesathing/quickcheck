@@ -76,6 +76,14 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
             return Padding(
               padding: const EdgeInsets.only(bottom: 32.0),
               child: TextField(
+                onSubmitted: (value) {
+                  Navigator.pop(context);
+                  widget.callback?.call(Assessment(
+                      name: _controller.text.isEmpty
+                          ? _getDateString()
+                          : _controller.text,
+                      scoreMap: _classAssessment));
+                },
                 controller: _controller,
                 decoration: const InputDecoration(labelText: "Name (optional)"),
               ),

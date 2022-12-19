@@ -58,7 +58,14 @@ class AssessmentWidget extends StatelessWidget {
           children: [
             for (int i = 4; i >= 0; i--)
               InkWell(
-                onTap: () => callback?.call([assessee, score == i ? -1 : i]),
+                onTap: () => {
+                  callback?.call([assessee, score == i ? -1 : i]),
+                  if (assessee is Group)
+                    {
+                      for (Student student in assessee.members)
+                        callback?.call([student, score == i ? -1 : i])
+                    }
+                },
                 customBorder: const CircleBorder(),
                 child: Opacity(
                   opacity: score == i ? 1.0 : 0.5,

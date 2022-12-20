@@ -74,6 +74,8 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add Assessment"),
+        backgroundColor: Theme.of(context).colorScheme.background,
+        shadowColor: Theme.of(context).colorScheme.shadow,
       ),
       body: ListView.builder(
         itemCount: assessees.length + 1,

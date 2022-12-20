@@ -43,9 +43,29 @@ class _AddStudentPageState extends State<AddStudentPage> {
     _controller.text = widget.student?.name ?? "";
   }
 
+  /// decide if we should prompt user about losing work
+  bool _shouldPrompt() {
+    Map<Group, bool> tempGroup = Map.from(groups);
+    tempGroup.removeWhere((key, value) => value == false);
+
+    // we're not editing; check textbox
+    if (widget.student == null) {
+      return _controller.text.isNotEmpty || tempGroup.isNotEmpty;
+    }
+
+    // we're editing; check if created student is same as passed-in student
+    Student possibleStudent = Student(
+        id: widget.student?.id,
+        name: _controller.text,
+        groups: tempGroup.keys.map((element) => element.id!).toList(),
+        classId: widget.student?.classId ?? 1);
+
+    return possibleStudent != widget.student;
+  }
+
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
-    if (_controller.text.isNotEmpty) {
+    if (_shouldPrompt()) {
       return await showDialog(
               context: context,
               builder: ((context) {
@@ -105,8 +125,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
     // call the callback
     // and go to previous page
     widget.callback.call(Student(
+        id: widget.student?.id,
         name: _controller.text,
-        groups: groups.keys.map((element) => element.id!).toList()));
+        groups: groups.keys.map((element) => element.id!).toList(),
+        classId: widget.student?.classId ?? 1));
     Navigator.pop(context);
   }
 
@@ -117,6 +139,8 @@ class _AddStudentPageState extends State<AddStudentPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          shadowColor: Theme.of(context).colorScheme.shadow,
           title: Text(widget.student == null ? "Add Student" : "Edit Student"),
         ),
         body: ListView.builder(
@@ -146,7 +170,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
                 ));
               }
               // otherwise render the groups
-              return CheckboxListTile(
+              return Padding(
+                padding: EdgeInsets.only(
+                    bottom: ((index == widget.groups.length + 1) ? 16.0 : 0)),
+                child: CheckboxListTile(
                   value: groups[widget.groups[index - 2]],
                   title: Text(
                     widget.groups[index - 2].name,
@@ -159,7 +186,11 @@ class _AddStudentPageState extends State<AddStudentPage> {
                     setState(() {
                       groups[widget.groups[index - 2]] = value!;
                     });
-                  }));
+                  }),
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  checkColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+              );
             })),
         bottomNavigationBar: Padding(
           padding: MediaQuery.of(context).viewInsets,

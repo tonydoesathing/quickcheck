@@ -76,14 +76,37 @@ class _AddGroupPageState extends State<AddGroupPage> {
     students.removeWhere((key, value) => value == false);
     // call the callback
     // and go to previous page
-    widget.callback
-        .call(Group(name: _controller.text, members: students.keys.toList()));
+    widget.callback.call(Group(
+        id: widget.group?.id,
+        name: _controller.text,
+        members: students.keys.toList(),
+        classId: widget.group?.classId ?? 1));
     Navigator.pop(context);
+  }
+
+  /// decide if we should prompt user about losing work
+  bool _shouldPrompt() {
+    Map<Student, bool> tempStudents = Map.from(students);
+    tempStudents.removeWhere((key, value) => value == false);
+
+    // we're not editing; check textbox
+    if (widget.group == null) {
+      return _controller.text.isNotEmpty || tempStudents.isNotEmpty;
+    }
+
+    // we're editing; check if created student is same as passed-in student
+    Group possibleGroup = Group(
+        id: widget.group?.id,
+        name: _controller.text,
+        members: tempStudents.keys.toList(),
+        classId: widget.group?.classId ?? 1);
+
+    return possibleGroup != widget.group;
   }
 
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
-    if (_controller.text.isNotEmpty || students.containsValue(true)) {
+    if (_shouldPrompt()) {
       return await showDialog(
               context: context,
               builder: ((context) {
@@ -119,6 +142,8 @@ class _AddGroupPageState extends State<AddGroupPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          shadowColor: Theme.of(context).colorScheme.shadow,
           title: Text(widget.group == null ? "Add Group" : "Edit Group"),
         ),
         body: ListView.builder(
@@ -148,14 +173,21 @@ class _AddGroupPageState extends State<AddGroupPage> {
                 ));
               }
               // otherwise render the students
-              return CheckboxListTile(
+              return Padding(
+                padding: EdgeInsets.only(
+                    bottom: ((index == widget.students.length + 1) ? 16.0 : 0)),
+                child: CheckboxListTile(
                   value: students[widget.students[index - 2]],
                   title: Text(widget.students[index - 2].name),
                   onChanged: ((value) {
                     setState(() {
                       students[widget.students[index - 2]] = value!;
                     });
-                  }));
+                  }),
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  checkColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+              );
             })),
         bottomNavigationBar: Padding(
           padding: MediaQuery.of(context).viewInsets,

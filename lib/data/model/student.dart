@@ -26,11 +26,13 @@ class Student extends Equatable {
   Student copyWith({
     int? id,
     String? name,
+    List<int>? groups,
     int? classId,
   }) {
     return Student(
         id: id ?? this.id,
         name: name ?? this.name,
+        groups: groups ?? this.groups,
         classId: classId ?? this.classId);
   }
 

@@ -105,8 +105,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
     // call the callback
     // and go to previous page
     widget.callback.call(Student(
+        id: widget.student?.id,
         name: _controller.text,
-        groups: groups.keys.map((element) => element.id!).toList()));
+        groups: groups.keys.map((element) => element.id!).toList(),
+        classId: widget.student?.classId ?? 1));
     Navigator.pop(context);
   }
 

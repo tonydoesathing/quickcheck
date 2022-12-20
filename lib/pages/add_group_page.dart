@@ -76,8 +76,11 @@ class _AddGroupPageState extends State<AddGroupPage> {
     students.removeWhere((key, value) => value == false);
     // call the callback
     // and go to previous page
-    widget.callback
-        .call(Group(name: _controller.text, members: students.keys.toList()));
+    widget.callback.call(Group(
+        id: widget.group?.id,
+        name: _controller.text,
+        members: students.keys.toList(),
+        classId: widget.group?.classId ?? 1));
     Navigator.pop(context);
   }
 

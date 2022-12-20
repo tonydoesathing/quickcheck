@@ -192,37 +192,39 @@ class _AddStudentPageState extends State<AddStudentPage> {
                 ),
               );
             })),
-        bottomNavigationBar: BottomAppBar(
-            child: Container(
-          color: Theme.of(context).colorScheme.surface,
-          height: 75,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                          onPrimary: Theme.of(context).colorScheme.onPrimary,
-                          primary: Theme.of(context).colorScheme.primary)
-                      .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                  onPressed: () async => await _submit(),
-                  icon: const Icon(Icons.save),
-                  label: const Text("Save")),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 16.0),
-                child: TextButton(
-                    onPressed: () async {
-                      bool goBack = await _onBack(context);
-                      if (goBack) {
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: const Text(
-                      "Cancel",
-                    )),
-              )
-            ],
-          ),
-        )),
+        bottomNavigationBar: Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: BottomAppBar(
+              child: Container(
+            height: 75,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                            onPrimary: Theme.of(context).colorScheme.onPrimary,
+                            primary: Theme.of(context).colorScheme.primary)
+                        .copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                    onPressed: () async => await _submit(),
+                    icon: const Icon(Icons.save),
+                    label: const Text("Save")),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 16.0),
+                  child: TextButton(
+                      onPressed: () async {
+                        bool goBack = await _onBack(context);
+                        if (goBack) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text(
+                        "Cancel",
+                      )),
+                )
+              ],
+            ),
+          )),
+        ),
       ),
     );
   }

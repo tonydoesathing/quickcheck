@@ -84,9 +84,29 @@ class _AddGroupPageState extends State<AddGroupPage> {
     Navigator.pop(context);
   }
 
+  /// decide if we should prompt user about losing work
+  bool _shouldPrompt() {
+    Map<Student, bool> tempStudents = Map.from(students);
+    tempStudents.removeWhere((key, value) => value == false);
+
+    // we're not editing; check textbox
+    if (widget.group == null) {
+      return _controller.text.isNotEmpty || tempStudents.isNotEmpty;
+    }
+
+    // we're editing; check if created student is same as passed-in student
+    Group possibleGroup = Group(
+        id: widget.group?.id,
+        name: _controller.text,
+        members: tempStudents.keys.toList(),
+        classId: widget.group?.classId ?? 1);
+
+    return possibleGroup != widget.group;
+  }
+
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
-    if (_controller.text.isNotEmpty || students.containsValue(true)) {
+    if (_shouldPrompt()) {
       return await showDialog(
               context: context,
               builder: ((context) {

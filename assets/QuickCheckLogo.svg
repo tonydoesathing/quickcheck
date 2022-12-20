@@ -2,16 +2,14 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="63.281132mm"
-   height="9.7124395mm"
+   width="63.281132em"
+   height="9.7124395em"
    viewBox="0 0 63.281132 9.7124395"
    shape-rendering="geometricPrecision"
    version="1.1"
    id="svg3004"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs3001" />
   <g
      id="layer1"
      transform="translate(-53.573118,-103.88928)">
@@ -43,7 +41,7 @@
     <path
        id="path2015"
        shape-rendering="geometricPrecision"
-       style="font-size:11.2889px;-inkscape-font-specification:Roboto;fill:#0088ff;fill-opacity:1;fill-rule:evenodd;stroke-width:1.34393;stroke-linecap:round;stroke-linejoin:round"
+       style="font-size:11.2889px;-inkscape-font-specification:Roboto;fill:#3B50AF;fill-opacity:1;fill-rule:evenodd;stroke-width:1.34393;stroke-linecap:round;stroke-linejoin:round"
        d="m 86.344453,103.88928 h -1.14098 l -4.35717,7.45659 -1.94355,-1.86397 -0.557929,0.9064 1.807979,1.69965 0.89897,0.85891 z" />
     <path
     shape-rendering="geometricPrecision"

@@ -1,8 +1,17 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:flutter_test/flutter_test.dart';
+import 'package:quickcheck/data/model/class.dart';
 import 'package:quickcheck/data/model/group.dart';
 import 'package:quickcheck/data/model/student.dart';
-import 'package:test/test.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
+import 'package:quickcheck/data/repository/class_repository.dart';
+import 'package:quickcheck/data/repository/group_repository.dart';
+import 'package:quickcheck/data/repository/networked_authentification_repository.dart';
+import 'package:quickcheck/data/repository/networked_class_repository.dart';
+import 'package:quickcheck/data/repository/networked_group_repository.dart';
+import 'package:quickcheck/data/repository/networked_student_repository.dart';
 
 void main() {
   test('Student creates a Student from JSON', () {
@@ -18,6 +27,38 @@ void main() {
     const Student expectedStudent =
         Student(name: "student", id: 1, groups: [2, 3], classId: 1);
     expect(jsonStudent, equals(expectedStudent));
+  });
+
+  test('Networked repo adds student', () async {
+    // set up auth
+    AuthenticationRepository authRepo = NetworkedAuthenticationRepository();
+    authRepo.url = "http://127.0.0.1:8000/";
+    await authRepo.login("admin", "admin");
+    // add a class
+    ClassRepository classRepository = NetworkedClassRepository(authRepo);
+    Class? cls = await classRepository.addClass(Class(name: "new class"));
+    expect(cls, isNotNull);
+    expect(cls!.id!, isNotNull);
+
+    // add a group
+    GroupRepository groupRepository = NetworkedGroupRepository(authRepo);
+    Group? g = await groupRepository
+        .addGroup(Group(name: "new group", classId: cls.id!));
+    expect(g, isNotNull);
+    expect(g!.id!, isNotNull);
+
+    NetworkedStudentRepository studentRepository =
+        NetworkedStudentRepository(authRepo);
+
+    Student studentToAdd =
+        Student(name: "student", groups: [g.id!], classId: cls.id!);
+    Student expectedStudent =
+        Student(name: "student", id: 1, groups: [g.id!], classId: cls.id!);
+
+    Student? resultingStudent =
+        await studentRepository.addStudent(studentToAdd);
+    expect(resultingStudent, isNotNull);
+    expect(resultingStudent!.groups!, equals(expectedStudent.groups));
   });
 
   test('Group creates Group from JSON', () {

@@ -76,8 +76,11 @@ class _AddGroupPageState extends State<AddGroupPage> {
     students.removeWhere((key, value) => value == false);
     // call the callback
     // and go to previous page
-    widget.callback
-        .call(Group(name: _controller.text, members: students.keys.toList()));
+    widget.callback.call(Group(
+        id: widget.group?.id,
+        name: _controller.text,
+        members: students.keys.toList(),
+        classId: widget.group?.classId ?? 1));
     Navigator.pop(context);
   }
 
@@ -119,6 +122,8 @@ class _AddGroupPageState extends State<AddGroupPage> {
       onWillPop: () => _onBack(context),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          shadowColor: Theme.of(context).colorScheme.shadow,
           title: Text(widget.group == null ? "Add Group" : "Edit Group"),
         ),
         body: ListView.builder(
@@ -148,17 +153,25 @@ class _AddGroupPageState extends State<AddGroupPage> {
                 ));
               }
               // otherwise render the students
-              return CheckboxListTile(
+              return Padding(
+                padding: EdgeInsets.only(
+                    bottom: ((index == widget.students.length + 1) ? 16.0 : 0)),
+                child: CheckboxListTile(
                   value: students[widget.students[index - 2]],
                   title: Text(widget.students[index - 2].name),
                   onChanged: ((value) {
                     setState(() {
                       students[widget.students[index - 2]] = value!;
                     });
-                  }));
+                  }),
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  checkColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+              );
             })),
         bottomNavigationBar: BottomAppBar(
             child: Container(
+          color: Theme.of(context).colorScheme.surface,
           height: 75,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,

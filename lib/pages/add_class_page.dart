@@ -91,6 +91,8 @@ class _AddClassPageState extends State<AddClassPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Add Class"),
+          backgroundColor: Theme.of(context).colorScheme.background,
+          shadowColor: Theme.of(context).colorScheme.shadow,
         ),
         body: Column(
           children: [
@@ -106,6 +108,7 @@ class _AddClassPageState extends State<AddClassPage> {
         ),
         bottomNavigationBar: BottomAppBar(
             child: Container(
+          color: Theme.of(context).colorScheme.surface,
           height: 75,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,

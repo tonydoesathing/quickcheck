@@ -219,7 +219,6 @@ class ClassHomePage extends StatelessWidget {
                     children: [
                       // Table
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Expanded(
                             child: GroupAssessmentTable(
@@ -262,7 +261,101 @@ class ClassHomePage extends StatelessWidget {
                             ),
                           )
                         ],
-                      )
+                      ),
+                      // ask to add a student or group
+                      if (state.students.isEmpty)
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 12.0),
+                            child: SizedBox(
+                              width: 200,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 12.0),
+                                      child: Text(
+                                        // ask to add a student or group if there aren't any
+                                        (state.students.isEmpty &&
+                                                state.groups.isEmpty)
+                                            ? "Add a student or group!"
+                                            : "Add a student!",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium,
+                                        overflow: TextOverflow.clip,
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 8.0, top: 2),
+                                    child: Icon(
+                                      size: 33,
+                                      Icons.arrow_upward,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium!
+                                          .color,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (state.assessments.isEmpty &&
+                          state.students.isNotEmpty)
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 12.0),
+                            child: SizedBox(
+                              width: 200,
+                              child: Column(
+                                // Ask to add an assessment
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
+                                        child: Text(
+                                          "Add an Assessment!",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 75.0),
+                                        child: Icon(
+                                          Icons.arrow_downward,
+                                          size: 33,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium!
+                                              .color,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
                     ],
                   )
                 // render that we're loading if we're loading

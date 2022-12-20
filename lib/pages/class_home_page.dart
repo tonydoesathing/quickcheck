@@ -273,12 +273,11 @@ class ClassHomePage extends StatelessWidget {
                                             AddStudentPage(
                                               groups: state.groups,
                                               student: student,
-                                              callback: (student) {
+                                              callback: (s) {
                                                 // on save of student, edit the student
                                                 context
                                                     .read<ClassHomePageBloc>()
-                                                    .add(EditStudentEvent(
-                                                        student));
+                                                    .add(EditStudentEvent(s));
                                               },
                                             )),
                                   );

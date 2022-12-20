@@ -43,7 +43,6 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
               state.students, state.assessments, state.groups));
           final Student? student = await studentRepository
               .addStudent(event.student.copyWith(classId: theClass.id));
-
           if (student != null) {
             final List<Student> newStudents = List.from(state.students);
             newStudents.add(student);
@@ -81,42 +80,8 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
         try {
           emit(LoadingClassGroupTable(
               state.students, state.assessments, state.groups));
-          // get the student in the repo
-          final Student oldStudent =
-              await studentRepository.getStudent(event.student.id!);
-
           final Student? student = await studentRepository
               .editStudent(event.student.copyWith(classId: theClass.id));
-
-          if (event.student.groups != null) {
-            // add student to groups
-            for (int groupId in event.student.groups!) {
-              // get the group
-              Group group = await groupRepository.getGroup(groupId);
-              // if the student isn't in the group, add it
-              int idx = group.members
-                  .indexWhere((element) => element.id == event.student.id);
-              if (idx == -1) {
-                group.members.add(event.student);
-                await groupRepository.editGroup(group);
-              }
-            }
-            // remove student from old groups
-            if (oldStudent.groups != null) {
-              for (int id in oldStudent.groups!) {
-                if (event.student.groups != null) {
-                  if (!event.student.groups!.contains(id)) {
-                    // get the group
-                    Group group = await groupRepository.getGroup(id);
-                    // remove the student
-                    group.members.removeWhere(
-                        (element) => element.id == event.student.id);
-                    await groupRepository.editGroup(group);
-                  }
-                }
-              }
-            }
-          }
 
           if (student != null) {
             final List<Student> newStudents =

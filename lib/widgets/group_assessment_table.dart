@@ -388,8 +388,11 @@ class TableCell extends StatelessWidget {
             // left: colorHorizontalBorder == null
             //     ? BorderSide.none
             //     : BorderSide(color: colorHorizontalBorder!),
-            right: BorderSide(
-                color: colorHorizontalBorder ?? Theme.of(context).dividerColor),
+            right: colorHorizontalBorder == Colors.transparent
+                ? BorderSide.none
+                : BorderSide(
+                    color: colorHorizontalBorder ??
+                        Theme.of(context).dividerColor),
           ),
         ),
         child: Column(

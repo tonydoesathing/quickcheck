@@ -15,6 +15,7 @@
 // StudentRepository
 
 import 'package:flutter/material.dart';
+import 'package:quickcheck/consts/color_themes.dart';
 import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
 import 'package:quickcheck/data/repository/group_repository.dart';
@@ -95,12 +96,10 @@ class App extends StatelessWidget {
         )
       ],
       child: MaterialApp(
-        title: 'Home',
+        title: 'QuickCheck',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          primarySwatch: Colors.blue,
-        ),
+        theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+        //darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
         home: const LoginPage(),
       ),
     );

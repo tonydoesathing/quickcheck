@@ -56,4 +56,15 @@ class LocalStudentRepository extends StudentRepository {
   Stream<List<Student>> get students {
     return _streamController.stream;
   }
+
+  @override
+  Future<Student?> editStudent(Student student) async {
+    int index = _students.indexWhere((element) => element.id == student.id);
+    if (index == -1) {
+      throw StudentNotFoundException(id: student.id!);
+    }
+    _students[index] = student;
+    _streamController.add(List<Student>.of(_students));
+    return student;
+  }
 }

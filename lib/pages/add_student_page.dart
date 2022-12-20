@@ -43,9 +43,29 @@ class _AddStudentPageState extends State<AddStudentPage> {
     _controller.text = widget.student?.name ?? "";
   }
 
+  /// decide if we should prompt user about losing work
+  bool _shouldPrompt() {
+    Map<Group, bool> tempGroup = Map.from(groups);
+    tempGroup.removeWhere((key, value) => value == false);
+
+    // we're not editing; check textbox
+    if (widget.student == null) {
+      return _controller.text.isNotEmpty || tempGroup.isNotEmpty;
+    }
+
+    // we're editing; check if created student is same as passed-in student
+    Student possibleStudent = Student(
+        id: widget.student?.id,
+        name: _controller.text,
+        groups: tempGroup.keys.map((element) => element.id!).toList(),
+        classId: widget.student?.classId ?? 1);
+
+    return possibleStudent != widget.student;
+  }
+
   /// prompt user if they want to lose their work
   Future<bool> _onBack(BuildContext context) async {
-    if (_controller.text.isNotEmpty) {
+    if (_shouldPrompt()) {
       return await showDialog(
               context: context,
               builder: ((context) {

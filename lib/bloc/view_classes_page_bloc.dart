@@ -14,6 +14,7 @@ class ViewClassesPageBloc
 
     on<AddClassEvent>((event, emit) async {
       try {
+        emit(LoadingClasses(state.classes));
         final List<Class> classes = List.from(state.classes);
         Class? newClass = await _classRepository.addClass(event.theClass);
         if (newClass != null) {

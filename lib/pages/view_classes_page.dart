@@ -25,30 +25,44 @@ class ViewClassesPage extends StatelessWidget {
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text("Classes"),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      BuildContext blocContext = context;
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddClassPage(
-                              callback: (theClass) {
-                                // on save button in AddStudentPage, add the student to the repo
-                                blocContext
-                                    .read<ViewClassesPageBloc>()
-                                    .add(AddClassEvent(theClass));
-                              },
-                            ),
-                          ));
-                    },
-                    child: const Text("Add Class"))
-              ],
-            ),
-            body: (state is DisplayClasses)
-                ? ListView.builder(
+              appBar: AppBar(
+                title: const Text("Classes"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        BuildContext blocContext = context;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddClassPage(
+                                callback: (theClass) {
+                                  // on save button in AddStudentPage, add the student to the repo
+                                  blocContext
+                                      .read<ViewClassesPageBloc>()
+                                      .add(AddClassEvent(theClass));
+                                },
+                              ),
+                            ));
+                      },
+                      child: const Text("Add Class"))
+                ],
+              ),
+              body: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // display loading
+                  if (state is LoadingClasses)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      ],
+                    ),
+                  // list classes
+                  ListView.builder(
                     itemCount: state.classes.length,
                     padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 4.0),
                     itemBuilder: (context, index) {
@@ -70,13 +84,9 @@ class ViewClassesPage extends StatelessWidget {
                         ),
                       );
                     },
-                  )
-
-                // bloc is loading; display progress indicator
-                : const Center(
-                    child: CircularProgressIndicator(),
                   ),
-          );
+                ],
+              ));
         },
       ),
     );

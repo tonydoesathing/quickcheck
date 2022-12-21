@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.quickcheck">
    <application
-        android:label="QuickCheck"
+        android:label="Quick✓Check"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

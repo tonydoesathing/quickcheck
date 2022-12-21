@@ -213,155 +213,157 @@ class ClassHomePage extends StatelessWidget {
                   )
                 : null,
             // render the table if not loading
-            body: (state is DisplayClassGroupTable)
-                ? Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      // Table
-                      Row(
-                        children: [
-                          Expanded(
-                            child: GroupAssessmentTable(
-                              assessments: state.assessments,
-                              groups: state.groups,
-                              students: state.students,
-                              onStudentClick: (student) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (pageContext) => AddStudentPage(
-                                            groups: state.groups,
-                                            student: student,
-                                            callback: (student) {
-                                              // on save of student, edit the student
-                                              context
-                                                  .read<ClassHomePageBloc>()
-                                                  .add(EditStudentEvent(
-                                                      student));
-                                            },
-                                          )),
-                                );
-                              },
-                              onGroupClick: (group) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (pageContext) => AddGroupPage(
-                                            callback: (g) {
-                                              // on save of group, edit the group
-                                              context
-                                                  .read<ClassHomePageBloc>()
-                                                  .add(EditGroupEvent(g));
-                                            },
-                                            students: state.students,
-                                            group: group,
-                                          )),
-                                );
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                      // ask to add a student or group
-                      if (state.students.isEmpty)
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 12.0),
-                            child: SizedBox(
-                              width: 200,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 12.0),
-                                      child: Text(
-                                        // ask to add a student or group if there aren't any
-                                        (state.students.isEmpty &&
-                                                state.groups.isEmpty)
-                                            ? "Add a student or group!"
-                                            : "Add a student!",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineMedium,
-                                        overflow: TextOverflow.clip,
-                                        textAlign: TextAlign.right,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 8.0, top: 2),
-                                    child: Icon(
-                                      size: 33,
-                                      Icons.arrow_upward,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium!
-                                          .color,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      if (state.assessments.isEmpty &&
-                          state.students.isNotEmpty)
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 12.0),
-                            child: SizedBox(
-                              width: 200,
-                              child: Column(
-                                // Ask to add an assessment
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 8.0),
-                                        child: Text(
-                                          "Add an Assessment!",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headlineMedium,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 75.0),
-                                        child: Icon(
-                                          Icons.arrow_downward,
-                                          size: 33,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .headlineMedium!
-                                              .color,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (state is LoadingClassGroupTable)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Center(
+                        child: CircularProgressIndicator(),
+                      )
                     ],
-                  )
-                // render that we're loading if we're loading
-                : const Center(
-                    child: Text("Loading"),
                   ),
+                // Table
+                Row(
+                  children: [
+                    Expanded(
+                      child: GroupAssessmentTable(
+                        assessments: state.assessments,
+                        groups: state.groups,
+                        students: state.students,
+                        onStudentClick: (student) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (pageContext) => AddStudentPage(
+                                      groups: state.groups,
+                                      student: student,
+                                      callback: (student) {
+                                        // on save of student, edit the student
+                                        context
+                                            .read<ClassHomePageBloc>()
+                                            .add(EditStudentEvent(student));
+                                      },
+                                    )),
+                          );
+                        },
+                        onGroupClick: (group) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (pageContext) => AddGroupPage(
+                                      callback: (g) {
+                                        // on save of group, edit the group
+                                        context
+                                            .read<ClassHomePageBloc>()
+                                            .add(EditGroupEvent(g));
+                                      },
+                                      students: state.students,
+                                      group: group,
+                                    )),
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                ),
+                // ask to add a student or group
+                if (state.students.isEmpty && state is DisplayClassGroupTable)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: SizedBox(
+                        width: 200,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: Text(
+                                  // ask to add a student or group if there aren't any
+                                  (state.students.isEmpty &&
+                                          state.groups.isEmpty)
+                                      ? "Add a student or group!"
+                                      : "Add a student!",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
+                                  overflow: TextOverflow.clip,
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 8.0, top: 2),
+                              child: Icon(
+                                size: 33,
+                                Icons.arrow_upward,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium!
+                                    .color,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                if (state.assessments.isEmpty &&
+                    state.students.isNotEmpty &&
+                    state is DisplayClassGroupTable)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: SizedBox(
+                        width: 200,
+                        child: Column(
+                          // Ask to add an assessment
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text(
+                                    "Add an Assessment!",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 75.0),
+                                  child: Icon(
+                                    Icons.arrow_downward,
+                                    size: 33,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium!
+                                        .color,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+              ],
+            ),
           );
         },
       ),

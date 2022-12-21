@@ -96,7 +96,7 @@ class App extends StatelessWidget {
         )
       ],
       child: MaterialApp(
-        title: 'QuickCheck',
+        title: 'Quick✓Check',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
         //darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),

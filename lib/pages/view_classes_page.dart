@@ -25,30 +25,86 @@ class ViewClassesPage extends StatelessWidget {
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text("Classes"),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      BuildContext blocContext = context;
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddClassPage(
-                              callback: (theClass) {
-                                // on save button in AddStudentPage, add the student to the repo
-                                blocContext
-                                    .read<ViewClassesPageBloc>()
-                                    .add(AddClassEvent(theClass));
-                              },
-                            ),
-                          ));
-                    },
-                    child: const Text("Add Class"))
-              ],
-            ),
-            body: (state is DisplayClasses)
-                ? ListView.builder(
+              appBar: AppBar(
+                title: const Text("Classes"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        BuildContext blocContext = context;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddClassPage(
+                                callback: (theClass) {
+                                  // on save button in AddStudentPage, add the student to the repo
+                                  blocContext
+                                      .read<ViewClassesPageBloc>()
+                                      .add(AddClassEvent(theClass));
+                                },
+                              ),
+                            ));
+                      },
+                      child: const Text("Add Class"))
+                ],
+              ),
+              body: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // display loading
+                  if (state is LoadingClasses)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      ],
+                    ),
+                  if (state.classes.isEmpty && state is DisplayClasses)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: SizedBox(
+                          width: 200,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 12.0),
+                                  child: Text(
+                                    "Add a class!",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                    overflow: TextOverflow.clip,
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 8.0, top: 2),
+                                child: Icon(
+                                  size: 33,
+                                  Icons.arrow_upward,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .color,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  // list classes
+                  ListView.builder(
                     itemCount: state.classes.length,
                     padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 4.0),
                     itemBuilder: (context, index) {
@@ -70,13 +126,9 @@ class ViewClassesPage extends StatelessWidget {
                         ),
                       );
                     },
-                  )
-
-                // bloc is loading; display progress indicator
-                : const Center(
-                    child: CircularProgressIndicator(),
                   ),
-          );
+                ],
+              ));
         },
       ),
     );

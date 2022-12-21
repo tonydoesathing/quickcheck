@@ -61,6 +61,48 @@ class ViewClassesPage extends StatelessWidget {
                         )
                       ],
                     ),
+                  if (state.classes.isEmpty && state is DisplayClasses)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: SizedBox(
+                          width: 200,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 12.0),
+                                  child: Text(
+                                    "Add a class!",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                    overflow: TextOverflow.clip,
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 8.0, top: 2),
+                                child: Icon(
+                                  size: 33,
+                                  Icons.arrow_upward,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .color,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   // list classes
                   ListView.builder(
                     itemCount: state.classes.length,

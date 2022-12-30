@@ -77,7 +77,10 @@ class AssessmentWidget extends StatelessWidget {
               if (assessee is Group)
                 Divider(
                   height: 2,
-                  color: Theme.of(context).colorScheme.outline.withAlpha(150),
+                  color:
+                      // after scouring through the [InputDecorator] class etc., this is the closest color I could find
+                      // it's still not quite it, which bugs me
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
                 )
             ],
           ),

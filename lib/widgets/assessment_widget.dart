@@ -23,6 +23,7 @@ class AssessmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (assessee is Student)
           const SizedBox(
@@ -43,19 +44,36 @@ class AssessmentWidget extends StatelessWidget {
                           .copyWith(fontStyle: FontStyle.italic)
                       : null),
         ),
-        Row(
-          children: [
-            for (int i = 4; i >= 0; i--)
-              InkWell(
-                onTap: () => callback?.call([assessee, score == i ? -1 : i]),
-                customBorder: const CircleBorder(),
-                child: Opacity(
-                  opacity: score == i ? 1.0 : 0.5,
-                  child: AssessmentScore(score: i),
-                ),
+        SizedBox(
+          width: 252,
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (int i = 4; i >= 0; i--)
+                    InkWell(
+                      onTap: () =>
+                          callback?.call([assessee, score == i ? -1 : i]),
+                      customBorder: const CircleBorder(),
+                      child: Opacity(
+                        opacity: score == i ? 1.0 : 0.5,
+                        child: AssessmentScore(score: i),
+                      ),
+                    ),
+                ],
               ),
-          ],
-        )
+              if (assessee is Group)
+                Divider(
+                  height: 2,
+                  color:
+                      // after scouring through the [InputDecorator] class etc., this is the closest color I could find
+                      // it's still not quite it, which bugs me
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
+                )
+            ],
+          ),
+        ),
       ],
     );
   }

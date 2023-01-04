@@ -105,7 +105,11 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
               padding: EdgeInsets.only(
                   top: (groupedAssessees[index - 1] is Group && index != 1)
                       ? 20
-                      : 0), // add extra padding between groups
+                      : 0, // add extra padding between groups
+                  bottom: (ungroupedAssessees.isEmpty &&
+                          index == groupedAssessees.length)
+                      ? 20
+                      : 0), // add extra padding at end
               child: AssessmentWidget(
                 assessee: groupedAssessees[index - 1],
                 score: _classAssessment[groupedAssessees[index - 1]] ?? -1,

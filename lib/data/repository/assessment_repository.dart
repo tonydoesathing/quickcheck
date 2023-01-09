@@ -15,8 +15,11 @@ abstract class AssessmentRepository {
   /// Returns a Assessment from an ID
   Future<Assessment> getAssessment(int id);
 
-  /// Tries to add assessment to repository and returns whether or not it was successful
+  /// Tries to add assessment to repository and returns the new assessument if successful
   Future<Assessment?> addAssessment(Assessment assessment);
+
+  /// Tries to edit an assessment and returns edited assessment if successful
+  Future<Assessment?> editAssessment(Assessment assessment);
 }
 
 /// [Assessment] with id of [id] could not be found in datastore

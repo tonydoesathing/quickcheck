@@ -16,10 +16,17 @@ class AddAssessmentPage extends StatefulWidget {
   /// The list of studetns
   final List<Student> students;
 
+  /// An optional assessment to edit
+  final Assessment? assessment;
+
   /// Page where the user can add assessments
   /// Takes in a [callback] and a list of [Student]s and displays assement
   const AddAssessmentPage(
-      {Key? key, this.callback, required this.groups, required this.students})
+      {Key? key,
+      this.callback,
+      required this.groups,
+      required this.students,
+      this.assessment})
       : super(key: key);
 
   @override
@@ -39,19 +46,26 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
 
   @override
   void initState() {
+    if (widget.assessment != null) {
+      // load in assessment scores, if exist
+      _classAssessment.addAll(widget.assessment!.scoreMap);
+      // load assessment name
+      _controller.text = widget.assessment!.name;
+    }
+
     // add grouped students to groupedAssessees
     for (Group group in widget.groups) {
-      _classAssessment[group] = -1;
+      // _classAssessment[group] = -1;
       groupedAssessees.add(group);
       for (Student student in group.members) {
-        _classAssessment[student] = -1;
+        // _classAssessment[student] = -1;
         groupedAssessees.add(student);
       }
     }
     // add ungrouped students to assessees
     for (Student student in widget.students) {
       if (student.groups == null || student.groups!.isEmpty) {
-        _classAssessment[student] = -1;
+        // _classAssessment[student] = -1;
         ungroupedAssessees.add(student);
       }
     }
@@ -68,15 +82,18 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
   Future<void> _submit() async {
     Navigator.pop(context);
     widget.callback?.call(Assessment(
+        id: widget.assessment?.id,
         name: _controller.text.isEmpty ? _getDateString() : _controller.text,
-        scoreMap: _classAssessment));
+        scoreMap: _classAssessment,
+        classId: widget.assessment?.classId ?? 1));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Assessment"),
+        title: Text(
+            widget.assessment == null ? "Add Assessment" : "Edit Assessment"),
         backgroundColor: Theme.of(context).colorScheme.background,
         shadowColor: Theme.of(context).colorScheme.shadow,
       ),

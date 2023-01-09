@@ -49,15 +49,9 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
     }
 
     // add the newly-created assessment
-    // as a workaround for the addAssessment API request not returning a full assessment
-    // (no objects), I'm just copying over the ID into the O.G. assessment
-    // just delete workaround and uncomment normal code
-    // starting workaround
     final Assessment newAssessment =
         assessment.copyWith(id: jsonDecode(response.body)['id']);
     _assessments.add(newAssessment);
-    // normal code:
-    // _assessments.add(Assessment.fromJson(jsonDecode(response.body)));
     _streamController.add(List<Assessment>.of(_assessments));
     return newAssessment;
   }
@@ -122,5 +116,40 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
   @override
   Stream<List<Assessment>> get assessments {
     return _streamController.stream;
+  }
+
+  @override
+  Future<Assessment?> editAssessment(Assessment assessment) async {
+    String? url = await authenticationRepository.getUrl();
+    if (url == null) {
+      throw Exception('No url');
+    }
+    Response response = await http.put(
+      Uri.parse('$url$endpoint${assessment.id}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token ${await authenticationRepository.getToken()}'
+      },
+      body: jsonEncode(assessment.toJson()),
+    );
+    if (response.statusCode == 200 && response.body != "400") {
+      // the body should be json assessment
+      // edit local cache
+      int index =
+          _assessments.indexWhere((element) => element.id == assessment.id);
+      if (index == -1) {
+        // could not find the assessment id
+        throw AssessmentNotFoundException(id: assessment.id ?? -1);
+      }
+      _assessments[index] = assessment;
+      _streamController.add(List.from(_assessments));
+      return Assessment.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw AssessmentNotFoundException(id: assessment.id ?? -1);
+    } else {
+      throw ConnectionFailedException(
+          url: '$url$endpoint${assessment.id}',
+          statuscode: response.statusCode);
+    }
   }
 }

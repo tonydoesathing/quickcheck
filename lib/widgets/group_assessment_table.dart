@@ -21,6 +21,9 @@ class GroupAssessmentTable extends StatelessWidget {
   /// Callback for when a group is clicked
   final Function(Group)? onGroupClick;
 
+  /// Callback for when a group is clicked
+  final Function(Assessment)? onAssessmentClick;
+
   /// Create a table from a list of [students] and a list of [assessments]
   GroupAssessmentTable(
       {Key? key,
@@ -28,7 +31,8 @@ class GroupAssessmentTable extends StatelessWidget {
       required this.groups,
       required this.students,
       this.onStudentClick,
-      this.onGroupClick})
+      this.onGroupClick,
+      this.onAssessmentClick})
       : super(key: key) {
     // generate list to render
     for (Group group in groups) {
@@ -68,11 +72,15 @@ class GroupAssessmentTable extends StatelessWidget {
             return TableCell.stickyColumn(
                 widget: Expanded(
               child: Center(
-                child: Text(
-                  assessments[columnIndex].name,
-                  style: Theme.of(context).textTheme.titleMedium,
-                  overflow: TextOverflow.fade,
-                  textAlign: TextAlign.center,
+                child: TextButton(
+                  onPressed: () =>
+                      onAssessmentClick?.call(assessments[columnIndex]),
+                  child: Text(
+                    assessments[columnIndex].name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    overflow: TextOverflow.fade,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ));

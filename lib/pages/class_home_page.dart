@@ -24,98 +24,6 @@ class ClassHomePage extends StatelessWidget {
   /// The home page of for a class which displays a table of the students/groups and their assessment results
   const ClassHomePage({Key? key, required this.theClass}) : super(key: key);
 
-  // /// generate the list of groups and students
-  // Widget _studentList(ClassHomePageState state) {
-  //   List<Student> ungroupedStudents = [];
-  //   for (Student student in state.students) {
-  //     if (student.groups == null || student.groups!.isEmpty) {
-  //       ungroupedStudents.add(student);
-  //     }
-  //   }
-  //   List elements = [];
-  //   for (Group g in state.groups) {
-  //     elements.add(g);
-  //     for (Student s in g.members) {
-  //       elements.add(s);
-  //     }
-  //   }
-
-  //   return Padding(
-  //     padding: const EdgeInsets.fromLTRB(24.0, 8.0, 0, 8),
-  //     child: ListView.builder(
-  //       itemCount: elements.length +
-  //           ungroupedStudents.length +
-  //           (ungroupedStudents.isEmpty
-  //               ? 0
-  //               : 1), // elements + ungrouped, + 1 if ungrouped
-  //       itemBuilder: (context, index) {
-  //         // elements
-  //         if (index < elements.length) {
-  //           var element = elements[index];
-  //           if (element is Group) {
-  //             return Container(
-  //               alignment: Alignment.centerLeft,
-  //               height: 44,
-  //               child: Text(
-  //                 element.name,
-  //                 style: Theme.of(context)
-  //                     .textTheme
-  //                     .titleMedium!
-  //                     .copyWith(fontWeight: FontWeight.bold),
-  //                 overflow: TextOverflow.fade,
-  //               ),
-  //             );
-  //           } else if (element is Student) {
-  //             return Container(
-  //               alignment: Alignment.centerLeft,
-  //               height: 44,
-  //               child: Row(children: [
-  //                 const SizedBox(
-  //                   width: 20,
-  //                 ),
-  //                 Expanded(
-  //                     child: Text(element.name, overflow: TextOverflow.fade))
-  //               ]),
-  //             );
-  //           }
-  //         }
-  //         // ungrouped title
-  //         if (index == elements.length) {
-  //           return Padding(
-  //             padding: EdgeInsets.only(top: elements.isEmpty ? 0.0 : 44.0),
-  //             child: Container(
-  //               alignment: Alignment.centerLeft,
-  //               height: 44,
-  //               child: Text(
-  //                 "Ungrouped",
-  //                 style: Theme.of(context)
-  //                     .textTheme
-  //                     .titleMedium!
-  //                     .copyWith(fontWeight: FontWeight.bold),
-  //                 overflow: TextOverflow.fade,
-  //               ),
-  //             ),
-  //           );
-  //         }
-  //         // ungrouped
-  //         return Container(
-  //           alignment: Alignment.centerLeft,
-  //           height: 44,
-  //           child: Row(children: [
-  //             const SizedBox(
-  //               width: 20,
-  //             ),
-  //             Expanded(
-  //                 child: Text(
-  //                     ungroupedStudents[index - elements.length - 1].name,
-  //                     overflow: TextOverflow.fade))
-  //           ]),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     // create a HomePageBloc from the repositories and have it load from them
@@ -263,6 +171,22 @@ class ClassHomePage extends StatelessWidget {
                                       },
                                       students: state.students,
                                       group: group,
+                                    )),
+                          );
+                        },
+                        onAssessmentClick: (assessment) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (pageContext) => AddAssessmentPage(
+                                      groups: state.groups,
+                                      students: state.students,
+                                      assessment: assessment,
+                                      callback: (assessment) {
+                                        // on save of assessment, edit the assessment
+                                        context.read<ClassHomePageBloc>().add(
+                                            EditAssessmentEvent(assessment));
+                                      },
                                     )),
                           );
                         },

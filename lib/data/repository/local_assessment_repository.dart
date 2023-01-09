@@ -56,4 +56,14 @@ class LocalAssessmentRepository extends AssessmentRepository {
   Stream<List<Assessment>> get assessments {
     return _streamController.stream;
   }
+
+  @override
+  Future<Assessment?> editAssessment(Assessment assessment) {
+    for (int i = 0; i < _assessments.length; i++) {
+      if (_assessments[i].id == assessment.id) {
+        _assessments[i] = assessment;
+      }
+    }
+    throw AssessmentNotFoundException(id: assessment.id ?? -1);
+  }
 }

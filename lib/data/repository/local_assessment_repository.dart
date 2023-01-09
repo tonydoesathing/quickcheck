@@ -58,10 +58,12 @@ class LocalAssessmentRepository extends AssessmentRepository {
   }
 
   @override
-  Future<Assessment?> editAssessment(Assessment assessment) {
+  Future<Assessment?> editAssessment(Assessment assessment) async {
     for (int i = 0; i < _assessments.length; i++) {
       if (_assessments[i].id == assessment.id) {
         _assessments[i] = assessment;
+        _streamController.add(List.from(_assessments));
+        return assessment;
       }
     }
     throw AssessmentNotFoundException(id: assessment.id ?? -1);

@@ -12,8 +12,8 @@ class GroupAssessmentTable extends StatelessWidget {
   final List<Assessment> assessments;
   final List<Group> groups;
   final List<Student> students;
-  List<Student> ungroupedStudents = [];
-  List groupsAndStudents = [];
+  final List<Student> ungroupedStudents = [];
+  final List groupsAndStudents = [];
 
   /// Callback for when a student is clicked
   final Function(Student)? onStudentClick;
@@ -24,7 +24,8 @@ class GroupAssessmentTable extends StatelessWidget {
   /// Callback for when a group is clicked
   final Function(Assessment)? onAssessmentClick;
 
-  /// Create a table from a list of [students] and a list of [assessments]
+  /// Create a table from a list of [students], [groups], and a list of [assessments]
+  /// Also takes optional callbacks [onStudentClick], [onGroupClick], [onAssessmentClick]
   GroupAssessmentTable(
       {Key? key,
       required this.assessments,

@@ -55,17 +55,14 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
 
     // add grouped students to groupedAssessees
     for (Group group in widget.groups) {
-      // _classAssessment[group] = -1;
       groupedAssessees.add(group);
       for (Student student in group.members) {
-        // _classAssessment[student] = -1;
         groupedAssessees.add(student);
       }
     }
     // add ungrouped students to assessees
     for (Student student in widget.students) {
       if (student.groups == null || student.groups!.isEmpty) {
-        // _classAssessment[student] = -1;
         ungroupedAssessees.add(student);
       }
     }

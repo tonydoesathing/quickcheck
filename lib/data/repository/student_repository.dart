@@ -18,7 +18,8 @@ abstract class StudentRepository {
   /// Tries to add student to repository and returns whether or not it was successful
   Future<Student?> addStudent(Student student);
 
-  /// Tries to edit a given student
+  /// Tries to edit a given student; returns null if unable
+  /// Throws [StudentNotFoundException] if unable to find the student
   Future<Student?> editStudent(Student student);
 }
 

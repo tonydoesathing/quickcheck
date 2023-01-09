@@ -19,6 +19,7 @@ abstract class AssessmentRepository {
   Future<Assessment?> addAssessment(Assessment assessment);
 
   /// Tries to edit an assessment and returns edited assessment if successful
+  /// Throws [AssessmentNotFoundException] if unable to find the assessment
   Future<Assessment?> editAssessment(Assessment assessment);
 }
 

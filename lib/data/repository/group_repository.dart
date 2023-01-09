@@ -19,6 +19,7 @@ abstract class GroupRepository {
   Future<Group?> addGroup(Group group);
 
   /// Tries to edit a group in repository and returns the group or null if failed
+  /// Throws [GroupNotFoundException] if unable to find the group
   Future<Group?> editGroup(Group group);
 }
 

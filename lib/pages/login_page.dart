@@ -88,77 +88,86 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 75,
-            ),
-            child: SvgPicture.asset(
-              'assets/QuickCheckLogo.svg',
-              width: 250,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(50),
-            child: Card(
-              child: Column(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-                    child: TextField(
-                      controller: _usernameController,
-                      onSubmitted: (value) => _submit(),
-                      decoration: const InputDecoration(labelText: "Username"),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-                    child: TextFormField(
-                      controller: _passwordController,
-                      onFieldSubmitted: (value) => _submit(),
-                      decoration: const InputDecoration(
-                        labelText: "Password",
-                      ),
-                      obscureText: true,
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-                    child: TextField(
-                      controller: _addressController,
-                      onSubmitted: (value) => _submit(),
-                      decoration:
-                          const InputDecoration(labelText: "Server Address"),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 75,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                                    onPrimary:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                    primary:
-                                        Theme.of(context).colorScheme.primary)
-                                .copyWith(
-                                    elevation:
-                                        ButtonStyleButton.allOrNull(0.0)),
-                            onPressed: () async => await _submit(),
-                            icon: const Icon(Icons.login),
-                            label: const Text("Log in")),
-                      ],
-                    ),
-                  ),
-                ],
+        child: Center(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 75,
+              ),
+              child: SvgPicture.asset(
+                'assets/QuickCheckLogo.svg',
+                width: 250,
               ),
             ),
-          ),
-        ]),
+            Padding(
+              padding: const EdgeInsets.all(50),
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 400, minWidth: 250),
+                child: Card(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 24.0, right: 24.0, top: 8),
+                        child: TextField(
+                          controller: _usernameController,
+                          onSubmitted: (value) => _submit(),
+                          decoration:
+                              const InputDecoration(labelText: "Username"),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 24.0, right: 24.0, top: 8),
+                        child: TextFormField(
+                          controller: _passwordController,
+                          onFieldSubmitted: (value) => _submit(),
+                          decoration: const InputDecoration(
+                            labelText: "Password",
+                          ),
+                          obscureText: true,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 24.0, right: 24.0, top: 8),
+                        child: TextField(
+                          controller: _addressController,
+                          onSubmitted: (value) => _submit(),
+                          decoration: const InputDecoration(
+                              labelText: "Server Address"),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 75,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                        onPrimary: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                        primary: Theme.of(context)
+                                            .colorScheme
+                                            .primary)
+                                    .copyWith(
+                                        elevation:
+                                            ButtonStyleButton.allOrNull(0.0)),
+                                onPressed: () async => await _submit(),
+                                icon: const Icon(Icons.login),
+                                label: const Text("Log in")),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ]),
+        ),
       ),
     );
   }

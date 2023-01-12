@@ -209,6 +209,21 @@ class _AddStudentPageState extends State<AddStudentPage> {
                     icon: const Icon(Icons.save),
                     label: const Text("Save")),
                 Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                              onPrimary: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                              primary: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer)
+                          .copyWith(
+                              elevation: ButtonStyleButton.allOrNull(0.0)),
+                      onPressed: () {},
+                      child: const Text("Save & Add New")),
+                ),
+                Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 16.0),
                   child: TextButton(
                       onPressed: () async {

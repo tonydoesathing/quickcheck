@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickcheck/consts/color_themes.dart';
 import 'package:quickcheck/data/repository/authentification_repository.dart';
+import 'package:quickcheck/data/repository/cache_repository.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
 import 'package:quickcheck/data/repository/group_repository.dart';
 import 'package:quickcheck/data/repository/local_group_repository.dart';
@@ -25,6 +26,7 @@ import 'package:quickcheck/data/repository/networked_class_repository.dart';
 import 'package:quickcheck/data/repository/networked_group_repository.dart';
 import 'package:quickcheck/data/repository/networked_student_repository.dart';
 import 'package:quickcheck/data/repository/networked_authentification_repository.dart';
+import 'package:quickcheck/data/repository/sembast_cache_repository.dart';
 import 'package:quickcheck/pages/home_page.dart';
 import 'package:quickcheck/pages/login_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,7 +38,10 @@ import 'data/repository/local_assessment_repository.dart';
 import 'data/repository/student_repository.dart';
 import '/data/repository/authentification_repository.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final CacheRepository cacheRepository = SembastCacheRepository();
   final AuthenticationRepository authentificationRepository =
       NetworkedAuthenticationRepository();
   final StudentRepository studentRepository =
@@ -54,6 +59,7 @@ void main() {
     groupRepository: groupRepository,
     classRepository: classRepository,
     authentificationRepository: authentificationRepository,
+    cacheRepository: cacheRepository,
   ));
 }
 
@@ -64,6 +70,7 @@ class App extends StatelessWidget {
   final GroupRepository groupRepository;
   final ClassRepository classRepository;
   final AuthenticationRepository authentificationRepository;
+  final CacheRepository cacheRepository;
 
   const App(
       {Key? key,
@@ -71,7 +78,8 @@ class App extends StatelessWidget {
       required this.assessmentRepository,
       required this.groupRepository,
       required this.classRepository,
-      required this.authentificationRepository})
+      required this.authentificationRepository,
+      required this.cacheRepository})
       : super(key: key);
 
   // This widget is the root of your application.
@@ -93,7 +101,8 @@ class App extends StatelessWidget {
         ),
         RepositoryProvider<AuthenticationRepository>.value(
           value: authentificationRepository,
-        )
+        ),
+        RepositoryProvider<CacheRepository>.value(value: cacheRepository)
       ],
       child: MaterialApp(
         title: 'Quick✓Check',

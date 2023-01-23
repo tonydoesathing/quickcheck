@@ -44,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
         }));
   }
 
+  /// called on submit
   void _submit(BuildContext context) {
     context
         .read<LoginPageBloc>()

@@ -44,6 +44,7 @@ class ClassHomePage extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
+              surfaceTintColor: Colors.white,
               title: Text(theClass.name),
               actions: [
                 PopupMenuButton(

@@ -91,14 +91,16 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
       return TableCell.content(
         width: _cellWidth,
         height: _cellHeight,
-        widget: Expanded(
-          child: Center(
-            child: AssessmentScore(
-                score: widget.assessments[assessmentIndex]
-                        .scoreMap[widget.groupsAndStudents[i]] ??
-                    -1),
-          ),
-        ),
+        widget: widget.groupsAndStudents[i] is Student
+            ? Expanded(
+                child: Center(
+                  child: AssessmentScore(
+                      score: widget.assessments[assessmentIndex]
+                              .scoreMap[widget.groupsAndStudents[i]] ??
+                          -1),
+                ),
+              )
+            : null,
       );
     }
     // the empty row

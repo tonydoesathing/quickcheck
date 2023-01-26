@@ -62,6 +62,8 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
   late ScrollController _bodyControllerVertical;
   static const double _cellHeight = 50;
   static const double _cellWidth = 150;
+  static const double _horizontalPadding = 24;
+  static const double _verticalPadding = 8;
 
   @override
   void initState() {
@@ -78,80 +80,335 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
   void dispose() {
     _headController.dispose();
     _bodyControllerHorizontal.dispose();
+    _bodyControllerVertical.dispose();
+    _columnController.dispose();
     super.dispose();
+  }
+
+  Widget _buildAssessmentColumnCell(int assessmentIndex, int i) {
+    //the grouped
+    if (i < widget.groupsAndStudents.length) {
+      return TableCell.content(
+        width: _cellWidth,
+        height: _cellHeight,
+        widget: Expanded(
+          child: Center(
+            child: AssessmentScore(
+                score: widget.assessments[assessmentIndex]
+                        .scoreMap[widget.groupsAndStudents[i]] ??
+                    -1),
+          ),
+        ),
+      );
+    }
+    // the empty row
+    if (i == widget.groupsAndStudents.length &&
+        widget.groupsAndStudents.isNotEmpty) {
+      return const TableCell.content(
+        width: _cellWidth,
+        height: _cellHeight,
+        colorHorizontalBorderTop: Colors.transparent,
+        colorHorizontalBorderBottom: Colors.transparent,
+        colorVerticalBorderLeft: Colors.transparent,
+        colorVerticalBorderRight: Colors.transparent,
+      );
+    }
+    // the ungrouped title
+    if (i ==
+        widget.groupsAndStudents.length +
+            (widget.groupsAndStudents.isNotEmpty ? 1 : 0)) {
+      return const TableCell.content(
+        width: _cellWidth,
+        height: _cellHeight,
+      );
+    }
+    // the ungrouped
+    return TableCell.content(
+      width: _cellWidth,
+      height: _cellHeight,
+      widget: Expanded(
+        child: Center(
+          child: AssessmentScore(
+              score: widget.assessments[assessmentIndex].scoreMap[
+                      widget.ungroupedStudents[i -
+                          widget.groupsAndStudents.length -
+                          1 -
+                          (widget.groupsAndStudents.isNotEmpty ? 1 : 0)]] ??
+                  -1),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssessmentColumn(int assessmentIndex) {
+    List<Widget> children = [];
+    int length = widget.ungroupedStudents.isNotEmpty
+        ? widget.groupsAndStudents.length +
+            (widget.groupsAndStudents.isNotEmpty ? 1 : 0) +
+            1 +
+            widget.ungroupedStudents.length
+        // groups and students + blank row (if needed) + ungrouped title + ungrouped students
+        : widget.groupsAndStudents.length;
+
+    for (int i = 0; i < length; i++) {
+      children.add(Padding(
+        padding: EdgeInsets.only(
+            right: assessmentIndex == widget.assessments.length - 1
+                ? _horizontalPadding
+                : 0),
+        child: _buildAssessmentColumnCell(assessmentIndex, i),
+      ));
+    }
+
+    return Column(
+      children: children,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.assessments.isNotEmpty) {
-      return Column(
-        children: [
-          Container(
-            constraints: const BoxConstraints(maxHeight: _cellHeight),
-            child: Row(
-              children: [
-                const TableCell.legend(width: _cellWidth, height: _cellHeight),
-                Expanded(
-                    child: Scrollbar(
-                  controller: _headController,
-                  child: ListView.builder(
-                      itemExtent: _cellWidth,
-                      controller: _headController,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: widget.assessments.length,
-                      itemBuilder: ((context, index) {
-                        return const TableCell.stickyRow(
-                            width: _cellWidth, height: _cellHeight);
-                      })),
-                ))
-              ],
-            ),
-          ),
-          Expanded(
-              child: Row(children: [
-            SizedBox(
-              width: _cellWidth,
-              child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: ListView.builder(
-                    controller: _columnController,
-                    itemCount: widget.groupsAndStudents.length,
-                    itemBuilder: ((context, index) {
-                      return const TableCell.stickyColumn(
-                          width: _cellWidth, height: _cellHeight);
-                    })),
-              ),
-            ),
-            Expanded(
-                child: Align(
-              alignment: Alignment.topLeft,
-              child: SingleChildScrollView(
-                controller: _bodyControllerVertical,
-                child: SizedBox(
-                  height: _cellHeight * widget.groupsAndStudents.length,
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemExtent: _cellWidth,
-                      controller: _bodyControllerHorizontal,
-                      itemCount: widget.assessments.length,
-                      itemBuilder: ((context, index) {
-                        return Column(children: [
-                          for (int i = 0;
-                              i < widget.groupsAndStudents.length;
-                              i++)
-                            TableCell.content(
+      return Padding(
+        padding: const EdgeInsets.only(
+            top: _verticalPadding, bottom: _verticalPadding),
+        child: Column(
+          children: [
+            ///////////////////////////////////////////
+            //////////  Sticky Row   /////////////////
+            //////////////////////////////////////////
+            Container(
+              constraints: const BoxConstraints(maxHeight: _cellHeight),
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: _horizontalPadding),
+                    child: TableCell.legend(
+                        width: _cellWidth, height: _cellHeight),
+                  ),
+                  Expanded(
+                      child: Scrollbar(
+                    controller: _headController,
+                    child: ListView.builder(
+                        itemExtent: _cellWidth,
+                        controller: _headController,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.assessments.length,
+                        itemBuilder: ((context, index) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                right: index == widget.assessments.length - 1
+                                    ? _horizontalPadding
+                                    : 0),
+                            child: TableCell.stickyRow(
                               width: _cellWidth,
                               height: _cellHeight,
-                              widget: Text("meow"),
-                            )
-                        ]);
-                      })),
+                              widget: Expanded(
+                                child: Center(
+                                  child: TextButton(
+                                    onPressed: () => widget.onAssessmentClick
+                                        ?.call(widget.assessments[index]),
+                                    child: Text(
+                                      widget.assessments[index].name,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                      overflow: TextOverflow.fade,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        })),
+                  ))
+                ],
+              ),
+            ),
+            ///////////////////////////////////////////
+            //////////  Sticky Column   //////////////
+            //////////////////////////////////////////
+            Expanded(
+                child: Row(children: [
+              SizedBox(
+                width: _cellWidth + _horizontalPadding,
+                child: ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context)
+                      .copyWith(scrollbars: false),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: _horizontalPadding),
+                    child: ListView.builder(
+                        controller: _columnController,
+                        itemCount: widget.ungroupedStudents.isNotEmpty
+                            ? widget.groupsAndStudents.length +
+                                (widget.groupsAndStudents.isNotEmpty ? 1 : 0) +
+                                1 +
+                                widget.ungroupedStudents.length
+                            // groups and students + blank row (if needed) + ungrouped title + ungrouped students
+                            : widget.groupsAndStudents.length,
+                        itemBuilder: ((context, index) {
+                          // if there aren't ungrouped
+                          if (index < widget.groupsAndStudents.length) {
+                            var element = widget.groupsAndStudents[index];
+                            if (element is Group) {
+                              return TableCell.stickyColumn(
+                                  width: _cellWidth,
+                                  height: _cellHeight,
+                                  widget: Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: TextButton(
+                                        onPressed: () =>
+                                            widget.onGroupClick?.call(element),
+                                        child: Text(
+                                          element.name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium!
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold),
+                                          overflow: TextOverflow.fade,
+                                        ),
+                                      ),
+                                    ),
+                                  ));
+                            } else if (element is Student) {
+                              return TableCell.stickyColumn(
+                                  width: _cellWidth,
+                                  height: _cellHeight,
+                                  widget: Expanded(
+                                    child: Row(children: [
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      Expanded(
+                                          child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: TextButton(
+                                            onPressed: () => widget
+                                                .onStudentClick
+                                                ?.call(element),
+                                            child: Text(element.name,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                                overflow: TextOverflow.fade)),
+                                      ))
+                                    ]),
+                                  ));
+                            }
+                          }
+
+                          // return the empty row
+                          if (index == widget.groupsAndStudents.length &&
+                              widget.groupsAndStudents.isNotEmpty) {
+                            return const TableCell.stickyColumn(
+                              width: _cellWidth,
+                              height: _cellHeight,
+                              colorHorizontalBorderBottom: Colors.transparent,
+                              colorHorizontalBorderTop: Colors.transparent,
+                              colorVerticalBorderLeft: Colors.transparent,
+                              colorVerticalBorderRight: Colors.transparent,
+                            );
+                          }
+                          // return the Ungrouped title
+                          if (index ==
+                              widget.groupsAndStudents.length +
+                                  (widget.groupsAndStudents.isNotEmpty
+                                      ? 1
+                                      : 0)) {
+                            return TableCell.stickyColumn(
+                                width: _cellWidth,
+                                height: _cellHeight,
+                                widget: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("Ungrouped",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.fade),
+                                ));
+                          }
+                          // return ungrouped students
+                          return TableCell.stickyColumn(
+                              width: _cellWidth,
+                              height: _cellHeight,
+                              widget: Expanded(
+                                child: Row(children: [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: TextButton(
+                                        onPressed: () => widget.onStudentClick
+                                            ?.call(widget.ungroupedStudents[
+                                                index -
+                                                    widget.groupsAndStudents
+                                                        .length -
+                                                    1 -
+                                                    (widget.groupsAndStudents
+                                                            .isNotEmpty
+                                                        ? 1
+                                                        : 0)]),
+                                        child: Text(
+                                            widget
+                                                .ungroupedStudents[index -
+                                                    widget.groupsAndStudents
+                                                        .length -
+                                                    1 -
+                                                    (widget.groupsAndStudents
+                                                            .isNotEmpty
+                                                        ? 1
+                                                        : 0)]
+                                                .name,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                            overflow: TextOverflow.fade),
+                                      ),
+                                    ),
+                                  )
+                                ]),
+                              ));
+                        })),
+                  ),
                 ),
               ),
-            ))
-          ]))
-        ],
+              //////////////////////////////////////////////
+              ///////////////      content      ////////////
+              //////////////////////////////////////////////
+              Expanded(
+                  child: Align(
+                alignment: Alignment.topLeft,
+                child: SingleChildScrollView(
+                  controller: _bodyControllerVertical,
+                  child: SizedBox(
+                    height: _cellHeight *
+                        (widget.ungroupedStudents.isNotEmpty
+                            ? widget.groupsAndStudents.length +
+                                (widget.groupsAndStudents.isNotEmpty ? 1 : 0) +
+                                1 +
+                                widget.ungroupedStudents.length
+                            // groups and students + blank row (if needed) + ungrouped title + ungrouped students
+                            : widget.groupsAndStudents.length),
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemExtent: _cellWidth,
+                        controller: _bodyControllerHorizontal,
+                        itemCount: widget.assessments.length,
+                        itemBuilder: ((context, index) {
+                          return _buildAssessmentColumn(index);
+                        })),
+                  ),
+                ),
+              ))
+            ]))
+          ],
+        ),
       );
     }
     return Padding(
@@ -170,7 +427,7 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
             if (element is Group) {
               return SizedBox(
                 height: 50,
-                width: 140,
+                width: _cellWidth,
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton(
@@ -188,8 +445,8 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
               );
             } else if (element is Student) {
               return SizedBox(
-                height: 50,
-                width: 140,
+                height: _cellHeight,
+                width: _cellWidth,
                 child: Row(children: [
                   const SizedBox(
                     width: 20,
@@ -211,9 +468,9 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
           // return the empty row
           if (index == widget.groupsAndStudents.length &&
               widget.groupsAndStudents.isNotEmpty) {
-            return SizedBox(
-              height: 50,
-              width: 140,
+            return const SizedBox(
+              height: _cellHeight,
+              width: _cellWidth,
             );
           }
           // return the Ungrouped title
@@ -221,8 +478,8 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
               widget.groupsAndStudents.length +
                   (widget.groupsAndStudents.isNotEmpty ? 1 : 0)) {
             return SizedBox(
-              height: 50,
-              width: 140,
+              height: _cellHeight,
+              width: _cellWidth,
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text("Ungrouped",
@@ -238,7 +495,7 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
           // return ungrouped students
           return SizedBox(
             height: 50,
-            width: 140,
+            width: _cellWidth,
             child: Row(children: [
               const SizedBox(
                 width: 20,
@@ -631,8 +888,8 @@ class TableCell extends StatelessWidget {
       required this.width,
       required this.height,
       this.colorVerticalBorderRight,
-      this.colorVerticalBorderLeft,
-      this.colorHorizontalBorderTop,
+      this.colorVerticalBorderLeft = Colors.transparent,
+      this.colorHorizontalBorderTop = Colors.transparent,
       this.colorHorizontalBorderBottom})
       : super(key: key);
 
@@ -642,9 +899,9 @@ class TableCell extends StatelessWidget {
       this.onTap,
       required this.width,
       required this.height,
-      this.colorVerticalBorderRight,
+      this.colorVerticalBorderRight = Colors.transparent,
       this.colorVerticalBorderLeft,
-      this.colorHorizontalBorderTop,
+      this.colorHorizontalBorderTop = Colors.transparent,
       this.colorHorizontalBorderBottom})
       : super(key: key);
 

@@ -145,50 +145,58 @@ class _AddGroupPageState extends State<AddGroupPage> {
           backgroundColor: Theme.of(context).colorScheme.background,
           shadowColor: Theme.of(context).colorScheme.shadow,
           title: Text(widget.group == null ? "Add Group" : "Edit Group"),
+          centerTitle: true,
         ),
-        body: ListView.builder(
-            itemCount: widget.students.length + 2,
-            padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 0.0),
-            itemBuilder: ((context, index) {
-              // render name textbox first
-              if (index == 0) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 32.0),
-                  child: TextField(
-                    onSubmitted: (value) async => await _submit(),
-                    controller: _controller,
-                    decoration:
-                        const InputDecoration(labelText: "Name (required)"),
-                  ),
-                );
-              } else if (index == 1) {
-                // render the title for the students
-                return Center(
-                    child: Text(
-                  "Students",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ));
-              }
-              // otherwise render the students
-              return Padding(
-                padding: EdgeInsets.only(
-                    bottom: ((index == widget.students.length + 1) ? 16.0 : 0)),
-                child: CheckboxListTile(
-                  value: students[widget.students[index - 2]],
-                  title: Text(widget.students[index - 2].name),
-                  onChanged: ((value) {
-                    setState(() {
-                      students[widget.students[index - 2]] = value!;
-                    });
-                  }),
-                  activeColor: Theme.of(context).colorScheme.primary,
-                  checkColor: Theme.of(context).colorScheme.onPrimary,
-                ),
-              );
-            })),
+        body: Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 750),
+            child: ListView.builder(
+                itemCount: widget.students.length + 2,
+                padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 0.0),
+                itemBuilder: ((context, index) {
+                  // render name textbox first
+                  if (index == 0) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 32.0),
+                      child: TextField(
+                        onSubmitted: (value) async => await _submit(),
+                        controller: _controller,
+                        decoration:
+                            const InputDecoration(labelText: "Name (required)"),
+                      ),
+                    );
+                  } else if (index == 1) {
+                    // render the title for the students
+                    return Center(
+                        child: Text(
+                      "Students",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ));
+                  }
+                  // otherwise render the students
+                  return Padding(
+                    padding: EdgeInsets.only(
+                        bottom:
+                            ((index == widget.students.length + 1) ? 16.0 : 0)),
+                    child: CheckboxListTile(
+                      value: students[widget.students[index - 2]],
+                      title: Text(widget.students[index - 2].name),
+                      onChanged: ((value) {
+                        setState(() {
+                          students[widget.students[index - 2]] = value!;
+                        });
+                      }),
+                      activeColor: Theme.of(context).colorScheme.primary,
+                      checkColor: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  );
+                })),
+          ),
+        ),
         bottomNavigationBar: Padding(
           padding: MediaQuery.of(context).viewInsets,
           child: BottomAppBar(

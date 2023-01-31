@@ -93,18 +93,27 @@ class _AddClassPageState extends State<AddClassPage> {
           title: const Text("Add Class"),
           backgroundColor: Theme.of(context).colorScheme.background,
           shadowColor: Theme.of(context).colorScheme.shadow,
+          centerTitle: true,
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
-              child: TextField(
-                onSubmitted: (value) async => await _submit(),
-                controller: _controller,
-                decoration: const InputDecoration(labelText: "Name (required)"),
-              ),
-            )
-          ],
+        body: Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 750),
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 24.0, right: 24.0, top: 8),
+                  child: TextField(
+                    onSubmitted: (value) async => await _submit(),
+                    controller: _controller,
+                    decoration:
+                        const InputDecoration(labelText: "Name (required)"),
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
         bottomNavigationBar: Padding(
           padding: MediaQuery.of(context).viewInsets,

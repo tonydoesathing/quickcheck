@@ -28,13 +28,14 @@ class LocalGroupRepository extends GroupRepository {
 
   @override
   Future<Group?> editGroup(Group group) async {
-    int index = _groups.indexWhere((element) => element.id == group.id);
-    if (index == -1) {
-      return null;
+    for (int i = 0; i < _groups.length; i++) {
+      if (_groups[i].id == group.id) {
+        _groups[i] = group;
+        _streamController.add(List.from(_groups));
+        return group;
+      }
     }
-    _groups[index] = group;
-    _streamController.add(List.from(_groups));
-    return group;
+    throw GroupNotFoundException(id: group.id ?? -1);
   }
 
   @override

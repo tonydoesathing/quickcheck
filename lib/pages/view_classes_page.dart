@@ -27,6 +27,7 @@ class ViewClassesPage extends StatelessWidget {
           return Scaffold(
               appBar: AppBar(
                 title: const Text("Classes"),
+                centerTitle: true,
                 actions: [
                   TextButton(
                       onPressed: () {

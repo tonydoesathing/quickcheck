@@ -209,6 +209,32 @@ class ClassHomePageBloc extends Bloc<ClassHomePageEvent, ClassHomePageState> {
         }
       },
     );
+
+    on<EditAssessmentEvent>(
+      (event, emit) async {
+        try {
+          emit(LoadingClassGroupTable(
+              state.students, state.assessments, state.groups));
+          // edit the assessment in the repo
+          final Assessment? assessment = await assessmentRepository
+              .editAssessment(event.assessment.copyWith(classId: theClass.id));
+
+          if (assessment != null) {
+            final List<Assessment> newAssessments =
+                await assessmentRepository.getAssessments(theClass.id!);
+            emit(DisplayClassGroupTable(
+                state.students, newAssessments, state.groups));
+          } else {
+            emit(DisplayClassGroupTableError(state.students, state.assessments,
+                state.groups, Exception("Assessment edit failed")));
+          }
+        } catch (e) {
+          // if there was an error, emit error state
+          emit(DisplayClassGroupTableError(
+              state.students, state.assessments, state.groups, e));
+        }
+      },
+    );
   }
 }
 
@@ -278,6 +304,18 @@ class AddAssessmentEvent extends ClassHomePageEvent {
 
   /// Add an [assessment] to the class
   const AddAssessmentEvent(this.assessment);
+
+  @override
+  List<Object> get props => [assessment];
+}
+
+/// Add an assessment to a class
+class EditAssessmentEvent extends ClassHomePageEvent {
+  /// The [Assessment] to edit
+  final Assessment assessment;
+
+  /// Edit an [assessment] in the class
+  const EditAssessmentEvent(this.assessment);
 
   @override
   List<Object> get props => [assessment];

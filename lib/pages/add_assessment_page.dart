@@ -93,102 +93,110 @@ class _AddAssessmentPageState extends State<AddAssessmentPage> {
             widget.assessment == null ? "Add Assessment" : "Edit Assessment"),
         backgroundColor: Theme.of(context).colorScheme.background,
         shadowColor: Theme.of(context).colorScheme.shadow,
+        centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: 1 +
-            groupedAssessees.length +
-            1 +
-            ungroupedAssessees
-                .length, // textfield, grouped assessees, ungrouped title, ungrouped students
-        padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 0.0),
-        itemBuilder: (context, index) {
-          // render name textbox first
-          if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 32.0),
-              child: TextField(
-                controller: _controller,
-                decoration: const InputDecoration(labelText: "Name (optional)"),
-              ),
-            );
-          }
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 750),
+          child: ListView.builder(
+            itemCount: 1 +
+                groupedAssessees.length +
+                1 +
+                ungroupedAssessees
+                    .length, // textfield, grouped assessees, ungrouped title, ungrouped students
+            padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 0.0),
+            itemBuilder: (context, index) {
+              // render name textbox first
+              if (index == 0) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  child: TextField(
+                    controller: _controller,
+                    decoration:
+                        const InputDecoration(labelText: "Name (optional)"),
+                  ),
+                );
+              }
 
-          // render grouped assessees
-          if (index <= groupedAssessees.length) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  top: (groupedAssessees[index - 1] is Group && index != 1)
-                      ? 20
-                      : 0, // add extra padding between groups
-                  bottom: (ungroupedAssessees.isEmpty &&
-                          index == groupedAssessees.length)
-                      ? 20
-                      : 0), // add extra padding at end
-              child: AssessmentWidget(
-                assessee: groupedAssessees[index - 1],
-                score: _classAssessment[groupedAssessees[index - 1]] ?? -1,
-                callback: (assessment) {
-                  // first value is [Student] or [Group]
-                  // second value is the score
-                  setState(() {
-                    var element = assessment[0];
-                    int score = assessment[1];
-                    if (element is Group) {
-                      for (Student student in element.members) {
-                        _classAssessment[student] = score;
-                      }
-                    }
-                    _classAssessment[element] = score;
-                  });
-                },
-              ),
-            );
-          }
+              // render grouped assessees
+              if (index <= groupedAssessees.length) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                      top: (groupedAssessees[index - 1] is Group && index != 1)
+                          ? 20
+                          : 0, // add extra padding between groups
+                      bottom: (ungroupedAssessees.isEmpty &&
+                              index == groupedAssessees.length)
+                          ? 20
+                          : 0), // add extra padding at end
+                  child: AssessmentWidget(
+                    assessee: groupedAssessees[index - 1],
+                    score: _classAssessment[groupedAssessees[index - 1]] ?? -1,
+                    callback: (assessment) {
+                      // first value is [Student] or [Group]
+                      // second value is the score
+                      setState(() {
+                        var element = assessment[0];
+                        int score = assessment[1];
+                        if (element is Group) {
+                          for (Student student in element.members) {
+                            _classAssessment[student] = score;
+                          }
+                        }
+                        _classAssessment[element] = score;
+                      });
+                    },
+                  ),
+                );
+              }
 
-          // render ungrouped title
-          if (index == groupedAssessees.length + 1 &&
-              ungroupedAssessees.isNotEmpty) {
-            return Container(
-                padding: const EdgeInsets.fromLTRB(0, 45, 0, 20),
-                child: Text(
-                  'Ungrouped Students',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ));
-          }
-          // render ungrouped
-          if (index > groupedAssessees.length + 1) {
-            int idx = index - (groupedAssessees.length + 2);
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: (index ==
-                          1 +
-                              groupedAssessees.length +
+              // render ungrouped title
+              if (index == groupedAssessees.length + 1 &&
+                  ungroupedAssessees.isNotEmpty) {
+                return Container(
+                    padding: const EdgeInsets.fromLTRB(0, 45, 0, 20),
+                    child: Text(
+                      'Ungrouped Students',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ));
+              }
+              // render ungrouped
+              if (index > groupedAssessees.length + 1) {
+                int idx = index - (groupedAssessees.length + 2);
+                return Padding(
+                  padding: EdgeInsets.only(
+                      bottom: (index ==
                               1 +
-                              ungroupedAssessees.length -
-                              1)
-                      ? 20.0
-                      : 0), // add some space at the bottom
-              child: AssessmentWidget(
-                assessee: ungroupedAssessees[idx],
-                score: _classAssessment[ungroupedAssessees[idx]] ?? -1,
-                callback: (assessment) {
-                  // first value is [Student] or [Group]
-                  // second value is the score
-                  setState(() {
-                    var element = assessment[0];
-                    int score = assessment[1];
-                    _classAssessment[element] = score;
-                  });
-                },
-              ),
-            );
-          }
+                                  groupedAssessees.length +
+                                  1 +
+                                  ungroupedAssessees.length -
+                                  1)
+                          ? 20.0
+                          : 0), // add some space at the bottom
+                  child: AssessmentWidget(
+                    assessee: ungroupedAssessees[idx],
+                    score: _classAssessment[ungroupedAssessees[idx]] ?? -1,
+                    callback: (assessment) {
+                      // first value is [Student] or [Group]
+                      // second value is the score
+                      setState(() {
+                        var element = assessment[0];
+                        int score = assessment[1];
+                        _classAssessment[element] = score;
+                      });
+                    },
+                  ),
+                );
+              }
 
-          return Container();
-        },
+              return Container();
+            },
+          ),
+        ),
       ),
       bottomNavigationBar: Padding(
         padding: MediaQuery.of(context).viewInsets,

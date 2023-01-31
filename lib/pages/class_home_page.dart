@@ -46,6 +46,7 @@ class ClassHomePage extends StatelessWidget {
             appBar: AppBar(
               surfaceTintColor: Colors.white,
               title: Text(theClass.name),
+              centerTitle: true,
               actions: [
                 PopupMenuButton(
                     onSelected: (value) {

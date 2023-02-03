@@ -14,6 +14,8 @@
 // Update the onSave callback for AddStudent to add the Student to the
 // StudentRepository
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:quickcheck/consts/color_themes.dart';
 import 'package:quickcheck/data/repository/authentification_repository.dart';
@@ -33,13 +35,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/pages/view_classes_page.dart';
 
 import 'data/repository/assessment_repository.dart';
-import 'data/repository/local_student_repository.dart';
-import 'data/repository/local_assessment_repository.dart';
 import 'data/repository/student_repository.dart';
-import '/data/repository/authentification_repository.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   final CacheRepository cacheRepository = SembastCacheRepository();
   final AuthenticationRepository authentificationRepository =
@@ -71,6 +74,10 @@ class App extends StatelessWidget {
   final ClassRepository classRepository;
   final AuthenticationRepository authentificationRepository;
   final CacheRepository cacheRepository;
+
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  static final FirebaseAnalyticsObserver _analyticsObserver =
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   const App(
       {Key? key,
@@ -110,6 +117,7 @@ class App extends StatelessWidget {
         theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
         //darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
         home: const LoginPage(),
+        navigatorObservers: [_analyticsObserver],
       ),
     );
   }

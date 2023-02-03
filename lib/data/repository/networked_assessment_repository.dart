@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/assessment.dart';
@@ -47,10 +48,17 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
     if (response.statusCode != 201) {
       return null;
     }
-
     // add the newly-created assessment
     final Assessment newAssessment =
         assessment.copyWith(id: jsonDecode(response.body)['id']);
+
+    // log analytics event
+    await FirebaseAnalytics.instance
+        .logEvent(name: "add_assessment", parameters: {
+      "number_of_scores": assessment.scoreMap.length,
+      "name_length": assessment.name.length
+    });
+    // add the assessment
     _assessments.add(newAssessment);
     _streamController.add(List<Assessment>.of(_assessments));
     return newAssessment;
@@ -141,6 +149,17 @@ class NetworkedAssessmentRepository extends AssessmentRepository {
         // could not find the assessment id
         throw AssessmentNotFoundException(id: assessment.id ?? -1);
       }
+      Assessment oldAssessment = _assessments[index];
+      // log analytics event
+      await FirebaseAnalytics.instance
+          .logEvent(name: "edit_assessment", parameters: {
+        "number_of_scores": assessment.scoreMap.length,
+        "name_length": assessment.name.length,
+        "old_number_of_scores": oldAssessment.scoreMap.length,
+        "old_name_length": oldAssessment.name.length,
+      });
+
+      // update the assessment
       _assessments[index] = assessment;
       _streamController.add(List.from(_assessments));
       return Assessment.fromJson(jsonDecode(response.body));

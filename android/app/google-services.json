@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "169295692118",
+    "project_id": "quickcheck-frontend",
+    "storage_bucket": "quickcheck-frontend.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169295692118:android:cf53206b522c3d198656f7",
+        "android_client_info": {
+          "package_name": "com.tonydoesathing.quickcheck"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "169295692118-vuf7425b0frrrvl3vlcb0o4g70o15gap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbDQL2hync5DToGlY6X1EdQ9tn1TRXQBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "169295692118-vuf7425b0frrrvl3vlcb0o4g70o15gap.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "169295692118-580rlhnpc8ur9hkank1u3kb36gm92hf5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tonydoesathing.quickcheck"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

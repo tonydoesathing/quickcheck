@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/group.dart';
 import 'package:quickcheck/data/model/student.dart';
@@ -49,6 +50,13 @@ class NetworkedGroupRepository extends GroupRepository {
     }
 
     final Group newGroup = Group.fromJson(jsonDecode(response.body));
+    // log analytics event
+    await FirebaseAnalytics.instance.logEvent(name: "add_group", parameters: {
+      "name_length": group.name.length,
+      "number_of_members": group.members.length,
+    });
+
+    // add group
     _groups.add(newGroup);
     _streamController.add(List<Group>.of(_groups));
     return newGroup;
@@ -76,6 +84,17 @@ class NetworkedGroupRepository extends GroupRepository {
         // could not find the group id
         throw GroupNotFoundException(id: group.id ?? -1);
       }
+      Group oldGroup = _groups[index];
+      // log analytics event
+      await FirebaseAnalytics.instance
+          .logEvent(name: "edit_group", parameters: {
+        "name_length": group.name.length,
+        "number_of_members": group.members.length,
+        "old_name_length": oldGroup.name.length,
+        "old_number_of_members": oldGroup.members.length
+      });
+
+      // add group
       _groups[index] = group;
       _streamController.add(List.from(_groups));
       return Group.fromJson(jsonDecode(response.body));

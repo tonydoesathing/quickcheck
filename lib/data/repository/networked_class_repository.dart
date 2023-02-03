@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/class.dart';
@@ -47,6 +48,10 @@ class NetworkedClassRepository implements ClassRepository {
       return null;
     }
     final Class newClass = Class.fromJson(jsonDecode(response.body));
+    // log analytics event
+    await FirebaseAnalytics.instance.logEvent(name: "add_class", parameters: {
+      "name_length": newClass.name.length,
+    });
     _classesCache.add(newClass);
     _streamController.add(_classesCache.toList());
     return newClass;

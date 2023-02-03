@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:http/http.dart';
 import 'package:quickcheck/data/model/student.dart';
 import 'package:quickcheck/data/repository/authentification_repository.dart';
@@ -45,6 +46,14 @@ class NetworkedStudentRepository extends StudentRepository {
 
     // add the newly-created student
     final Student newStudent = Student.fromJson(jsonDecode(response.body));
+
+    // log analytics event
+    await FirebaseAnalytics.instance.logEvent(name: "add_student", parameters: {
+      "name_length": newStudent.name.length,
+      "number_of_groups": newStudent.groups?.length ?? 0,
+    });
+
+    // add student
     _students.add(newStudent);
     _streamController.add(List<Student>.of(_students));
     return newStudent;
@@ -117,6 +126,25 @@ class NetworkedStudentRepository extends StudentRepository {
         body: jsonEncode(student.toJson()));
     if (response.statusCode == 200 && response.body != "400") {
       // the body should be json student
+      // edit local cache
+      int index = _students.indexWhere((element) => element.id == student.id);
+      if (index == -1) {
+        // could not find the group id
+        throw StudentNotFoundException(id: student.id ?? -1);
+      }
+      Student oldStudent = _students[index];
+      // log analytics event
+      await FirebaseAnalytics.instance
+          .logEvent(name: "edit_student", parameters: {
+        "name_length": student.name.length,
+        "number_of_groups": student.groups?.length ?? 0,
+        "old_name_length": oldStudent.name.length,
+        "old_number_of_groups": oldStudent.groups?.length ?? 0
+      });
+
+      // add student
+      _students[index] = student;
+      _streamController.add(List.from(_students));
       return Student.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 404) {
       throw StudentNotFoundException(id: student.id ?? -1);

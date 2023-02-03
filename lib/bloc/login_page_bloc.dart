@@ -97,6 +97,11 @@ class LoginPageBloc extends Bloc<LoginPageEvent, LoginPageState> {
           _cacheRepository.putRecord("token", token);
           // save username to cache
           _cacheRepository.putRecord("username", event.username);
+          // set analytics id
+          await FirebaseAnalytics.instance.setUserId(id: event.username);
+          // add analytics event
+          await FirebaseAnalytics.instance.logLogin();
+          // move to next screen
           emit(const LoginPageLoggedIn());
         }
       } catch (E) {

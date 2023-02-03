@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'package:quickcheck/data/repository/authentification_repository.dart';
 import 'package:quickcheck/data/repository/cache_repository.dart';
@@ -50,6 +51,13 @@ class LoginPageBloc extends Bloc<LoginPageEvent, LoginPageState> {
 
           return;
         }
+        // try to set analytics user ID to be username
+        String? username =
+            await _cacheRepository.getRecord("username") as String?;
+        if (username != null) {
+          await FirebaseAnalytics.instance.setUserId(id: username);
+        }
+
         // success
         emit(const LoginPageLoggedIn());
       }
@@ -87,6 +95,8 @@ class LoginPageBloc extends Bloc<LoginPageEvent, LoginPageState> {
           // success
           // save token to cache
           _cacheRepository.putRecord("token", token);
+          // save username to cache
+          _cacheRepository.putRecord("username", event.username);
           emit(const LoginPageLoggedIn());
         }
       } catch (E) {

@@ -55,6 +55,8 @@ class ClassHomePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
+                              settings:
+                                  const RouteSettings(name: "add_student"),
                               builder: (pageContext) => AddStudentPage(
                                 callback: (student) {
                                   // on save button in AddStudentPage, add the student
@@ -71,6 +73,7 @@ class ClassHomePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(name: "add_group"),
                               builder: (pageContext) => AddGroupPage(
                                   students: state.students,
                                   callback: (group) {
@@ -105,6 +108,8 @@ class ClassHomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+                              settings:
+                                  const RouteSettings(name: "add_assessment"),
                               builder: (pageContext) => AddAssessmentPage(
                                     groups: state.groups,
                                     students: state.students,
@@ -148,6 +153,8 @@ class ClassHomePage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
+                                settings:
+                                    const RouteSettings(name: "edit_student"),
                                 builder: (pageContext) => AddStudentPage(
                                       groups: state.groups,
                                       student: student,
@@ -164,6 +171,8 @@ class ClassHomePage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
+                                settings:
+                                    const RouteSettings(name: "edit_group"),
                                 builder: (pageContext) => AddGroupPage(
                                       callback: (g) {
                                         // on save of group, edit the group
@@ -180,6 +189,8 @@ class ClassHomePage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
+                                settings: const RouteSettings(
+                                    name: "edit_assessment"),
                                 builder: (pageContext) => AddAssessmentPage(
                                       groups: state.groups,
                                       students: state.students,

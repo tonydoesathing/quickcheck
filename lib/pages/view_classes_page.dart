@@ -35,6 +35,7 @@ class ViewClassesPage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(name: "add_class"),
                               builder: (context) => AddClassPage(
                                 callback: (theClass) {
                                   // on save button in AddStudentPage, add the student to the repo
@@ -119,6 +120,7 @@ class ViewClassesPage extends StatelessWidget {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
+                                  settings: const RouteSettings(name: "home"),
                                   builder: (context) => ClassHomePage(
                                     theClass: state.classes[index],
                                   ),

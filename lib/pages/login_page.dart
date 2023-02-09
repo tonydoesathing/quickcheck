@@ -69,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(name: "view_classes"),
                   builder: (context) => const ViewClassesPage(),
                 ));
           } else if (state is LoginPageError) {

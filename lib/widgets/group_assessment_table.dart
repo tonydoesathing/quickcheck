@@ -64,6 +64,7 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
   static const double _cellWidth = 150;
   static const double _horizontalPadding = 24;
   static const double _verticalPadding = 8;
+  static const double _bottomVerticalPadding = 86;
 
   @override
   void initState() {
@@ -155,15 +156,19 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
     for (int i = 0; i < length; i++) {
       children.add(Padding(
         padding: EdgeInsets.only(
-            right: assessmentIndex == widget.assessments.length - 1
-                ? _horizontalPadding
-                : 0),
+          right: assessmentIndex == widget.assessments.length - 1
+              ? _horizontalPadding
+              : 0,
+        ),
         child: _buildAssessmentColumnCell(assessmentIndex, i),
       ));
     }
 
-    return Column(
-      children: children,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: _bottomVerticalPadding),
+      child: Column(
+        children: children,
+      ),
     );
   }
 
@@ -172,7 +177,8 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
     if (widget.assessments.isNotEmpty) {
       return Padding(
         padding: const EdgeInsets.only(
-            top: _verticalPadding, bottom: _verticalPadding),
+          top: _verticalPadding,
+        ),
         child: Column(
           children: [
             ///////////////////////////////////////////
@@ -240,6 +246,8 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: _horizontalPadding),
                     child: ListView.builder(
+                        padding: const EdgeInsets.only(
+                            bottom: _bottomVerticalPadding),
                         controller: _columnController,
                         itemCount: widget.ungroupedStudents.isNotEmpty
                             ? widget.groupsAndStudents.length +
@@ -389,14 +397,17 @@ class _GroupAssessmentTableState extends State<GroupAssessmentTable> {
                 child: SingleChildScrollView(
                   controller: _bodyControllerVertical,
                   child: SizedBox(
-                    height: _cellHeight *
-                        (widget.ungroupedStudents.isNotEmpty
-                            ? widget.groupsAndStudents.length +
-                                (widget.groupsAndStudents.isNotEmpty ? 1 : 0) +
-                                1 +
-                                widget.ungroupedStudents.length
-                            // groups and students + blank row (if needed) + ungrouped title + ungrouped students
-                            : widget.groupsAndStudents.length),
+                    height: _bottomVerticalPadding +
+                        _cellHeight *
+                            (widget.ungroupedStudents.isNotEmpty
+                                ? widget.groupsAndStudents.length +
+                                    (widget.groupsAndStudents.isNotEmpty
+                                        ? 1
+                                        : 0) +
+                                    1 +
+                                    widget.ungroupedStudents.length
+                                // groups and students + blank row (if needed) + ungrouped title + ungrouped students
+                                : widget.groupsAndStudents.length),
                     child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemExtent: _cellWidth,
@@ -606,12 +617,12 @@ class TableCell extends StatelessWidget {
                   ? BorderSide.none
                   : BorderSide(
                       color: colorVerticalBorderLeft ??
-                          Theme.of(context).dividerColor),
+                          Theme.of(context).dividerColor.withAlpha(100)),
               right: colorVerticalBorderRight == Colors.transparent
                   ? BorderSide.none
                   : BorderSide(
                       color: colorVerticalBorderRight ??
-                          Theme.of(context).dividerColor),
+                          Theme.of(context).dividerColor.withAlpha(100)),
             ),
           ),
           child: Column(
@@ -627,7 +638,7 @@ class TableCell extends StatelessWidget {
                 width: double.infinity,
                 height: 2,
                 color: colorHorizontalBorderBottom ??
-                    Theme.of(context).dividerColor,
+                    Theme.of(context).dividerColor.withAlpha(100),
               ),
             ],
           ),

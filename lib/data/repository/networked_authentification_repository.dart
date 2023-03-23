@@ -41,6 +41,14 @@ class NetworkedAuthenticationRepository extends AuthenticationRepository {
   }
 
   @override
+  Future<void> logout() async {
+    // send logout request to server
+
+    // nullify token
+    token = null;
+  }
+
+  @override
   Future<void> tryToken() async {
     Response response = await http.get(Uri.parse('${url}auth/users/'),
         headers: <String, String>{'Authorization': 'Token $token'});

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quickcheck/bloc/view_classes_page_bloc.dart';
 import 'package:quickcheck/data/model/class.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
+import 'package:quickcheck/data/repository/cache_repository.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
 import 'package:quickcheck/pages/add_class_page.dart';
 import 'package:quickcheck/pages/class_home_page.dart';
+import 'package:quickcheck/pages/login_page.dart';
 
 /// Displays all of the classes for a user
 /// Tapping a class takes the user to that class's page
@@ -14,7 +17,10 @@ class ViewClassesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ViewClassesPageBloc(context.read<ClassRepository>())
+      create: (context) => ViewClassesPageBloc(
+          context.read<ClassRepository>(),
+          context.read<AuthenticationRepository>(),
+          context.read<CacheRepository>())
         ..add(LoadClassesEvent()),
       child: BlocConsumer<ViewClassesPageBloc, ViewClassesPageState>(
         listener: (context, state) {
@@ -22,10 +28,24 @@ class ViewClassesPage extends StatelessWidget {
           if (state is DisplayClassesError) {
             throw state.exception;
           }
+          if (state is LoggedOut) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(name: "login"),
+                  builder: (context) => const LoginPage(),
+                ));
+          }
         },
         builder: (context, state) {
           return Scaffold(
               appBar: AppBar(
+                leading: IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {
+                    context.read<ViewClassesPageBloc>().add(LogoutEvent());
+                  },
+                ),
                 title: const Text("Classes"),
                 centerTitle: true,
                 actions: [

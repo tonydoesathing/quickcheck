@@ -1,12 +1,24 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:quickcheck/data/model/class.dart';
+import 'package:quickcheck/data/repository/authentification_repository.dart';
+import 'package:quickcheck/data/repository/cache_repository.dart';
 import 'package:quickcheck/data/repository/class_repository.dart';
 
 class ViewClassesPageBloc
     extends Bloc<ViewClassesPageEvent, ViewClassesPageState> {
+  /// class repository
   final ClassRepository _classRepository;
-  ViewClassesPageBloc(this._classRepository) : super(const LoadingClasses([])) {
+
+  /// authentication repository
+  final AuthenticationRepository _authenticationRepository;
+
+  /// cache repository
+  final CacheRepository _cacheRepository;
+
+  ViewClassesPageBloc(this._classRepository, this._authenticationRepository,
+      this._cacheRepository)
+      : super(const LoadingClasses([])) {
     on<LoadClassesEvent>((event, emit) async {
       List<Class> classes = await _classRepository.getClasses();
       emit(DisplayClasses(List.from(classes)));
@@ -28,6 +40,19 @@ class ViewClassesPageBloc
         emit(DisplayClassesError(state.classes, e));
       }
     });
+
+    on<LogoutEvent>((event, emit) async {
+      final List<Class> classes = List.from(state.classes);
+      // set loading
+      emit(LoadingClasses(classes));
+
+      // log out from auth
+      await _authenticationRepository.logout();
+      // clear cached token
+      await _cacheRepository.putRecord("token", null);
+
+      emit(LoggedOut(classes));
+    });
   }
 }
 
@@ -39,6 +64,9 @@ abstract class ViewClassesPageEvent extends Equatable {
 }
 
 class LoadClassesEvent extends ViewClassesPageEvent {}
+
+/// Logout
+class LogoutEvent extends ViewClassesPageEvent {}
 
 class AddClassEvent extends ViewClassesPageEvent {
   final Class theClass;
@@ -63,6 +91,10 @@ class LoadingClasses extends ViewClassesPageState {
 
 class DisplayClasses extends ViewClassesPageState {
   const DisplayClasses(super.classes);
+}
+
+class LoggedOut extends ViewClassesPageState {
+  const LoggedOut(super.classes);
 }
 
 class DisplayClassesError extends ViewClassesPageState {

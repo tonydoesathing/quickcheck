@@ -50,9 +50,9 @@ class NetworkedAuthenticationRepository extends AuthenticationRepository {
 
   @override
   Future<void> tryToken() async {
-    Response response = await http.get(Uri.parse('${url}auth/users/'),
+    Response response = await http.get(Uri.parse('${url}api/classes/'),
         headers: <String, String>{'Authorization': 'Token $token'});
-    if (response.statusCode != 200 || response.body == '400') {
+    if (response.statusCode == 401) {
       throw TokenFailedException(
           "Received status code of ${response.statusCode} with body of ${response.body}",
           token ?? "-1");

@@ -43,9 +43,20 @@ class NetworkedAuthenticationRepository extends AuthenticationRepository {
   @override
   Future<void> logout() async {
     // send logout request to server
-
-    // nullify token
-    token = null;
+    Response response = await http.post(
+      Uri.parse('${url}auth/logout/'),
+      headers: <String, String>{
+        'Authorization': 'Token $token',
+      },
+    );
+    if (response.statusCode != 204) {
+      throw TokenFailedException(
+          "Received status code of ${response.statusCode} with body of ${response.body}",
+          token ?? "-1");
+    } else {
+      // nullify token
+      token = null;
+    }
   }
 
   @override

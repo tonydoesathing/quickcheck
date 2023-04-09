@@ -150,6 +150,23 @@ class _LoginPageState extends State<LoginPage> {
                                       obscureText: true,
                                     ),
                                   ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 24.0, right: 24.0, top: 8),
+                                    child: CheckboxListTile(
+                                      title: const Text("Stay signed in"),
+                                      value: state.stayLoggedIn,
+                                      onChanged: (value) {
+                                        context.read<LoginPageBloc>().add(
+                                            StayLoggedInToggleEvent(
+                                                _usernameController.text,
+                                                _passwordController.text,
+                                                value ?? false));
+                                      },
+                                      controlAffinity:
+                                          ListTileControlAffinity.leading,
+                                    ),
+                                  ),
                                   SizedBox(
                                     height: 75,
                                     child: Row(

@@ -14,7 +14,14 @@ abstract class AuthenticationRepository {
   /// Returns token if successful, null if failed
   Future<String?> login(String username, String password);
 
+  /// Tries to logout
+  ///
+  /// Throws [LogoutException] if failed
+  Future<void> logout();
+
   /// Tries the stored [token] on the [url]
+  ///
+  /// Throws [TokenFailedException] if failed
   Future<void> tryToken();
 }
 
@@ -27,5 +34,18 @@ class TokenFailedException implements Exception {
   @override
   String toString() {
     return 'Error for token $token: $err';
+  }
+}
+
+/// Error logging out
+class LogoutException implements Exception {
+  final Object err;
+  const LogoutException(
+    this.err,
+  );
+
+  @override
+  String toString() {
+    return '$err';
   }
 }
